@@ -2,9 +2,9 @@
 
 namespace Illuminate\Database\Eloquent\Concerns;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use Illuminate\Contracts\Events\Dispatcher;
 
 trait HasEvents
 {
@@ -46,7 +46,7 @@ trait HasEvents
     /**
      * Register a single observer with the model.
      *
-     * @param  object|string $class
+     * @param  object|string  $class
      * @return void
      *
      * @throws \RuntimeException
@@ -68,7 +68,7 @@ trait HasEvents
     /**
      * Resolve the observer's class name from an object or string.
      *
-     * @param  object|string $class
+     * @param  object|string  $class
      * @return string
      *
      * @throws \InvalidArgumentException
@@ -96,7 +96,7 @@ trait HasEvents
         return array_merge(
             [
                 'retrieved', 'creating', 'created', 'updating', 'updated',
-                'saving', 'saved', 'restoring', 'restored',
+                'saving', 'saved', 'restoring', 'restored', 'replicating',
                 'deleting', 'deleted', 'forceDeleted',
             ],
             $this->observables
@@ -301,6 +301,17 @@ trait HasEvents
     public static function created($callback)
     {
         static::registerModelEvent('created', $callback);
+    }
+
+    /**
+     * Register a replicating model event with the dispatcher.
+     *
+     * @param  \Closure|string  $callback
+     * @return void
+     */
+    public static function replicating($callback)
+    {
+        static::registerModelEvent('replicating', $callback);
     }
 
     /**
