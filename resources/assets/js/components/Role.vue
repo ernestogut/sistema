@@ -22,7 +22,7 @@
                                       <option value="descripcion">Descripción</option>
                                     </select>
                                     <input type="text" v-model="buscar"  @keyup.enter="listarRole(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listarRole(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <button type="submit" @click="listarRole(1,buscar,criterio)" class="btn btn-primary boton"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>

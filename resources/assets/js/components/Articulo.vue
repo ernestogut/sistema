@@ -11,10 +11,10 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Productos
-                        <button type="button" @click="abrirModal('articulo', 'registrar')" class="btn btn-secondary" >
+                        <button type="button" @click="abrirModal('articulo', 'registrar')" class="btn btn-secondary boton" >
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
-                        <button type="button" @click="cargarPdf()" class="btn btn-info" >
+                        <button type="button" @click="cargarPdf()" class="btn btn-info boton" >
                             <i class="fa fa-download"></i>&nbsp;Descargar reporte
                         </button>
                     </div>
@@ -27,11 +27,11 @@
                                       <option value="descripcion">Descripción</option>
                                     </select>
                                     <input type="text" v-model="buscar"  @keyup.enter="listarArticulo(1,buscar,criterio)" class="form-control" placeholder="Producto a buscar">
-                                    <button type="submit" @click="listarArticulo(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <button type="submit" @click="listarArticulo(1,buscar,criterio)" class="btn btn-primary boton"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
-                        <table class="table table-bordered table-striped table-sm">
+                        <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th class="text-center">Opciones</th>
@@ -47,16 +47,16 @@
                             <tbody>
                                 <tr v-for="articulo in arrayArticulo" :key="articulo.id">
                                     <td class="text-center">
-                                        <button type="button" @click="abrirModal('articulo', 'actualizar',articulo)" class="btn btn-warning btn-sm" >
+                                        <button type="button" @click="abrirModal('articulo', 'actualizar',articulo)" class="btn btn-warning btn-sm boton" >
                                           <i class="icon-pencil"></i>
                                         </button> &nbsp;
                                         <template v-if="articulo.condicion">
-                                            <button type="button" @click="desactivarArticulo(articulo.id)" class="btn btn-danger btn-sm">
+                                            <button type="button" @click="desactivarArticulo(articulo.id)" class="btn btn-danger btn-sm boton">
                                                 <i class="icon-trash"></i>
                                             </button>
                                         </template>
                                         <template v-else>
-                                            <button type="button" @click="activarArticulo(articulo.id)" class="btn btn-success btn-sm">
+                                            <button type="button" @click="activarArticulo(articulo.id)" class="btn btn-success btn-sm boton">
                                                 <i class="icon-check"></i>
                                             </button>
                                         </template>
@@ -161,9 +161,9 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" @click="cerrarModal()" class="btn btn-secondary" >Cerrar</button>
-                            <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="registrarArticulo()">Guardar</button>
-                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarArticulo()">Actualizar</button>
+                            <button type="button" @click="cerrarModal()" class="btn btn-secondary boton" >Cerrar</button>
+                            <button type="button" v-if="tipoAccion==1" class="btn btn-primary boton" @click="registrarArticulo()">Guardar</button>
+                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary boton" @click="actualizarArticulo()">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -338,7 +338,7 @@
                     'descripcion': this.descripcion,
                     'id':this.articulo_id
                      }).then(function (response){
-
+                         console.log(response.data)
                 }).then(function(){
                     me.cerrarModal();
                     me.listarArticulo(1,'', 'nombre');
@@ -519,6 +519,9 @@
     .text-error{
         color: red !important;
         font-weight: bold;
+    }
+    .boton{
+        border-radius: 5px;
     }
 </style>
 

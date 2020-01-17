@@ -22,7 +22,7 @@
                                         <option value="fecha_hora">Fecha-Hora</option>
                                         </select>
                                         <input type="text" v-model="buscar"  @keyup.enter="listarVenta(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
-                                        <button type="submit" @click="listarVenta(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                        <button type="submit" @click="listarVenta(1,buscar,criterio)" class="btn btn-primary boton"><i class="fa fa-search"></i> Buscar</button>
                                     </div>
                                 </div>
                             </div>
@@ -46,10 +46,10 @@
                                 <tbody>
                                     <tr v-for="venta in arrayVenta" :key="venta.id">
                                         <td>
-                                            <button type="button" @click="verVenta(venta.id)" class="btn btn-success btn-sm" >
+                                            <button type="button" @click="verVenta(venta.id)" class="btn btn-success btn-sm boton" >
                                             <i class="icon-eye"></i>
                                             </button> &nbsp;
-                                            <button type="button" @click="pdfVenta(venta.id)" class="btn btn-info btn-sm" >
+                                            <button type="button" @click="pdfVenta(venta.id)" class="btn btn-info btn-sm boton" >
                                             <i class="icon-doc"></i>
                                             </button> &nbsp;
                                         </td>
@@ -182,7 +182,7 @@
                             </div>
                             <div class="form-group row ">
                                 <div class="col-md-12">
-                                    <button type="button" class="btn btn-danger" @click="ocultarDetalle()">Cerrar</button>
+                                    <button type="button" class="btn btn-danger boton" @click="ocultarDetalle()">Cerrar</button>
                                 </div>
                             </div>
                         </div>

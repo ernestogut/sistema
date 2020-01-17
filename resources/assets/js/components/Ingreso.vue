@@ -9,10 +9,10 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Ingresos
-                        <button type="button" @click="mostrarDetalle()" class="btn btn-success" >
+                        <button type="button" @click="mostrarDetalle()" class="btn btn-success boton" >
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
-                        <button type="button" @click="cargarPdf()" class="btn btn-info" >
+                        <button type="button" @click="cargarPdf()" class="btn btn-info boton" >
                             <i class="fa fa-download"></i>&nbsp;Descargar reporte
                         </button>
                     </div>
@@ -28,7 +28,7 @@
                                         <option value="fecha_hora">Fecha-Hora</option>
                                         </select>
                                         <input type="text" v-model="buscar"  @keyup.enter="listarIngreso(1,buscar,criterio)" class="form-control" placeholder="Ingreso a buscar">
-                                        <button type="submit" @click="listarIngreso(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                        <button type="submit" @click="listarIngreso(1,buscar,criterio)" class="btn btn-primary boton"><i class="fa fa-search"></i> Buscar</button>
                                     </div>
                                 </div>
                             </div>
@@ -49,11 +49,11 @@
                                 <tbody>
                                     <tr v-for="ingreso in arrayIngreso" :key="ingreso.id">
                                         <td class="text-center">
-                                            <button type="button" @click="verIngreso(ingreso.id)" class="btn btn-success btn-sm" >
+                                            <button type="button" @click="verIngreso(ingreso.id)" class="btn btn-success btn-sm boton" >
                                             <i class="icon-eye"></i>
                                             </button> &nbsp;
                                             <template v-if="ingreso.estado == 'Registrado'">
-                                                <button type="button" @click="desactivarIngreso(ingreso.id)" class="btn btn-danger btn-sm">
+                                                <button type="button" @click="desactivarIngreso(ingreso.id)" class="btn btn-danger btn-sm boton">
                                                     <i class="icon-trash"></i>
                                                 </button>
                                             </template>
@@ -151,7 +151,7 @@
                                         <label><strong>Artículo</strong><span style="color:red" v-show="idarticulo == 0">(*Seleccione)</span></label>
                                         <div class="form-inline">
                                             <input type="text" class="form-control" v-model="codigo" @keyup.enter="buscarArticulo()" placeholder="Código artículo y enter">
-                                            <button class="btn btn-primary" @click="abrirModal()">...</button>
+                                            <button class="btn btn-primary boton" @click="abrirModal()">...</button>
                                             <input type="text" readonly class="form-control" v-model="articulo">
                                         </div>
                                     </div>
@@ -170,7 +170,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <button class="btn btn-success form-control btnagregar" @click="agregarDetalle()" >
+                                        <button class="btn btn-success boton form-control btnagregar" @click="agregarDetalle()" >
                                             <i class="icon-plus"></i>
                                         </button>
                                     </div>
@@ -192,7 +192,7 @@
                                         <tbody v-if="arrayDetalle.length">
                                             <tr v-for="(detalle,index) in arrayDetalle" :key="detalle.id">
                                             <td>
-                                                <button class="btn btn-danger btn-sm" @click="eliminarDetalle(index)" type="button"><i class="icon-close"></i></button>
+                                                <button class="btn btn-danger btn-sm boton" @click="eliminarDetalle(index)" type="button"><i class="icon-close"></i></button>
                                             </td>
                                             <td v-text="detalle.articulo"></td>
                                             <td><input v-model="detalle.precio" type="number" value="3" class="form-control"></td>
@@ -235,8 +235,8 @@
                             </div>
                             <div class="form-group row ">
                                 <div class="col-md-12">
-                                    <button type="button" class="btn btn-danger" @click="ocultarDetalle()">Cerrar</button>
-                                    <button type="button" class="btn btn-primary" @click="registrarIngreso()">Registrar Compra</button>
+                                    <button type="button" class="btn btn-danger boton" @click="ocultarDetalle()">Cerrar</button>
+                                    <button type="button" class="btn btn-primary boton" @click="registrarIngreso()">Registrar Compra</button>
                                 </div>
                             </div>
                         </div>
@@ -336,7 +336,7 @@
                             </div>
                             <div class="form-group row ">
                                 <div class="col-md-12">
-                                    <button type="button" class="btn btn-danger" @click="ocultarDetalle()">Cerrar</button>
+                                    <button type="button" class="btn btn-danger boton" @click="ocultarDetalle()">Cerrar</button>
                                 </div>
                             </div>
                         </div>

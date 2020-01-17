@@ -9,10 +9,10 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Clientes
-                        <button type="button" @click="abrirModal('persona', 'registrar')" class="btn btn-secondary" >
+                        <button type="button" @click="abrirModal('persona', 'registrar')" class="btn btn-secondary boton" >
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
-                        <button type="button" @click="cargarPdf()" class="btn btn-info" >
+                        <button type="button" @click="cargarPdf()" class="btn btn-info boton" >
                             <i class="fa fa-download"></i>&nbsp;Descargar reporte
                         </button>
                     </div>
@@ -27,7 +27,7 @@
                                       <option value="telefono">Teléfono</option>
                                     </select>
                                     <input type="text" v-model="buscar"  @keyup.enter="listarPersona(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listarPersona(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <button type="submit" @click="listarPersona(1,buscar,criterio)" class="btn btn-primary boton"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -46,7 +46,7 @@
                             <tbody>
                                 <tr v-for="persona in arrayPersona" :key="persona.id">
                                     <td class="text-center">
-                                        <button type="button" @click="abrirModal('persona', 'actualizar',persona)" class="btn btn-warning btn-sm" >
+                                        <button type="button" @click="abrirModal('persona', 'actualizar',persona)" class="btn btn-warning btn-sm boton" >
                                           <i class="icon-pencil"></i>
                                         </button> &nbsp;
                                     </td>
@@ -145,9 +145,9 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" @click="cerrarModal()" class="btn btn-secondary" >Cerrar</button>
-                            <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="registrarPersona()">Guardar</button>
-                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarPersona()">Actualizar</button>
+                            <button type="button" @click="cerrarModal()" class="btn btn-secondary boton" >Cerrar</button>
+                            <button type="button" v-if="tipoAccion==1" class="btn btn-primary boton" @click="registrarPersona()">Guardar</button>
+                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary boton" @click="actualizarPersona()">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->

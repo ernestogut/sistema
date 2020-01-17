@@ -9,7 +9,7 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Usuario
-                        <button type="button" @click="abrirModal('persona', 'registrar')" class="btn btn-secondary" >
+                        <button type="button" @click="abrirModal('persona', 'registrar')" class="btn btn-secondary boton" >
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
                     </div>
@@ -24,7 +24,7 @@
                                       <option value="telefono">Teléfono</option>
                                     </select>
                                     <input type="text" v-model="buscar"  @keyup.enter="listarPersona(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listarPersona(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <button type="submit" @click="listarPersona(1,buscar,criterio)" class="btn btn-primary boton"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -46,16 +46,16 @@
                             <tbody>
                                 <tr v-for="persona in arrayPersona" :key="persona.id">
                                     <td>
-                                        <button type="button" @click="abrirModal('persona', 'actualizar',persona)" class="btn btn-warning btn-sm" >
+                                        <button type="button" @click="abrirModal('persona', 'actualizar',persona)" class="btn btn-warning btn-sm boton" >
                                           <i class="icon-pencil"></i>
                                         </button> &nbsp;
                                         <template v-if="persona.condicion">
-                                            <button type="button" @click="desactivarUsuario(persona.id)" class="btn btn-danger btn-sm">
+                                            <button type="button" @click="desactivarUsuario(persona.id)" class="btn btn-danger btn-sm boton">
                                                 <i class="icon-trash"></i>
                                             </button>
                                         </template>
                                         <template v-else>
-                                            <button type="button" @click="activarUsuario(persona.id)" class="btn btn-success btn-sm">
+                                            <button type="button" @click="activarUsuario(persona.id)" class="btn btn-success btn-sm boton">
                                                 <i class="icon-check"></i>
                                             </button>
                                         </template>
@@ -113,9 +113,8 @@
                                     <label class="col-md-3 form-control-label" for="text-input">Tipo Documento</label>
                                     <div class="col-md-9">
                                         <select v-model="tipo_documento" class="form-control">
-                                            <option value="CC">CC</option>
-                                            <option value="RUT">RUT</option>
-                                            <option value="PASS">PASS</option>
+                                            <option value="DNI">DNI</option>
+                                            <option value="RUC">RUC</option>
                                         </select>
                                     </div>
                                 </div>
@@ -184,9 +183,9 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" @click="cerrarModal()" class="btn btn-secondary" >Cerrar</button>
-                            <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="registrarPersona()">Guardar</button>
-                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarPersona()">Actualizar</button>
+                            <button type="button" @click="cerrarModal()" class="btn btn-secondary boton" >Cerrar</button>
+                            <button type="button" v-if="tipoAccion==1" class="btn btn-primary boton" @click="registrarPersona()">Guardar</button>
+                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary boton" @click="actualizarPersona()">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -208,8 +207,8 @@
                             <p>Estas seguro de eliminar esta persona?</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-danger">Eliminar</button>
+                            <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn btn-danger boton">Eliminar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -227,7 +226,7 @@
             return {
                 persona_id : 0,
                 nombre : '',
-                tipo_documento : 'CC',
+                tipo_documento : 'DNI',
                 num_documento: '',
                 direccion: '',
                 telefono: '',
@@ -466,7 +465,7 @@
                 this.modal=0;
                 this.tituloModal='';
                 this.nombre='';
-                this.tipo_documento='CC';
+                this.tipo_documento='DNI';
                 this.num_documento = '';
                 this.direccion = '';
                 this.telefono = '';
@@ -488,7 +487,7 @@
                                 this.modal = 1;
                                 this.tituloModal = 'Registrar Usuario';
                                 this.nombre='';
-                                this.tipo_documento='CC';
+                                this.tipo_documento='DNI';
                                 this.num_documento = '';
                                 this.direccion = '';
                                 this.telefono = '';

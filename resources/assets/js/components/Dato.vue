@@ -47,7 +47,7 @@
                                 </form>
                             </div>
                             <div class="card-footer">
-                                 <button type="button" @click="abrirModal('dato', 'actualizar',dato)" class="btn btn-warning btn-sm" >
+                                 <button type="button" @click="abrirModal('dato', 'actualizar',dato)" class="btn btn-warning btn-sm boton" >
                                           <i class="icon-pencil"></i>
                                         </button> &nbsp;
                             </div>
@@ -118,8 +118,8 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" @click="cerrarModal()" class="btn btn-secondary" >Cerrar</button>
-                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarInformacion()">Actualizar</button>
+                            <button type="button" @click="cerrarModal()" class="btn btn-secondary boton" >Cerrar</button>
+                            <button type="button" v-if="tipoAccion==2" class="btn btn-primary boton" @click="actualizarInformacion()">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->

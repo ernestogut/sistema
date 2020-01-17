@@ -22,7 +22,7 @@
                                         <option value="fecha_hora">Fecha-Hora</option>
                                         </select>
                                         <input type="text" v-model="buscar"  @keyup.enter="listarIngreso(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
-                                        <button type="submit" @click="listarIngreso(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                        <button type="submit" @click="listarIngreso(1,buscar,criterio)" class="btn btn-primary boton"><i class="fa fa-search"></i> Buscar</button>
                                     </div>
                                 </div>
                             </div>
@@ -46,7 +46,7 @@
                                 <tbody>
                                     <tr v-for="ingreso in arrayIngreso" :key="ingreso.id">
                                         <td>
-                                            <button type="button" @click="verIngreso(ingreso.id)" class="btn btn-success btn-sm" >
+                                            <button type="button" @click="verIngreso(ingreso.id)" class="btn btn-success btn-sm boton" >
                                             <i class="icon-eye"></i>
                                             </button> &nbsp;
 
@@ -178,7 +178,7 @@
                             </div>
                             <div class="form-group row ">
                                 <div class="col-md-12">
-                                    <button type="button" class="btn btn-danger" @click="ocultarDetalle()">Cerrar</button>
+                                    <button type="button" class="btn btn-danger boton" @click="ocultarDetalle()">Cerrar</button>
                                 </div>
                             </div>
                         </div>
