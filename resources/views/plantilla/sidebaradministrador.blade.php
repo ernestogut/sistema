@@ -19,24 +19,13 @@
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">
-                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Almacén Lince</a>
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Productos</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=1" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-bag"></i> Categorías</a>
+                            <a class="nav-link" href="#"><i class="icon-bag"></i> Almacenes</a>
                         </li>
                         <li  @click="menu=2" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-bag"></i> Artículos</a>
-                        </li>
-                    </ul>
-                </li>
-                <li  class="nav-item nav-dropdown">
-                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Almacén Inde</a>
-                    <ul class="nav-dropdown-items">
-                        <li  @click="menu=1" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-bag"></i> Categorías</a>
-                        </li>
-                        <li  @click="menu=2" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-bag"></i> Artículos</a>
+                            <a class="nav-link" href="#"><i class="icon-bag"></i> Productos</a>
                         </li>
                     </ul>
                 </li>
