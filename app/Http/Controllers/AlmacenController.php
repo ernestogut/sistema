@@ -15,7 +15,8 @@ class AlmacenController extends Controller
      */
     public function index()
     {
-        //
+        $almacen = Almacen::All();
+        return $almacen;
     }
 
     /**
@@ -36,7 +37,20 @@ class AlmacenController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $almacen = new Almacen();
+        #if($request->hasFile('imagen')){
+         #   $almacen['imagen']=$request->file('imagen')->store('uploads', 'public');
+        #}
+        $almacen->codigo = $request->codigo;
+        $almacen->descripcion = $request->descripcion;
+        $almacen->direccion = $request->direccion;
+        #$almacen->imagen = $request->imagen;
+        $almacen->save();
+        #$almacen = request()->all();
+        #$almacen = request()->except('_token');
+        #almacen::insert($almacen);
+        #return response()->json($almacen);
+        return $almacen;
     }
 
     /**

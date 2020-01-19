@@ -193,7 +193,12 @@ Route::group(['middleware' => ['auth']], function () {
         //Auth::routes();
     });
 
+    
+
 
 });
+
+
+Route::resource('almacen', 'AlmacenController');
 
 //Route::get('/home', 'HomeController@index')->name('home');

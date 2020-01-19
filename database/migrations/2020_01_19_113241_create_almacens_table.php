@@ -15,9 +15,9 @@ class CreateAlmacensTable extends Migration
     {
         Schema::create('almacens', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('Codigo', 20);
-            $table->string('Descripcion', 100);
-            $table->string('Direccion', 200);
+            $table->string('codigo', 20);
+            $table->string('descripcion', 100);
+            $table->string('direccion', 200);
 
             $table->timestamps();
         });
