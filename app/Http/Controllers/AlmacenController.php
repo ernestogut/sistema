@@ -59,9 +59,10 @@ class AlmacenController extends Controller
      * @param  \App\Almacen  $almacen
      * @return \Illuminate\Http\Response
      */
-    public function show(Almacen $almacen)
+    public function show($id)
     {
-        //
+        $almacen = Almacen::find($id);
+        return $almacen;
     }
 
     /**
@@ -82,9 +83,14 @@ class AlmacenController extends Controller
      * @param  \App\Almacen  $almacen
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Almacen $almacen)
+    public function update(Request $request, $id)
     {
-        //
+        $almacen = Almacen::find($id);
+        $almacen->codigo = $request->codigo;
+        $almacen->descripcion = $request->descripcion;
+        $almacen->direccion = $request->direccion;
+        $almacen->save();
+        return $almacen;
     }
 
     /**
@@ -93,8 +99,9 @@ class AlmacenController extends Controller
      * @param  \App\Almacen  $almacen
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Almacen $almacen)
+    public function destroy($id)
     {
-        //
+        $almacen = Almacen::find($id);
+        $almacen->delete();
     }
 }

@@ -10,6 +10,7 @@ window.$ = window.jQuery = require('jquery');
 
 window.Vue = require('vue');
 
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -30,6 +31,7 @@ Vue.component('consultaingreso', require('./components/ConsultaIngreso.vue').def
 Vue.component('consultaventa', require('./components/ConsultaVenta.vue').default);
 Vue.component('notification', require('./components/Notification.vue').default);
 Vue.component('almacen', require('./components/Almacen.vue').default);
+Vue.component('modulo', require('./components/Modulo.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

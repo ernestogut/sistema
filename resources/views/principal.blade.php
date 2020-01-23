@@ -18,6 +18,8 @@
     <link href="css/plantilla.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Raleway&display=swap" rel="stylesheet">
     <script   src="https://code.jquery.com/jquery-3.4.0.js"></script>
+    
+    
 
 </head>
 

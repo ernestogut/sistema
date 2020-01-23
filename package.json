@@ -26,8 +26,10 @@
     "dependencies": {
         "datatables": "^1.10.18",
         "datatables.net": "^1.10.20",
+        "datatables.net-bs4": "^1.10.20",
         "datatables.net-dt": "^1.10.20",
         "laravel-echo": "^1.5.3",
+        "laravel-vue-datatable": "^0.5.4",
         "pusher-js": "^4.4.0",
         "vue-barcode": "^1.2.0",
         "vue-select": "^2.6.4"
