@@ -120,10 +120,10 @@ export default {
             })
         },
         agregarItem(){
-            if(this.variables[0].var.trim() === '' || this.variables[1].var.trim() === '' || this.variables[2].var.trim() === ''){
+            /*if(this.variables[0].var.trim() === '' || this.variables[1].var.trim() === '' || this.variables[2].var.trim() === ''){
                 alert('Debes completar todos los campos')
                 return;
-            }
+            }*/
             var me = this;
             let formDatos = new FormData();
             for(var i = 0; i < this.variables.length; i++){

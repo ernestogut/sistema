@@ -15,7 +15,8 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        //
+        $producto = Producto::All();
+        return $producto;
     }
 
     /**
@@ -36,7 +37,17 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $producto = new Producto();
+        #if($request->hasFile('imagen')){
+         #   $producto['imagen']=$request->file('imagen')->store('uploads', 'public');
+        #}
+        $producto->codigo = $request->codigo;
+        $producto->marca = $request->marca;
+        $producto->modelo = $request->modelo;
+        $producto->precio = $request->precio;
+        $producto->descripcion = $request->descripcion;
+        $producto->save();
+        return $producto;
     }
 
     /**
@@ -45,9 +56,10 @@ class ProductoController extends Controller
      * @param  \App\Producto  $producto
      * @return \Illuminate\Http\Response
      */
-    public function show(Producto $producto)
+    public function show($id)
     {
-        //
+        $producto = Producto::find($id);
+        return $producto;
     }
 
     /**
@@ -68,9 +80,16 @@ class ProductoController extends Controller
      * @param  \App\Producto  $producto
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Producto $producto)
+    public function update(Request $request, $id)
     {
-        //
+        $producto = Producto::find($id);
+        $producto->codigo = $request->codigo;
+        $producto->marca = $request->marca;
+        $producto->modelo = $request->modelo;
+        $producto->precio = $request->precio;
+        $producto->descripcion = $request->descripcion;
+        $producto->save();
+        return $producto;
     }
 
     /**
@@ -79,8 +98,9 @@ class ProductoController extends Controller
      * @param  \App\Producto  $producto
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Producto $producto)
+    public function destroy($id)
     {
-        //
+        $producto = Producto::find($id);
+        $producto->delete();
     }
 }

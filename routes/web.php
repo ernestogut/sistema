@@ -200,5 +200,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 Route::resource('almacen', 'AlmacenController');
+Route::resource('producto', 'ProductoController');
 
 //Route::get('/home', 'HomeController@index')->name('home');

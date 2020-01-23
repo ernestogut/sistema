@@ -41,6 +41,9 @@
             <template v-if="menu==12">
                 <almacen></almacen>
             </template>
+            <template v-if="menu==13">
+                <producto></producto>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <venta></venta>
