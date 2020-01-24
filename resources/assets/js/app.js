@@ -33,6 +33,7 @@ Vue.component('notification', require('./components/Notification.vue').default);
 Vue.component('almacen', require('./components/Almacen.vue').default);
 Vue.component('modulo', require('./components/Modulo.vue').default);
 Vue.component('producto', require('./components/Producto.vue').default);
+Vue.component('componente-prueba', require('./components/ComponentePrueba.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -13,6 +13,7 @@ try {
 
     require('bootstrap');
 } catch (e) {}
+require('./jquery.dataTables.min.js');
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

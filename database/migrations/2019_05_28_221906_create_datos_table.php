@@ -28,13 +28,13 @@ class CreateDatosTable extends Migration
 
         DB::table('datos')->insert(array(
             'id'=>'1',
-            'nombre'=>'Mi Empresa',
-            'ciudad'=>'Pasto',
-            'pais'=>'Colombia',
-            'telefono' => '0327228417',
-            'celular' => '+57 3173178899',
-            'email' => 'miempresa@miempresa.com',
-            'direccion' => 'av las americas'
+            'nombre'=>'SpeedCuber Perú',
+            'ciudad'=>'Lima',
+            'pais'=>'Perú',
+            'telefono' => '01 753 3350',
+            'celular' => '+51 99187714',
+            'email' => 'ventas@speedcuberperu.com',
+            'direccion' => 'Av. Arenales 1624 - Lince'
         ));
     }
 
