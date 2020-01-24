@@ -19,8 +19,8 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 v-show="!modoEditable" class="modal-title" id="exampleModalLabel">Nuevo Almacén</h5>
-                                        <h5 v-show="modoEditable" class="modal-title" id="exampleModalLabel">Editar Almacén</h5>
+                                        <h5 v-show="!modoEditable" class="modal-title" id="exampleModalLabel">Nuevo {{tituloModal}}</h5>
+                                        <h5 v-show="modoEditable" class="modal-title" id="exampleModalLabel">Editar {{tituloModal}}</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -56,8 +56,8 @@
                             <th scope="row">{{index+1}}</th>
                             <td v-for="(value, key) in item" :key="value.key" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'">{{value}}</td>
                             <td>
-                                <span class="btn btn-primary btn-sm boton" @click="modalEditar(item)">editar</span>
-                                <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)">x</span>
+                                <span class="btn btn-primary btn-sm boton" @click="modalEditar(item)"><i class="icon-pencil"></i></span>
+                                <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
                             </td>
                             </tr>
                         </tbody>
@@ -72,7 +72,7 @@
 import datatables from 'datatables'
 
 export default {
-    props: ['variables', 'ruta', 'cabeceras', 'titulo'],
+    props: ['variables', 'ruta', 'cabeceras', 'titulo', 'tituloModal'],
     mounted(){
         this.listarItem()
     },

@@ -1,5 +1,5 @@
 <template>
-    <modulo :variables="variables" :ruta="ruta" :cabeceras="cabeceras" :titulo="titulo"></modulo>
+    <modulo :variables="variables" :ruta="ruta" :cabeceras="cabeceras" :titulo="titulo" :tituloModal="tituloModal"></modulo>
 </template>
 <script>
 
@@ -7,6 +7,7 @@ export default {
     data(){
         return{
             titulo: 'Almacenes',
+            tituloModal: 'almacén',
             ruta: '/almacen',
             cabeceras: ['#', 'Codigo', 'Descripcion', 'Dirección', 'Acciones'],
             variables: [

@@ -13,10 +13,14 @@ class ProductoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $producto = Producto::All();
-        return $producto;
+        if(!$request->ajax()){
+            return redirect('/');
+        }else{
+            $producto = Producto::All();
+            return $producto;
+        } 
     }
 
     /**

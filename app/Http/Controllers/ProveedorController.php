@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Proveedor;
-use App\Persona;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class ProveedorController extends Controller
 {
-
-
     /**
      * Display a listing of the resource.
      *
@@ -18,53 +15,24 @@ class ProveedorController extends Controller
      */
     public function index(Request $request)
     {
-        //verifica si la peticion se la esta haciendo por ajax y si no es asi se lo redirige a /
-        if(!$request->ajax()) return redirect('/');
-        //listar todos los registros de la tabla categoria
-        $buscar = $request->buscar;
-        $criterio = $request->criterio;
-
-        if($buscar==''){
-            $personas = Proveedor::join('personas','proveedores.id', '=', 'personas.id')
-            ->select('personas.id','personas.nombre','personas.tipo_documento','personas.num_documento','personas.direccion','personas.telefono',
-            'personas.email', 'proveedores.contacto', 'proveedores.telefono_contacto')
-            ->orderBy('personas.id', 'desc')->paginate(10);
+        if(!$request->ajax()){
+            return redirect('/');
         }else{
-            $personas = Proveedor::join('personas','proveedores.id', '=', 'personas.id')
-            ->select('personas.id','personas.nombre','personas.tipo_documento','personas.num_documento','personas.direccion','personas.telefono',
-            'personas.email', 'proveedores.contacto', 'proveedores.telefono_contacto')
-            ->where('personas.'.$criterio, 'like', '%'. $buscar . '%')
-            ->orderBy('personas.id', 'desc')->paginate(10);
+            $proveedor = Proveedor::All();
+            return $proveedor;
         }
-        //$proveedores = Categoria::paginate(5);
-        return [
-            'pagination' => [
-                'total' => $personas->total(),
-                'current_page' => $personas->currentPage(),
-                'per_page' => $personas->perPage(),
-                'last_page' => $personas->lastPage(),
-                'from' => $personas->firstItem(),
-                'to' => $personas->lastItem(),
-            ],
-            'personas' => $personas
-        ];
-
     }
+
     /**
-     * seleccionar proveedores
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function selectProveedor(Request $request){
-        if(!$request->ajax()) return redirect('/');
-
-        $filtro = $request->filtro;
-        $proveedores = Proveedor::join('personas','proveedores.id', '=', 'personas.id')
-        ->where('personas.nombre', 'like', '%'.$filtro.'%')
-        ->orWhere('personas.num_documento', 'like', '%' .$filtro . '%')
-        ->select('personas.id', 'personas.nombre','personas.num_documento')
-        ->orderBy('personas.nombre', 'asc')->get();
-
-        return ['proveedores' => $proveedores];
+    public function create()
+    {
+        //
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -73,34 +41,44 @@ class ProveedorController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$request->ajax()) return redirect('/');
+        $proveedor = new Proveedor();
+        #if($request->hasFile('imagen')){
+         #   $proveedor['imagen']=$request->file('imagen')->store('uploads', 'public');
+        #}
+        $proveedor->nombre = $request->nombre;
+        $proveedor->num_documento = $request->num_documento;
+        $proveedor->correo = $request->correo;
+        $proveedor->telefono_contacto = $request->telefono_contacto;
+        #$proveedor->imagen = $request->imagen;
+        $proveedor->save();
+        #$proveedor = request()->all();
+        #$proveedor = request()->except('_token');
+        #proveedor::insert($proveedor);
+        #return response()->json($proveedor);
+        return $proveedor;
+    }
 
-        try{
-            DB::beginTransaction();
-            $persona = new Persona();
-            $persona->nombre = $request->nombre;
-            $persona->tipo_documento = $request->tipo_documento;
-            $persona->num_documento = $request->num_documento;
-            $persona->direccion = $request->direccion;
-            $persona->telefono = $request->telefono;
-            $persona->email = $request->email;
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $proveedor = Producto::find($id);
+        return $proveedor;
+    }
 
-
-            $persona->save();
-            $proveedor = new Proveedor();
-            $proveedor->contacto = $request->contacto;
-            $proveedor->telefono_contacto = $request->telefono_contacto;
-            $proveedor->id = $persona->id;
-            $proveedor->save();
-
-            DB::commit();
-
-        } catch(Exception $e){
-            DB::rollBack();
-        }
-
-
-
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
     }
 
     /**
@@ -110,47 +88,34 @@ class ProveedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        if(!$request->ajax()) return redirect('/');
-
-        try{
-            DB::beginTransaction();
-            $proveedor = Proveedor::findOrFail($request->id);
-            $persona = Persona::findOrFail($proveedor->id);
-
-
-
-            $persona->nombre = $request->nombre;
-            $persona->tipo_documento = $request->tipo_documento;
-            $persona->num_documento = $request->num_documento;
-            $persona->direccion = $request->direccion;
-            $persona->telefono = $request->telefono;
-            $persona->email = $request->email;
-            $persona->save();
-
-            $proveedor->contacto = $request->contacto;
-            $proveedor->telefono_contacto = $request->telefono_contacto;
-            $proveedor->save();
-
-            DB::commit();
-
-        } catch(Exception $e){
-            DB::rollBack();
-        }
+        $proveedor = Proveedor::find($id);
+        #if($request->hasFile('imagen')){
+         #   $proveedor['imagen']=$request->file('imagen')->store('uploads', 'public');
+        #}
+        $proveedor->nombre = $request->nombre;
+        $proveedor->num_documento = $request->num_documento;
+        $proveedor->correo = $request->correo;
+        $proveedor->telefono_contacto = $request->telefono_contacto;
+        #$proveedor->imagen = $request->imagen;
+        $proveedor->save();
+        #$proveedor = request()->all();
+        #$proveedor = request()->except('_token');
+        #proveedor::insert($proveedor);
+        #return response()->json($proveedor);
+        return $proveedor;
     }
 
-    public function listarPdf(){
-
-        $proveedores = Proveedor::join('personas','proveedores.id', '=', 'personas.id')
-        ->select('personas.id','personas.nombre','personas.tipo_documento','personas.num_documento','personas.direccion','personas.telefono',
-        'personas.email', 'proveedores.contacto', 'proveedores.telefono_contacto')
-        ->orderBy('personas.id', 'desc')->get();
-
-
-        $cont=Proveedor::count();
-
-        $pdf = \PDF::loadview('pdf.proveedorpdf', ['proveedores' => $proveedores, 'cont'=>$cont]);
-        return $pdf->download('proveedores.pdf');
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $proveedor = Proveedor::find($id);
+        $proveedor->delete();
     }
 }
