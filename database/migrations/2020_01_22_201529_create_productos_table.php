@@ -20,6 +20,7 @@ class CreateProductosTable extends Migration
             $table->string('modelo');
             $table->float('precio');
             $table->longText('descripcion');
+            $table->string('imagen');
             $table->timestamps();
         });
     }

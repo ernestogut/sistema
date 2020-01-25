@@ -44,6 +44,9 @@
             <template v-if="menu==13">
                 <producto></producto>
             </template>
+            <template v-if="menu==14">
+                <componente-prueba></componente-prueba>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <venta></venta>

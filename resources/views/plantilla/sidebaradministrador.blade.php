@@ -27,6 +27,9 @@
                         <li  @click="menu=13" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-notebook"></i> Productos</a>
                         </li>
+                        <li  @click="menu=14" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Prueba</a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item nav-dropdown">

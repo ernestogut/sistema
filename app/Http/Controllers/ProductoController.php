@@ -41,15 +41,20 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->hasFile('imagen')){
+            $file = $request->file('imagen');
+            #($producto['imagen']=$request->file('imagen'))--
+            $name = time().$file->getClientOriginalName();
+            $file->move(public_path().'/images/', $name);
+         #  $producto['imagen']=$request->file('imagen')->store('uploads', 'public');
+        }
         $producto = new Producto();
-        #if($request->hasFile('imagen')){
-         #   $producto['imagen']=$request->file('imagen')->store('uploads', 'public');
-        #}
         $producto->codigo = $request->codigo;
         $producto->marca = $request->marca;
         $producto->modelo = $request->modelo;
         $producto->precio = $request->precio;
         $producto->descripcion = $request->descripcion;
+        $producto->imagen = $name;
         $producto->save();
         return $producto;
     }
@@ -92,6 +97,14 @@ class ProductoController extends Controller
         $producto->modelo = $request->modelo;
         $producto->precio = $request->precio;
         $producto->descripcion = $request->descripcion;
+        if($request->hasFile('imagen')){
+            $file = $request->file('imagen');
+            #($producto['imagen']=$request->file('imagen'))--
+            $name = time().$file->getClientOriginalName();
+            $file->move(public_path().'/images/', $name);
+            $producto->imagen = $name;
+         #   $producto['imagen']=$request->file('imagen')->store('uploads', 'public');
+        }
         $producto->save();
         return $producto;
     }

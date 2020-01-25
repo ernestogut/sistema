@@ -32,6 +32,15 @@
                                                 <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
                                                 v-model="variable.var" :placeholder="variable.placeholder">
                                             </div>
+                                            <div class="d-flex flex-wrap justify-content-between" v-if="tituloModal == 'producto'">
+                                                <div>
+                                                    <label for="exampleFormControlFile1"></label>
+                                                    <input type="file" class="form-control-file" @change="obtenerImagenProducto" id="exampleFormControlFile1">
+                                                </div>
+                                                <div class="imagenContenedor">
+                                                    <img :src="imagenProducto" id="imagen" alt="">
+                                                </div>
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
                                                 <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
@@ -45,7 +54,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered" id="myTable">
+                    <table class="table table-striped table-bordered dt-responsive nowrap" id="myTable">
                         <thead>
                             <tr>
                             <th scope="col" v-for="cabecera of cabeceras" :key="cabecera.id">{{cabecera}}</th>
@@ -54,7 +63,14 @@
                         <tbody>
                             <tr v-for="(item, index) of arrayItems" :key="item.key">
                             <th scope="row">{{index+1}}</th>
-                            <td v-for="(value, key) in item" :key="value.key" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'">{{value}}</td>
+                                <td v-for="(value, key) in item" :key="value.key" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'">
+                                    <template v-if="key != 'imagen'">
+                                        {{value}}
+                                    </template>
+                                    <template v-else>
+                                        <img :src="`images/${value}`" alt="" width="60">
+                                    </template>
+                                </td>
                             <td>
                                 <span class="btn btn-primary btn-sm boton" @click="modalEditar(item)"><i class="icon-pencil"></i></span>
                                 <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
@@ -84,9 +100,33 @@ export default {
             id: '',
             modoEditable: true,
             arrayItems:[],
+            imagen: '',
+            imagenMiniatura: ''
         }
     },
+    computed:{
+        imagenProducto(){
+            return this.imagenMiniatura;
+        },
+        
+    },
     methods:{
+        /*imagenAsd(ima){
+            foto = require('../../../../public/images/'+ima);
+            console.log(foto)
+        },*/
+        obtenerImagenProducto(e){
+            let archivo = e.target.files[0];
+            this.imagen = archivo;
+            this.cargarImagenProducto(archivo);
+        },
+        cargarImagenProducto(archivo){
+            let reader = new FileReader()
+            reader.onload = (e) =>{
+                this.imagenMiniatura = e.target.result;
+            }
+            reader.readAsDataURL(archivo)
+        },
         modalEditar(item){
             $('#modalRegistroItem').modal('show')
             axios.get(`${this.ruta}/${item.id}`).then((response)=>{
@@ -124,10 +164,14 @@ export default {
                 alert('Debes completar todos los campos')
                 return;
             }*/
+            console.log(this.imagen)
             var me = this;
             let formDatos = new FormData();
             for(var i = 0; i < this.variables.length; i++){
                 formDatos.append(this.variables[i].name,this.variables[i].var);
+            }
+            if(this.tituloModal == 'producto'){
+                formDatos.append('imagen', this.imagen)
             }
             for(var j = 0;  j < this.variables.length; j++){
                 this.variables[j].var = ''
@@ -144,8 +188,10 @@ export default {
         editarItem(item){
             var miLista = new Object();
             for(var i = 0; i < this.variables.length; i++){
-                miLista[this.variables[i].name] = this.variables[i].var
+                miLista[this.variables[i].name] = this.variables[i].var  
             }
+            var lista = JSON.stringify(miLista)
+            console.log(lista)
             axios.put(`${this.ruta}/${item}`, miLista).then((response) =>{
                 $( function () {
                     $('#myTable').DataTable().destroy();
@@ -171,3 +217,15 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+
+.imagenContenedor{
+   width: 100px;
+   height: 100px; 
+}
+#imagen{
+    max-width: 100%;
+}
+</style>
