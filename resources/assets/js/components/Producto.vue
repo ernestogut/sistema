@@ -9,7 +9,7 @@ export default {
             titulo: 'Productos',
             tituloModal: 'producto',
             ruta: '/producto',
-            cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Precio', 'Descripcion', 'Imagen', 'Acciones'],
+            cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Precio', 'Descripcion', 'Imagen', 'Almacen','Acciones'],
             variables: [
                 {
                     for: 'codigo',

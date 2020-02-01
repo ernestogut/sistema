@@ -20,11 +20,12 @@
                     
                     <!-- Modal body -->
                     <div class="modal-body">
-                        <div class="productos d-flex flex-wrap justify-content-between">
-                            <div class="card" style="width: 11rem;" v-for="producto in arrayProductos" :key="producto.key">
-                                <img :src="`images/${producto.imagen}`" class="card-img-top" alt="..." width="60">
+                        <div class="productos d-flex flex-wrap justify-content-around">
+                            <div class="card d-flex justify-content-center align-items-center" style="width: 14rem;" v-for="producto in arrayProductos" :key="producto.key">
+                                <img :src="`images/${producto.imagen}`" class="card-img-top" id="imagen" alt="..." >
                                 <div class="card-body">
-                                    <p class="card-text">{{producto.marca}} - {{producto.modelo}} -- {{producto.precio}}</p>
+                                    <h5 class="card-text">{{producto.marca}} {{producto.modelo}}</h5>
+                                    <p>S/ {{producto.precio}}</p>
                                 </div>
                             </div>
                         </div>
@@ -68,4 +69,16 @@ export default {
 
 }
 </script>
+
+<style scoped>
+
+
+#imagen{
+    border-radius: 10px;
+    border: 1px;
+    /*margin-left: 5px;*/
+    max-width: 90%;
+}
+
+</style>
 

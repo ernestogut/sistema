@@ -21,6 +21,8 @@ class CreateProductosTable extends Migration
             $table->float('precio');
             $table->longText('descripcion');
             $table->string('imagen');
+            $table->unsignedBigInteger('almacen_id');
+            $table->foreign('almacen_id')->references('id')->on('almacens');
             $table->timestamps();
         });
     }

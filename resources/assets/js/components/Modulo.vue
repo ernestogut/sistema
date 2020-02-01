@@ -16,7 +16,7 @@
                         </button>
                         <!-- Modal -->
                         <div class="modal fade" id="modalRegistroItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
+                            <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 v-show="!modoEditable" class="modal-title" id="exampleModalLabel">Nuevo {{tituloModal}}</h5>
@@ -27,26 +27,36 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
-                                            <div class="form-group" v-for="(variable) of variables" :key="variable.key">
-                                                <label :for="variable.for">{{variable.titulo}}</label>
-                                                <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
-                                                v-model="variable.var" :placeholder="variable.placeholder">
-                                            </div>
-                                            <div class="d-flex flex-wrap justify-content-between" v-if="tituloModal == 'producto'">
-                                                <div>
-                                                    <label for="exampleFormControlFile1"></label>
-                                                    <input type="file" class="form-control-file" @change="obtenerImagenProducto" id="exampleFormControlFile1">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6" v-for="(variable) of variables" :key="variable.key">
+                                                    <label :for="variable.for">{{variable.titulo}}</label>
+                                                    <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
+                                                    v-model="variable.var" :placeholder="variable.placeholder">
                                                 </div>
-                                                <div class="imagenContenedor">
-                                                    <img :src="imagenProducto" id="imagen" alt="">
+                                                <div class="d-flex flex-wrap justify-content-between" v-if="tituloModal == 'producto'">
+                                                    <div>
+                                                        <label for="exampleFormControlFile1"></label>
+                                                        <input type="file" class="form-control-file" @change="obtenerImagenProducto" id="exampleFormControlFile1">
+                                                    </div>
+                                                    <div class="imagenContenedor">
+                                                        <img :src="imagenProducto" id="imagen" alt="">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
-                                                <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
-                                                <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
+                                                <div class="form-group col-md-3" v-if="tituloModal == 'producto'">
+                                                    <label >Almacén</label>
+                                                    <select class="form-control" v-model="almacen_id">
+                                                        <option disabled value="">Escoje un almacén</option>
+                                                        <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
+                                                    <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
+                                                    <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
+                                                </div>
                                             </div>
                                         </form>
+                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -57,13 +67,13 @@
                     <table class="table table-striped table-bordered dt-responsive nowrap" id="myTable">
                         <thead>
                             <tr>
-                            <th scope="col" v-for="cabecera of cabeceras" :key="cabecera.id">{{cabecera}}</th>
+                            <th scope="col" class="text-center align-middle" v-for="cabecera of cabeceras" :key="cabecera.id">{{cabecera}}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(item, index) of arrayItems" :key="item.key">
-                            <th scope="row">{{index+1}}</th>
-                                <td v-for="(value, key) in item" :key="value.key" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'">
+                            <th scope="row" class="text-center align-middle">{{index+1}}</th>
+                                <td v-for="(value, key) in item" :key="value.key" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'" class="text-center align-middle">
                                     <template v-if="key != 'imagen'">
                                         {{value}}
                                     </template>
@@ -71,7 +81,7 @@
                                         <img :src="`images/${value}`" alt="" width="60">
                                     </template>
                                 </td>
-                            <td>
+                            <td class="text-center align-middle">
                                 <span class="btn btn-primary btn-sm boton" @click="modalEditar(item)"><i class="icon-pencil"></i></span>
                                 <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
                             </td>
@@ -80,7 +90,6 @@
                     </table>
                 </div>
             </div>         
-        </div>
     </main>
 </template>
 <script>
@@ -101,7 +110,9 @@ export default {
             modoEditable: true,
             arrayItems:[],
             imagen: '',
-            imagenMiniatura: ''
+            imagenMiniatura: '',
+            arrayAlmacen: [],
+            almacen_id: '',
         }
     },
     computed:{
@@ -111,10 +122,6 @@ export default {
         
     },
     methods:{
-        /*imagenAsd(ima){
-            foto = require('../../../../public/images/'+ima);
-            console.log(foto)
-        },*/
         obtenerImagenProducto(e){
             let archivo = e.target.files[0];
             this.imagen = archivo;
@@ -130,12 +137,21 @@ export default {
         modalEditar(item){
             $('#modalRegistroItem').modal('show')
             axios.get(`${this.ruta}/${item.id}`).then((response)=>{
-                /*for(var i = 0;  i < this.variables.length; i++){
-                    this.variables[i].var = ''
-                }*/
-                this.codigo = response.data.codigo;
-                this.descripcion = response.data.descripcion;
-                this.direccion = response.data.direccion;
+                var arrayValoresRecientes = Object.values(response.data)
+                var arrayValores = [];
+                for (var j = 0; j < arrayValoresRecientes.length; j++) {
+                    if(arrayValoresRecientes.indexOf(arrayValoresRecientes[j]) != 0 && arrayValoresRecientes.indexOf(arrayValoresRecientes[j]) != arrayValoresRecientes.length-1 && arrayValoresRecientes.indexOf(arrayValoresRecientes[j]) != arrayValoresRecientes.length-2){
+                        arrayValores.push(arrayValoresRecientes[j])
+                    }                      
+                }
+                for(var i = 0;  i < this.variables.length; i++){
+                    for(var j = 0; j < arrayValores.length; j++){
+                        if(this.variables.indexOf(this.variables[i]) == arrayValores.indexOf(arrayValores[j])){
+                            this.variables[i].var = arrayValores[j];
+                            break;
+                        }
+                    }
+                }
             })
             this.modoEditable = true;
             this.id = item.id
@@ -144,8 +160,10 @@ export default {
             for(var i = 0;  i < this.variables.length; i++){
                 this.variables[i].var = ''
             }
+            this.seleccionarAlmacen()
             this.modoEditable = false;
             $('#modalRegistroItem').modal('show')
+
         },
         miTabla(){
             $( function () {
@@ -159,23 +177,32 @@ export default {
                 this.miTabla();
             })
         },
+        seleccionarAlmacen(){
+                let me= this;
+                var url='/almacen';
+                axios.get(url).then(function (response){
+                    me.arrayAlmacen = response.data;
+                })
+            },
         agregarItem(){
             /*if(this.variables[0].var.trim() === '' || this.variables[1].var.trim() === '' || this.variables[2].var.trim() === ''){
                 alert('Debes completar todos los campos')
                 return;
             }*/
-            console.log(this.imagen)
+            
             var me = this;
             let formDatos = new FormData();
             for(var i = 0; i < this.variables.length; i++){
                 formDatos.append(this.variables[i].name,this.variables[i].var);
             }
             if(this.tituloModal == 'producto'){
+                formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen)
             }
             for(var j = 0;  j < this.variables.length; j++){
                 this.variables[j].var = ''
             }
+
             axios.post(`${this.ruta}`, formDatos).then((response)=>{
                 $( function () {
                     $('#myTable').DataTable().destroy();
@@ -186,16 +213,25 @@ export default {
             $('#modalRegistroItem').modal('toggle');
         },
         editarItem(item){
-            var miLista = new Object();
+            /*var miLista = new Object();
             for(var i = 0; i < this.variables.length; i++){
                 miLista[this.variables[i].name] = this.variables[i].var  
+            }*/
+            let formDatos = new FormData();
+            for(var i = 0; i < this.variables.length; i++){
+                formDatos.append(this.variables[i].name,this.variables[i].var);
             }
-            var lista = JSON.stringify(miLista)
-            console.log(lista)
-            axios.put(`${this.ruta}/${item}`, miLista).then((response) =>{
-                $( function () {
-                    $('#myTable').DataTable().destroy();
-                } );
+            if(this.tituloModal == 'producto'){
+                formDatos.append('almacen_id', this.almacen_id)
+                formDatos.append('imagen', this.imagen)
+            }
+            for(var j = 0;  j < this.variables.length; j++){
+                this.variables[j].var = ''
+            }
+            formDatos.append("_method", "put");
+            var mi = $('#myTable').DataTable()
+            axios.post(`${this.ruta}/${item}`, formDatos).then((response) =>{
+                mi.destroy()
                 this.listarItem();
             })
             $('#modalRegistroItem').modal('toggle');

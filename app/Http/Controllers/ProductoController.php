@@ -18,8 +18,13 @@ class ProductoController extends Controller
         if(!$request->ajax()){
             return redirect('/');
         }else{
-            $producto = Producto::All();
-            return $producto;
+            $productos = Producto::select('productos.id','productos.codigo','productos.marca','productos.modelo','productos.precio','productos.descripcion','productos.imagen',
+            'almacens.descripcion as descripcion_almacen')->join('almacens','productos.almacen_id', '=', 'almacens.id')->get();
+            //$producto = Producto::All();
+            return $productos;
+            //$producto = Producto::first();
+            //$producto = $producto->almacen;
+            
         } 
     }
 
@@ -55,6 +60,7 @@ class ProductoController extends Controller
         $producto->precio = $request->precio;
         $producto->descripcion = $request->descripcion;
         $producto->imagen = $name;
+        $producto->almacen_id = $request->almacen_id;
         $producto->save();
         return $producto;
     }
@@ -105,6 +111,7 @@ class ProductoController extends Controller
             $producto->imagen = $name;
          #   $producto['imagen']=$request->file('imagen')->store('uploads', 'public');
         }
+        $producto->almacen_id = $request->almacen_id;
         $producto->save();
         return $producto;
     }
