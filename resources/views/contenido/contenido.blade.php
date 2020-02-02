@@ -18,7 +18,7 @@
                 <proveedor></proveedor>
             </template>
             <template v-if="menu==5">
-                <venta></venta>
+                <facturacion></facturacion>
             </template>
             <template v-if="menu==6">
                 <cliente></cliente>

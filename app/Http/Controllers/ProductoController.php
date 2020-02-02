@@ -46,6 +46,7 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
+        $name = null;
         if($request->hasFile('imagen')){
             $file = $request->file('imagen');
             #($producto['imagen']=$request->file('imagen'))--

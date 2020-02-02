@@ -17,7 +17,7 @@ class UsersTableSeeder extends Seeder
             'usuario' => 'julio',
             'password' => bcrypt('123456'),
             'idrole' => '1',
-            'condicion' => '0'
+            'condicion' => '1'
 
         ]);
         DB::table('users')->insert([

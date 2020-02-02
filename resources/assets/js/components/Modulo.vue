@@ -73,12 +73,12 @@
                         <tbody>
                             <tr v-for="(item, index) of arrayItems" :key="item.key">
                             <th scope="row" class="text-center align-middle">{{index+1}}</th>
-                                <td v-for="(value, key) in item" :key="value.key" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'" class="text-center align-middle">
+                                <td v-for="(value, key) in item" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'" class="text-center align-middle">
                                     <template v-if="key != 'imagen'">
                                         {{value}}
                                     </template>
                                     <template v-else>
-                                        <img :src="`images/${value}`" alt="" width="60">
+                                        <img :src="(value==null)?'images/0.jpg':`images/${value}`" alt="" width="60">
                                     </template>
                                 </td>
                             <td class="text-center align-middle">
