@@ -28,6 +28,7 @@
         "datatables.net": "^1.10.20",
         "datatables.net-bs4": "^1.10.20",
         "datatables.net-dt": "^1.10.20",
+        "datatables.net-responsive": "^2.2.3",
         "laravel-echo": "^1.5.3",
         "laravel-vue-datatable": "^0.5.4",
         "pusher-js": "^4.4.0",

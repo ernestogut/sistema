@@ -14,6 +14,12 @@ try {
     require('bootstrap');
 } catch (e) {}
 require('./jquery.dataTables.min.js');
+require('./dataTables.bootstrap4.min.js')
+require('./dataTables.responsive.min.js')
+require('./responsive.bootstrap4.min.js')
+
+require('../css/dataTables.bootstrap4.min.css')
+require('../css/responsive.bootstrap4.min.css')
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
