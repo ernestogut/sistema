@@ -18,7 +18,7 @@
                             </template>
                         </td>
                         <td class="text-center align-middle">
-                            <span class="btn btn-primary btn-sm boton" @click="modalEditar(item)"><i :class="icono"></i></span>
+                            <span class="btn btn-primary btn-sm boton" @click="(icono=='icon-pencil')?modalEditar(item):agregarProducto(item)"><i :class="icono"></i></span>
                             <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
                         </td>
                     </tr>
@@ -26,7 +26,6 @@
             </table>
         </div>
 </template>
-
 <script>
 export default {
     props:{
@@ -35,6 +34,34 @@ export default {
         arrayItems: Array,
         cabeceras: Array,
         icono: String
+    },
+    data(){
+        return{
+            arrayVentas: []
+        }
+    },
+    methods:{
+        emitirEventoArray(ventas){
+            this.$emit('emitirEvProductos', ventas)
+        },
+        agregarProducto(item){
+            var obj = {}
+            for(const i in item){
+                if(i == 'codigo'){
+                    obj.codigo = item[i]
+                }
+                if(i == 'descripcion'){
+                    obj.descripcion = item[i]
+                }
+                if(i == 'precio'){
+                    obj.precio = item[i]
+                }
+                obj.cantidad = 0
+                obj.descuento = 0
+            }
+            this.arrayVentas.push(obj)
+            this.emitirEventoArray(this.arrayVentas);
+        }
     }
 }
 </script>
