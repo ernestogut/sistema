@@ -1,10 +1,5 @@
 <template>
     <main class="main">
-        <ol class="breadcrumb">
-
-                <li class="breadcrumb-item titulo-1">{{titulo}}</li>
-
-        </ol>
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
@@ -63,7 +58,8 @@
                         </div>
                     </div>
                 </div>
-                <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos"></datatable>
+                <spinner v-if="loading"></spinner>
+                <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated"></datatable>
             </div>         
     </main>
 </template>
@@ -88,7 +84,10 @@ export default {
             imagenMiniatura: '',
             arrayAlmacen: [],
             almacen_id: '',
-            iconos: 'icon-pencil'
+            iconos: 'icon-pencil',
+            loading: false,
+            initiated: false
+
         }
     },
     computed:{
@@ -147,9 +146,12 @@ export default {
             } );
         },
         listarItem(){
+            this.loading = true
             var urlItem = this.ruta;
             axios.get(urlItem).then(response=>{
                 this.arrayItems = response.data;
+                this.loading = false;
+                this.initiated = true;
                 this.miTabla();
             })
         },

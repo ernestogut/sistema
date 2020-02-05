@@ -8,7 +8,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -75,48 +75,50 @@
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg2">Agregar productos</button>
                             </div>
                         </div>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Codigo</th>
-                                    <th scope="col">Descripcion</th>
-                                    <th scope="col">Precio</th>
-                                    <th scope="col">Cantidad</th>
-                                    <th scope="col">Descuento</th>
-                                    <th scope="col">Almacen</th>
-                                    <th scope="col">Total</th>
-                                    <th scope="col">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(venta, index) in ventas">
-                                    <th scope="row">{{index+1}}</th>
-                                    <td>{{venta.codigo}}</td>
-                                    <td>{{venta.descripcion}}</td>
-                                    <td >
-                                        <input type="number" v-model="venta.precio">
-                                    </td>
-                                    <td><input type="number" v-model="venta.cantidad"></td>
-                                    <td><input type="number" v-model="venta.descuento"></td>
-                                    <td>
-                                        <select v-model="almacen_id">
-                                            <option disabled value="">Escoje un almacén</option>
-                                            <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
-                                        </select>
-                                    </td>
-                                    <td ><input v-model="venta.precio*venta.cantidad" @change="probar" disabled></td>
-                                    <td>
-                                        <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive scroll">   
+                            <table class="table table-bordered ">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Codigo</th>
+                                        <th scope="col">Descripcion</th>
+                                        <th scope="col">Precio</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Descuento</th>
+                                        <th scope="col">Almacen</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(venta, index) in ventas" :key="venta.id">
+                                        <th scope="row">{{index+1}}</th>
+                                        <td>{{venta.codigo}}</td>
+                                        <td>{{venta.descripcion}}</td>
+                                        <td >
+                                            <input type="number" v-model="venta.precio" @input="generarSubTotal(venta)">
+                                        </td>
+                                        <td><input type="number" v-model="venta.cantidad" @input="generarSubTotal(venta)"></td>
+                                        <td><input type="number" v-model="venta.descuento" @input="generarSubTotal(venta)"></td>
+                                        <td>
+                                            <select v-model="almacen_id">
+                                                <option disabled value="">Escoje un almacén</option>
+                                                <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
+                                            </select>
+                                        </td>
+                                        <td ><input v-model="venta.total" disabled></td>
+                                        <td>
+                                            <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="row">
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
                                 <div class="col-2 col-form-label">SubTotal</div>
-                                <div class="col"><input type="text" name="SubTotal" id="SubTotal" class="form-control" readonly="">{{subTotal}}</div>
+                                <div class="col"><input type="text" v-model="subTotal" class="form-control" readonly=""></div>
 
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
@@ -153,7 +155,7 @@
                                     </button>
                                 </div>
                                 <div class="table-responsive">
-                                    <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta"></datatable>
+                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas"></datatable>
                                 </div>
                             </div>
                         </div>
@@ -170,20 +172,28 @@ export default {
             cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Precio', 'Descripcion', 'Imagen', 'Almacen','Acciones'],
             iconos: 'icon-plus',
             ventas: [],
-            descuento: 0,
-            cantidad: 0,
-            totalVenta: 0,
             arrayAlmacen: [],
             almacen_id: '',
-            subTotal: ''
+            subTotal: 0
         }
     },
     mounted(){
         this.listarItem()
+        $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
     },
     methods:{
-        probar(){
-            console.log('hola')
+        limpiarTabla(){
+            this.ventas = []
+        },
+        generarSubTotal(item){
+            item.total = item.precio * item.cantidad
+            var lista = []
+            var suma = 0
+            for(var i = 0; i < this.ventas.length; i++){
+                lista.push(this.ventas[i].total)
+            }
+            suma = lista.reduce((a, b) => a + b, 0)
+            this.subTotal = suma
         },
         recibirVenta(venta){
             this.ventas = venta
@@ -236,5 +246,9 @@ export default {
 
 li{
     list-style-type: none;
+}
+.scroll{
+    height: 300px;
+    overflow-y: scroll
 }
 </style>

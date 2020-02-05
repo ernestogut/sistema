@@ -33,7 +33,8 @@ export default {
         eliminarItem: Function,
         arrayItems: Array,
         cabeceras: Array,
-        icono: String
+        icono: String,
+        listaVentasPadre: Array
     },
     data(){
         return{
@@ -45,7 +46,9 @@ export default {
             this.$emit('emitirEvProductos', ventas)
         },
         agregarProducto(item){
+            console.log(item.codigo)
             var obj = {}
+            var controlador = false
             for(const i in item){
                 if(i == 'codigo'){
                     obj.codigo = item[i]
@@ -56,11 +59,33 @@ export default {
                 if(i == 'precio'){
                     obj.precio = item[i]
                 }
-                obj.cantidad = 0
-                obj.descuento = 0
+                obj.cantidad = 1
+                obj.descuento = 1
+                obj.total = obj.cantidad*obj.precio
             }
-            this.arrayVentas.push(obj)
-            this.emitirEventoArray(this.arrayVentas);
+            
+
+            for(var j = 0; j < this.arrayVentas.length; j++){
+                if(item.codigo == this.arrayVentas[j].codigo){
+                    this.arrayVentas[j].cantidad += 1
+                    this.arrayVentas[j].total = this.arrayVentas[j].cantidad*this.arrayVentas[j].precio
+                    controlador = true
+                    break;
+                }else{
+                    controlador = false
+                }
+            }
+            if(controlador){
+                this.emitirEventoArray(this.arrayVentas);
+            }else{
+                this.arrayVentas.push(obj)
+                this.emitirEventoArray(this.arrayVentas);
+            }
+        }
+    },
+    watch:{
+        listaVentasPadre(){
+            this.arrayVentas.length = this.listaVentasPadre.length
         }
     }
 }

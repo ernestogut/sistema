@@ -26,22 +26,22 @@
 
 <body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
     <div id="app" >
-            <header class="app-header navbar">
-                    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+            <header class="app-header navbar" style="background: #1D262B; border-color: #1D262B;">
+                    <!--<button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
                       <span class="navbar-toggler-icon"></span>
                     </button>
                     <a class="navbar-brand" href="#"></a>
                     <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
                       <span class="navbar-toggler-icon"></span>
-                    </button>
+                    </button>-->
 
                     <ul class="nav navbar-nav ml-auto">
                         {{-- <notification :notifications="notifications"></notification> --}}
                         <li class="nav-item dropdown">
                             <div class="dropdown-menu dropdown-menu-right">
-                                <div class="dropdown-header text-center">
+                                <!--<div class="dropdown-header text-center">
                                     <strong>Cuenta</strong>
-                                </div>
+                                </div>-->
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fa fa-lock"></i> Cerrar sesión</a>
@@ -51,11 +51,8 @@
                                 </form>
                             </div>
                             <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <span class="d-md-down-none">{{Auth::user()->usuario}} </span>
-                                <img src="img/avatars/engranajes.png" class="img-avatar" alt="cerrar sesión">
-
+                                    <span class="d-md-down-none text-white">{{Auth::user()->usuario}} </span>
                             </a>
-
                         </li>
                     </ul>
                 </header>
