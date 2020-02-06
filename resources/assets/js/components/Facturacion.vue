@@ -8,7 +8,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal">
+            <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -76,7 +76,7 @@
                             </div>
                         </div>
                         <div class="table-responsive scroll">   
-                            <table class="table table-bordered ">
+                            <table class="table table-bordered table-sm ">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
@@ -96,10 +96,10 @@
                                         <td>{{venta.codigo}}</td>
                                         <td>{{venta.descripcion}}</td>
                                         <td >
-                                            <input type="number" v-model="venta.precio" @input="generarSubTotal(venta)">
+                                            <input type="number" v-model="venta.precio" @input="generarTotal(venta)">
                                         </td>
-                                        <td><input type="number" v-model="venta.cantidad" @input="generarSubTotal(venta)"></td>
-                                        <td><input type="number" v-model="venta.descuento" @input="generarSubTotal(venta)"></td>
+                                        <td><input type="number" v-model="venta.cantidad" @input="generarTotal(venta)"></td>
+                                        <td><input type="number" v-model="venta.descuento" @input="generarTotal(venta)"></td>
                                         <td>
                                             <select v-model="almacen_id">
                                                 <option disabled value="">Escoje un almacén</option>
@@ -117,8 +117,8 @@
                         <div class="row">
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
-                                <div class="col-2 col-form-label">SubTotal</div>
-                                <div class="col"><input type="text" v-model="subTotal" class="form-control" readonly=""></div>
+                                <div class="col-2 col-form-label">Subtotal</div>
+                                <div class="col"><input type="text" class="form-control" readonly="" v-model="subTotal"></div>
 
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
@@ -128,12 +128,12 @@
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
                                 <div class="col-2 col-form-label">IgvTotal</div>
-                                <div class="col"><input type="text" name="IgvTotal" id="IgvTotal" class="form-control" readonly=""></div>
+                                <div class="col"><input type="text" name="IgvTotal" id="IgvTotal" class="form-control" readonly="" v-model="igv"></div>
 
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
                                 <div class="col-2 col-form-label">Total</div>
-                                <div class="col"><input type="text" name="Totales" id="Totales" class="form-control" readonly=""></div>
+                                <div class="col"><input type="text" name="Totales" id="Totales" class="form-control" readonly="" v-model="total"></div>
                             </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -174,7 +174,10 @@ export default {
             ventas: [],
             arrayAlmacen: [],
             almacen_id: '',
-            subTotal: 0
+            total: 0,
+            subTotal: 0,
+            igv: 0
+
         }
     },
     mounted(){
@@ -185,7 +188,7 @@ export default {
         limpiarTabla(){
             this.ventas = []
         },
-        generarSubTotal(item){
+        generarTotal(item){
             item.total = item.precio * item.cantidad
             var lista = []
             var suma = 0
@@ -193,7 +196,9 @@ export default {
                 lista.push(this.ventas[i].total)
             }
             suma = lista.reduce((a, b) => a + b, 0)
-            this.subTotal = suma
+            this.total = suma
+            this.subTotal = Math.round((this.total / 1.18)*100)/100
+            this.igv = Math.round((this.subTotal * 0.18)*100)/100
         },
         recibirVenta(venta){
             this.ventas = venta
@@ -238,6 +243,33 @@ export default {
             this.ventas.splice(index,1)
         }
         
+    },
+    watch:{
+        /*ventas(){
+            var lista = []
+            var suma = 0
+            for(var i = 0; i < this.ventas.length; i++){
+                lista.push(this.ventas[i].total)
+            }
+            suma = lista.reduce((a, b) => a + b, 0)
+            this.total = suma
+            this.subTotal = Math.round((this.total / 1.18)*100)/100
+            this.igv = Math.round((this.subTotal * 0.18)*100)/100    
+        }*/
+        ventas:{
+            handler: function(){
+                var lista = []
+                var suma = 0
+                for(var i = 0; i < this.ventas.length; i++){
+                    lista.push(this.ventas[i].total)
+                }
+                suma = lista.reduce((a, b) => a + b, 0)
+                this.total = suma
+                this.subTotal = Math.round((this.total / 1.18)*100)/100
+                this.igv = Math.round((this.subTotal * 0.18)*100)/100  
+                },
+            deep: true
+        }
     }
 }
 </script>

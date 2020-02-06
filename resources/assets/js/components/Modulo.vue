@@ -110,7 +110,7 @@ export default {
             reader.readAsDataURL(archivo)
         },
         modalEditar(item){
-            $('#modalRegistroItem').modal('show')
+            this.seleccionarAlmacen()
             axios.get(`${this.ruta}/${item.id}`).then((response)=>{
                 var arrayValoresRecientes = Object.values(response.data)
                 var arrayValores = [];
@@ -127,9 +127,14 @@ export default {
                         }
                     }
                 }
+                if(this.tituloModal == 'producto'){
+                    this.almacen_id = response.data.almacen_id;
+                }
+
             })
             this.modoEditable = true;
             this.id = item.id
+            $('#modalRegistroItem').modal('show')
         },
         abrirModalRegistrar(){
             for(var i = 0;  i < this.variables.length; i++){

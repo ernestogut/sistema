@@ -67,6 +67,7 @@ export default {
 
             for(var j = 0; j < this.arrayVentas.length; j++){
                 if(item.codigo == this.arrayVentas[j].codigo){
+                    this.arrayVentas[j].cantidad = parseInt(this.arrayVentas[j].cantidad)
                     this.arrayVentas[j].cantidad += 1
                     this.arrayVentas[j].total = this.arrayVentas[j].cantidad*this.arrayVentas[j].precio
                     controlador = true

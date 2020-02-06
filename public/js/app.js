@@ -4112,6 +4112,7 @@ __webpack_require__.r(__webpack_exports__);
 
       for (var j = 0; j < this.arrayVentas.length; j++) {
         if (item.codigo == this.arrayVentas[j].codigo) {
+          this.arrayVentas[j].cantidad = parseInt(this.arrayVentas[j].cantidad);
           this.arrayVentas[j].cantidad += 1;
           this.arrayVentas[j].total = this.arrayVentas[j].cantidad * this.arrayVentas[j].precio;
           controlador = true;
@@ -4571,7 +4572,9 @@ __webpack_require__.r(__webpack_exports__);
       ventas: [],
       arrayAlmacen: [],
       almacen_id: '',
-      subTotal: 0
+      total: 0,
+      subTotal: 0,
+      igv: 0
     };
   },
   mounted: function mounted() {
@@ -4582,7 +4585,7 @@ __webpack_require__.r(__webpack_exports__);
     limpiarTabla: function limpiarTabla() {
       this.ventas = [];
     },
-    generarSubTotal: function generarSubTotal(item) {
+    generarTotal: function generarTotal(item) {
       item.total = item.precio * item.cantidad;
       var lista = [];
       var suma = 0;
@@ -4594,7 +4597,9 @@ __webpack_require__.r(__webpack_exports__);
       suma = lista.reduce(function (a, b) {
         return a + b;
       }, 0);
-      this.subTotal = suma;
+      this.total = suma;
+      this.subTotal = Math.round(this.total / 1.18 * 100) / 100;
+      this.igv = Math.round(this.subTotal * 0.18 * 100) / 100;
     },
     recibirVenta: function recibirVenta(venta) {
       this.ventas = venta;
@@ -4640,6 +4645,37 @@ __webpack_require__.r(__webpack_exports__);
     },
     eliminarProductoTabla: function eliminarProductoTabla(index) {
       this.ventas.splice(index, 1);
+    }
+  },
+  watch: {
+    /*ventas(){
+        var lista = []
+        var suma = 0
+        for(var i = 0; i < this.ventas.length; i++){
+            lista.push(this.ventas[i].total)
+        }
+        suma = lista.reduce((a, b) => a + b, 0)
+        this.total = suma
+        this.subTotal = Math.round((this.total / 1.18)*100)/100
+        this.igv = Math.round((this.subTotal * 0.18)*100)/100    
+    }*/
+    ventas: {
+      handler: function handler() {
+        var lista = [];
+        var suma = 0;
+
+        for (var i = 0; i < this.ventas.length; i++) {
+          lista.push(this.ventas[i].total);
+        }
+
+        suma = lista.reduce(function (a, b) {
+          return a + b;
+        }, 0);
+        this.total = suma;
+        this.subTotal = Math.round(this.total / 1.18 * 100) / 100;
+        this.igv = Math.round(this.subTotal * 0.18 * 100) / 100;
+      },
+      deep: true
     }
   }
 });
@@ -5715,7 +5751,7 @@ __webpack_require__.r(__webpack_exports__);
     modalEditar: function modalEditar(item) {
       var _this2 = this;
 
-      $('#modalRegistroItem').modal('show');
+      this.seleccionarAlmacen();
       axios.get("".concat(this.ruta, "/").concat(item.id)).then(function (response) {
         var arrayValoresRecientes = Object.values(response.data);
         var arrayValores = [];
@@ -5734,9 +5770,14 @@ __webpack_require__.r(__webpack_exports__);
             }
           }
         }
+
+        if (_this2.tituloModal == 'producto') {
+          _this2.almacen_id = response.data.almacen_id;
+        }
       });
       this.modoEditable = true;
       this.id = item.id;
+      $('#modalRegistroItem').modal('show');
     },
     abrirModalRegistrar: function abrirModalRegistrar() {
       for (var i = 0; i < this.variables.length; i++) {
@@ -94834,6 +94875,7 @@ var render = function() {
       {
         ref: "vuemodal",
         staticClass: "modal fade bd-example-modal-lg1",
+        staticStyle: { "overflow-y": "scroll" },
         attrs: {
           id: "modalVenta",
           tabindex: "-1",
@@ -94860,216 +94902,220 @@ var render = function() {
                   _vm._m(2),
                   _vm._v(" "),
                   _c("div", { staticClass: "table-responsive scroll" }, [
-                    _c("table", { staticClass: "table table-bordered " }, [
-                      _vm._m(3),
-                      _vm._v(" "),
-                      _c(
-                        "tbody",
-                        _vm._l(_vm.ventas, function(venta, index) {
-                          return _c("tr", { key: venta.id }, [
-                            _c("th", { attrs: { scope: "row" } }, [
-                              _vm._v(_vm._s(index + 1))
-                            ]),
-                            _vm._v(" "),
-                            _c("td", [_vm._v(_vm._s(venta.codigo))]),
-                            _vm._v(" "),
-                            _c("td", [_vm._v(_vm._s(venta.descripcion))]),
-                            _vm._v(" "),
-                            _c("td", [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: venta.precio,
-                                    expression: "venta.precio"
-                                  }
-                                ],
-                                attrs: { type: "number" },
-                                domProps: { value: venta.precio },
-                                on: {
-                                  input: [
-                                    function($event) {
-                                      if ($event.target.composing) {
-                                        return
-                                      }
-                                      _vm.$set(
-                                        venta,
-                                        "precio",
-                                        $event.target.value
-                                      )
-                                    },
-                                    function($event) {
-                                      return _vm.generarSubTotal(venta)
-                                    }
-                                  ]
-                                }
-                              })
-                            ]),
-                            _vm._v(" "),
-                            _c("td", [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: venta.cantidad,
-                                    expression: "venta.cantidad"
-                                  }
-                                ],
-                                attrs: { type: "number" },
-                                domProps: { value: venta.cantidad },
-                                on: {
-                                  input: [
-                                    function($event) {
-                                      if ($event.target.composing) {
-                                        return
-                                      }
-                                      _vm.$set(
-                                        venta,
-                                        "cantidad",
-                                        $event.target.value
-                                      )
-                                    },
-                                    function($event) {
-                                      return _vm.generarSubTotal(venta)
-                                    }
-                                  ]
-                                }
-                              })
-                            ]),
-                            _vm._v(" "),
-                            _c("td", [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: venta.descuento,
-                                    expression: "venta.descuento"
-                                  }
-                                ],
-                                attrs: { type: "number" },
-                                domProps: { value: venta.descuento },
-                                on: {
-                                  input: [
-                                    function($event) {
-                                      if ($event.target.composing) {
-                                        return
-                                      }
-                                      _vm.$set(
-                                        venta,
-                                        "descuento",
-                                        $event.target.value
-                                      )
-                                    },
-                                    function($event) {
-                                      return _vm.generarSubTotal(venta)
-                                    }
-                                  ]
-                                }
-                              })
-                            ]),
-                            _vm._v(" "),
-                            _c("td", [
-                              _c(
-                                "select",
-                                {
+                    _c(
+                      "table",
+                      { staticClass: "table table-bordered table-sm " },
+                      [
+                        _vm._m(3),
+                        _vm._v(" "),
+                        _c(
+                          "tbody",
+                          _vm._l(_vm.ventas, function(venta, index) {
+                            return _c("tr", { key: venta.id }, [
+                              _c("th", { attrs: { scope: "row" } }, [
+                                _vm._v(_vm._s(index + 1))
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(venta.codigo))]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(venta.descripcion))]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("input", {
                                   directives: [
                                     {
                                       name: "model",
                                       rawName: "v-model",
-                                      value: _vm.almacen_id,
-                                      expression: "almacen_id"
+                                      value: venta.precio,
+                                      expression: "venta.precio"
                                     }
                                   ],
+                                  attrs: { type: "number" },
+                                  domProps: { value: venta.precio },
                                   on: {
-                                    change: function($event) {
-                                      var $$selectedVal = Array.prototype.filter
-                                        .call($event.target.options, function(
-                                          o
-                                        ) {
-                                          return o.selected
-                                        })
-                                        .map(function(o) {
-                                          var val =
-                                            "_value" in o ? o._value : o.value
-                                          return val
-                                        })
-                                      _vm.almacen_id = $event.target.multiple
-                                        ? $$selectedVal
-                                        : $$selectedVal[0]
-                                    }
-                                  }
-                                },
-                                [
-                                  _c(
-                                    "option",
-                                    { attrs: { disabled: "", value: "" } },
-                                    [_vm._v("Escoje un almacén")]
-                                  ),
-                                  _vm._v(" "),
-                                  _vm._l(_vm.arrayAlmacen, function(almacen) {
-                                    return _c(
-                                      "option",
-                                      {
-                                        key: almacen.id,
-                                        domProps: { value: almacen.id }
+                                    input: [
+                                      function($event) {
+                                        if ($event.target.composing) {
+                                          return
+                                        }
+                                        _vm.$set(
+                                          venta,
+                                          "precio",
+                                          $event.target.value
+                                        )
                                       },
-                                      [_vm._v(_vm._s(almacen.descripcion))]
-                                    )
-                                  })
-                                ],
-                                2
-                              )
-                            ]),
-                            _vm._v(" "),
-                            _c("td", [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: venta.total,
-                                    expression: "venta.total"
+                                      function($event) {
+                                        return _vm.generarTotal(venta)
+                                      }
+                                    ]
                                   }
-                                ],
-                                attrs: { disabled: "" },
-                                domProps: { value: venta.total },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: venta.cantidad,
+                                      expression: "venta.cantidad"
                                     }
-                                    _vm.$set(
-                                      venta,
-                                      "total",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              })
-                            ]),
-                            _vm._v(" "),
-                            _c("td", [
-                              _c(
-                                "span",
-                                {
-                                  staticClass: "btn btn-danger btn-sm boton",
+                                  ],
+                                  attrs: { type: "number" },
+                                  domProps: { value: venta.cantidad },
                                   on: {
-                                    click: function($event) {
-                                      return _vm.eliminarProductoTabla(index)
+                                    input: [
+                                      function($event) {
+                                        if ($event.target.composing) {
+                                          return
+                                        }
+                                        _vm.$set(
+                                          venta,
+                                          "cantidad",
+                                          $event.target.value
+                                        )
+                                      },
+                                      function($event) {
+                                        return _vm.generarTotal(venta)
+                                      }
+                                    ]
+                                  }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: venta.descuento,
+                                      expression: "venta.descuento"
+                                    }
+                                  ],
+                                  attrs: { type: "number" },
+                                  domProps: { value: venta.descuento },
+                                  on: {
+                                    input: [
+                                      function($event) {
+                                        if ($event.target.composing) {
+                                          return
+                                        }
+                                        _vm.$set(
+                                          venta,
+                                          "descuento",
+                                          $event.target.value
+                                        )
+                                      },
+                                      function($event) {
+                                        return _vm.generarTotal(venta)
+                                      }
+                                    ]
+                                  }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c(
+                                  "select",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: _vm.almacen_id,
+                                        expression: "almacen_id"
+                                      }
+                                    ],
+                                    on: {
+                                      change: function($event) {
+                                        var $$selectedVal = Array.prototype.filter
+                                          .call($event.target.options, function(
+                                            o
+                                          ) {
+                                            return o.selected
+                                          })
+                                          .map(function(o) {
+                                            var val =
+                                              "_value" in o ? o._value : o.value
+                                            return val
+                                          })
+                                        _vm.almacen_id = $event.target.multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c(
+                                      "option",
+                                      { attrs: { disabled: "", value: "" } },
+                                      [_vm._v("Escoje un almacén")]
+                                    ),
+                                    _vm._v(" "),
+                                    _vm._l(_vm.arrayAlmacen, function(almacen) {
+                                      return _c(
+                                        "option",
+                                        {
+                                          key: almacen.id,
+                                          domProps: { value: almacen.id }
+                                        },
+                                        [_vm._v(_vm._s(almacen.descripcion))]
+                                      )
+                                    })
+                                  ],
+                                  2
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: venta.total,
+                                      expression: "venta.total"
+                                    }
+                                  ],
+                                  attrs: { disabled: "" },
+                                  domProps: { value: venta.total },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        venta,
+                                        "total",
+                                        $event.target.value
+                                      )
                                     }
                                   }
-                                },
-                                [_c("i", { staticClass: "icon-trash" })]
-                              )
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "btn btn-danger btn-sm boton",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.eliminarProductoTabla(index)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "icon-trash" })]
+                                )
+                              ])
                             ])
-                          ])
-                        }),
-                        0
-                      )
-                    ])
+                          }),
+                          0
+                        )
+                      ]
+                    )
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "row" }, [
@@ -95078,7 +95124,7 @@ var render = function() {
                     _c("div", { staticClass: "col-6" }),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-2 col-form-label" }, [
-                      _vm._v("SubTotal")
+                      _vm._v("Subtotal")
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col" }, [
@@ -95123,7 +95169,34 @@ var render = function() {
                       _vm._v("IgvTotal")
                     ]),
                     _vm._v(" "),
-                    _vm._m(5),
+                    _c("div", { staticClass: "col" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.igv,
+                            expression: "igv"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          name: "IgvTotal",
+                          id: "IgvTotal",
+                          readonly: ""
+                        },
+                        domProps: { value: _vm.igv },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.igv = $event.target.value
+                          }
+                        }
+                      })
+                    ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "w-100" }),
                     _vm._v(" "),
@@ -95133,10 +95206,37 @@ var render = function() {
                       _vm._v("Total")
                     ]),
                     _vm._v(" "),
-                    _vm._m(6)
+                    _c("div", { staticClass: "col" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.total,
+                            expression: "total"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          name: "Totales",
+                          id: "Totales",
+                          readonly: ""
+                        },
+                        domProps: { value: _vm.total },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.total = $event.target.value
+                          }
+                        }
+                      })
+                    ])
                   ]),
                   _vm._v(" "),
-                  _vm._m(7)
+                  _vm._m(5)
                 ]
               )
             ])
@@ -95160,7 +95260,7 @@ var render = function() {
         _c("div", { staticClass: "modal-dialog modal-xl" }, [
           _c("div", { staticClass: "card-body" }, [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(8),
+              _vm._m(6),
               _vm._v(" "),
               _c(
                 "div",
@@ -95444,28 +95544,6 @@ var staticRenderFns = [
       _c("input", {
         staticClass: "form-control",
         attrs: { type: "text", name: "DescGlobal", id: "DescGlobal" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col" }, [
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "text", name: "IgvTotal", id: "IgvTotal", readonly: "" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col" }, [
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "text", name: "Totales", id: "Totales", readonly: "" }
       })
     ])
   },
