@@ -4,7 +4,12 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex flex-wrap justify-content-between align-items-center">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo</button>
+                        <div>
+                            <h4>Factura</h4>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo</button>
+                        </div>   
                     </div>
                 </div>
             </div>
@@ -24,19 +29,28 @@
 
                                 <div class="col-2 col-form-label">Cod.Cliente</div>
                                     <div class="input-group col">
-                                    <div class="input-group-prepend btn_subbuscar" id="Btn_SubBuscar" idsubform="1">
-                                    <span class="input-group-text" ><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                    <div class="btn input-group-prepend btn_subbuscar" id="Btn_SubBuscar" idsubform="1">
+                                    <span class="input-group-text" ><i class="fa fa-search" aria-hidden="true" @click="(buscarCodigo.length > 0)?buscarCliente(buscarCodigo):abrirModalClientes()"></i ></span>
                                 </div>
-                                <input type="text" class="form-control" name="SdnCode" placeholder="Escriba ó Busque...">
+                                <input type="text" class="form-control" name="SdnCode" v-model="buscarCodigo" placeholder="Escriba ó Busque...">
                                 </div>
                                 <div class="col-2 col-form-label">Num.Doc</div>
                                 <div class="col"><input type="text" name="Id" class="form-control" disabled="disabled"></div>
-
                                 <div class="w-100"></div>
+
+                                <div class="col-2 col-form-label">RUC</div>
+                                    <div class="input-group col">
+                                    <input type="text" name="RUC" class="form-control" :value="ruc" disabled="disabled">
+                                </div>
+                                <div class="col-2 col-form-label">Dirección</div>
+                                <div class="col"><input type="text" name="Direccion" class="form-control" :value="direccion" disabled="disabled"></div>
+                                <div class="w-100"></div>
+
                                 <div class="col-2 col-form-label">Razón Social</div>
-                                <div class="col"><input type="text" name="SdnName" class="form-control"></div>
+                                <div class="col"><input type="text" name="SdnName" class="form-control" :value="razon"></div>
 
                                 <div class="w-100"></div>
+                          
 
                                 <div class="col-2 col-form-label">Vendedor</div>
                                 <div class="col-3">
@@ -72,7 +86,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 ml-auto">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg2">Agregar productos</button>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Agregar productos</button>
                             </div>
                         </div>
                         <div class="table-responsive scroll">   
@@ -144,7 +158,7 @@
                 </div>
             </div>
             </div>
-                <div class="modal fade bd-example-modal-lg2" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal fade" tabindex="-1" role="dialog" id="modalProducto" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl">
                         <div class="card-body">
                             <div class="modal-content" >
@@ -161,6 +175,23 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" tabindex="-1" role="dialog" id="modalClientes" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="card-body">
+                            <div class="modal-content" >
+                                <div class="modal-header">
+                                    Clientes
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayClientes" :cabeceras="cabecerasCliente" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador" :buscarClientes="buscarCliente"></datatable>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </main>
 </template>
 <script>
@@ -168,20 +199,29 @@
 export default {
     data(){
         return{
+            arrayClientes: [],
             arrayItems: [],
             cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Precio', 'Descripcion', 'Imagen', 'Almacen','Acciones'],
+            cabecerasCliente: ['#', 'Codigo', 'Razón social', 'Dirección', 'RUC', 'Acciones'],
             iconos: 'icon-plus',
             ventas: [],
             arrayAlmacen: [],
             almacen_id: '',
             total: 0,
             subTotal: 0,
-            igv: 0
+            igv: 0,
+            buscarCodigo: '',
+            razon: '',
+            ruc: '',
+            direccion: '',
+            controlador: 0    // 1 - productos, 2 - clientes
+
 
         }
     },
     mounted(){
         this.listarItem()
+        this.listarClientes()
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
     },
     methods:{
@@ -196,9 +236,10 @@ export default {
                 lista.push(this.ventas[i].total)
             }
             suma = lista.reduce((a, b) => a + b, 0)
-            this.total = suma
-            this.subTotal = Math.round((this.total / 1.18)*100)/100
+            this.subTotal = suma
             this.igv = Math.round((this.subTotal * 0.18)*100)/100
+            this.total =  Math.round((this.subTotal + this.igv)*100)/100 
+           
         },
         recibirVenta(venta){
             this.ventas = venta
@@ -212,6 +253,13 @@ export default {
             var urlItem = '/producto';
             axios.get(urlItem).then(response=>{
                 this.arrayItems = response.data;
+                this.miTabla();
+            })
+        },
+        listarClientes(){
+            var urlItem = '/cliente';
+            axios.get(urlItem).then(response=>{
+                this.arrayClientes = response.data;
                 this.miTabla();
             })
         },
@@ -232,6 +280,14 @@ export default {
             this.seleccionarAlmacen();
             $('#modalVenta').modal('show');
         },
+        abrirModalClientes(){
+            this.controlador = 2
+            $('#modalClientes').modal('show');
+        },
+        abrirModalAgregarProducto(){
+            this.controlador= 1
+            $('#modalProducto').modal('show');
+        },
         seleccionarAlmacen(){
             let me= this;
             var url='/almacen';
@@ -241,21 +297,20 @@ export default {
         },
         eliminarProductoTabla(index){
             this.ventas.splice(index,1)
+        },
+        buscarCliente(codigo){
+            axios.get(`/cliente/${codigo}`).then((response)=>{
+                console.log(response.data[0])
+                this.buscarCodigo = response.data[0].codigo
+                this.razon = response.data[0].razon
+                this.direccion = response.data[0].direccion
+                this.ruc = response.data[0].ruc
+            })
+            
         }
         
     },
     watch:{
-        /*ventas(){
-            var lista = []
-            var suma = 0
-            for(var i = 0; i < this.ventas.length; i++){
-                lista.push(this.ventas[i].total)
-            }
-            suma = lista.reduce((a, b) => a + b, 0)
-            this.total = suma
-            this.subTotal = Math.round((this.total / 1.18)*100)/100
-            this.igv = Math.round((this.subTotal * 0.18)*100)/100    
-        }*/
         ventas:{
             handler: function(){
                 var lista = []
@@ -264,9 +319,9 @@ export default {
                     lista.push(this.ventas[i].total)
                 }
                 suma = lista.reduce((a, b) => a + b, 0)
-                this.total = suma
-                this.subTotal = Math.round((this.total / 1.18)*100)/100
-                this.igv = Math.round((this.subTotal * 0.18)*100)/100  
+                this.subTotal = suma
+                this.igv = Math.round((this.subTotal * 0.18)*100)/100
+                this.total =  Math.round((this.subTotal + this.igv)*100)/100 
                 },
             deep: true
         }

@@ -18,7 +18,7 @@
                             </template>
                         </td>
                         <td class="text-center align-middle">
-                            <span class="btn btn-primary btn-sm boton" @click="(icono=='icon-pencil')?modalEditar(item):agregarProducto(item)"><i :class="icono"></i></span>
+                            <span class="btn btn-primary btn-sm boton"  data-dismiss="modal" @click="(controlador==0)?modalEditar(item):(controlador==1)?agregarProducto(item):buscarClientes(item.codigo)"><i :class="icono"></i></span>
                             <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
                         </td>
                     </tr>
@@ -34,7 +34,9 @@ export default {
         arrayItems: Array,
         cabeceras: Array,
         icono: String,
-        listaVentasPadre: Array
+        listaVentasPadre: Array,
+        controlador: Number,
+        buscarClientes: Function
     },
     data(){
         return{
@@ -82,7 +84,7 @@ export default {
                 this.arrayVentas.push(obj)
                 this.emitirEventoArray(this.arrayVentas);
             }
-        }
+        },
     },
     watch:{
         listaVentasPadre(){

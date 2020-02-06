@@ -26,15 +26,17 @@
 
 <body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
     <div id="app" >
-            <header class="app-header navbar" style="background: #1D262B; border-color: #1D262B;">
-                    <!--<button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+            <header class="app-header navbar d-flex flex-wrap justify-content-between align-items-center" style="background: #1D262B; border-color: #1D262B;">
+                <div>
+                    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
                       <span class="navbar-toggler-icon"></span>
                     </button>
-                    <a class="navbar-brand" href="#"></a>
+                    <!--<a class="navbar-brand" href="#"></a>-->
                     <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
                       <span class="navbar-toggler-icon"></span>
-                    </button>-->
-
+                    </button>
+                </div>
+                <div>
                     <ul class="nav navbar-nav ml-auto">
                         {{-- <notification :notifications="notifications"></notification> --}}
                         <li class="nav-item dropdown">
@@ -55,7 +57,8 @@
                             </a>
                         </li>
                     </ul>
-                </header>
+                </div>
+            </header>
 
     <div class="app-body">
         @if(Auth::check())

@@ -80,14 +80,14 @@ Route::group(['middleware' => ['auth']], function () {
         /**
          * rutas clientes
          */
-        Route::get('/cliente', 'ClienteController@index');
+        /*Route::get('/cliente', 'ClienteController@index');
         Route::post('/cliente/registrar','ClienteController@store' );
         Route::put('/cliente/actualizar','ClienteController@update' );
         Route::get('/cliente/selectCliente', 'ClienteController@selectCliente');
         Route::get('/cliente/listarPdf', 'ClienteController@listarPdf')->name('clientes_pdf');
 
         Route::get('/articulo/buscarArticuloVenta', 'ArticuloController@buscarArticuloVenta');
-        Route::get('/articulo/listarArticuloVenta', 'ArticuloController@listarArticuloVenta');
+        Route::get('/articulo/listarArticuloVenta', 'ArticuloController@listarArticuloVenta');*/
 
          /**
          * rutas ventas
@@ -146,11 +146,11 @@ Route::group(['middleware' => ['auth']], function () {
         /**
          * rutas clientes
          */
-        Route::get('/cliente', 'ClienteController@index');
+        /*Route::get('/cliente', 'ClienteController@index');
         Route::post('/cliente/registrar','ClienteController@store' );
         Route::put('/cliente/actualizar','ClienteController@update' );
         Route::get('/cliente/selectCliente', 'ClienteController@selectCliente');
-        Route::get('/cliente/listarPdf', 'ClienteController@listarPdf')->name('clientes_pdf');
+        Route::get('/cliente/listarPdf', 'ClienteController@listarPdf')->name('clientes_pdf');*/
 
 
         /**
@@ -202,5 +202,6 @@ Route::group(['middleware' => ['auth']], function () {
 Route::resource('almacen', 'AlmacenController');
 Route::resource('producto', 'ProductoController');
 Route::resource('proveedor', 'ProveedorController');
+Route::resource('cliente', 'ClienteController');
 
 //Route::get('/home', 'HomeController@index')->name('home');

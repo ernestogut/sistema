@@ -11,10 +11,7 @@
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-basket"></i> Ventas</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=5" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Modulo de Ventas</a>
-                        </li>
-                        <li  @click="menu=6" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Clientes</a>
+                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Factura</a>
                         </li>
                     </ul>
                 </li>
@@ -29,6 +26,17 @@
                         </li>
                         <li  @click="menu=14" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-notebook"></i> Prueba</a>
+                        </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Socios de negocio</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=6" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Clientes</a>
+                        </li>
+                        <li  @click="menu=13" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Proveedor</a>
                         </li>
                     </ul>
                 </li>

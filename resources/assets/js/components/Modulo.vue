@@ -1,66 +1,66 @@
 <template>
     <main class="main">
-        <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex flex-row justify-content-between align-items-center">  
-                        <h6>{{titulo}}</h6>
+                        <h4>{{titulo}}</h4>
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-primary boton" data-toggle="modal" @click="abrirModalRegistrar()">
                         Nuevo
                         </button>
                         <!-- Modal -->
-                        <div class="modal fade" id="modalRegistroItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 v-show="!modoEditable" class="modal-title" id="exampleModalLabel">Nuevo {{tituloModal}}</h5>
-                                        <h5 v-show="modoEditable" class="modal-title" id="exampleModalLabel">Editar {{tituloModal}}</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
-                                            <div class="form-row">
-                                                <div class="form-group col-md-6" v-for="(variable) of variables" :key="variable.key">
-                                                    <label :for="variable.for">{{variable.titulo}}</label>
-                                                    <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
-                                                    v-model="variable.var" :placeholder="variable.placeholder">
+                    </div>
+                    <div class="modal fade" id="modalRegistroItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 v-show="!modoEditable" class="modal-title" id="exampleModalLabel">Nuevo {{tituloModal}}</h5>
+                                    <h5 v-show="modoEditable" class="modal-title" id="exampleModalLabel">Editar {{tituloModal}}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6" v-for="(variable) of variables" :key="variable.key">
+                                                <label :for="variable.for">{{variable.titulo}}</label>
+                                                <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
+                                                v-model="variable.var" :placeholder="variable.placeholder">
+                                            </div>
+                                            <div class="d-flex flex-wrap justify-content-between" v-if="tituloModal == 'producto'">
+                                                <div>
+                                                    <label for="exampleFormControlFile1"></label>
+                                                    <input type="file" class="form-control-file" @change="obtenerImagenProducto" id="exampleFormControlFile1">
                                                 </div>
-                                                <div class="d-flex flex-wrap justify-content-between" v-if="tituloModal == 'producto'">
-                                                    <div>
-                                                        <label for="exampleFormControlFile1"></label>
-                                                        <input type="file" class="form-control-file" @change="obtenerImagenProducto" id="exampleFormControlFile1">
-                                                    </div>
-                                                    <div class="imagenContenedor">
-                                                        <img :src="imagenProducto" id="imagen" alt="">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-md-3" v-if="tituloModal == 'producto'">
-                                                    <label >Almacén</label>
-                                                    <select class="form-control" v-model="almacen_id">
-                                                        <option disabled value="">Escoje un almacén</option>
-                                                        <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
-                                                    </select>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
-                                                    <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
-                                                    <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
+                                                <div class="imagenContenedor">
+                                                    <img :src="imagenProducto" id="imagen" alt="">
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
-                                    </div>
+                                            <div class="form-group col-md-3" v-if="tituloModal == 'producto'">
+                                                <label >Almacén</label>
+                                                <select class="form-control" v-model="almacen_id">
+                                                    <option disabled value="">Escoje un almacén</option>
+                                                    <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary boton"data-dismiss="modal">Cerrar</button>
+                                                <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
+                                                <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <spinner v-if="loading"></spinner>
-                <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated"></datatable>
-            </div>         
+            </div>
+            <spinner v-if="loading"></spinner>
+            <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated" :controlador="controlador"></datatable>
+        </div>         
     </main>
 </template>
 <script>
@@ -86,7 +86,8 @@ export default {
             almacen_id: '',
             iconos: 'icon-pencil',
             loading: false,
-            initiated: false
+            initiated: false,
+            controlador: 0
 
         }
     },
