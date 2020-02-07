@@ -18,7 +18,7 @@
                             </template>
                         </td>
                         <td class="text-center align-middle">
-                            <span class="btn btn-primary btn-sm boton"  data-dismiss="modal" @click="(controlador==0)?modalEditar(item):(controlador==1)?agregarProducto(item):buscarClientes(item.codigo)"><i :class="icono"></i></span>
+                            <span class="btn btn-primary btn-sm boton"  @click="funcionConjunto(item)"><i :class="icono"></i></span>
                             <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
                         </td>
                     </tr>
@@ -85,6 +85,19 @@ export default {
                 this.emitirEventoArray(this.arrayVentas);
             }
         },
+        cerrarModalProductos(){
+            $('#modalProducto').modal('hide');
+        },
+        funcionConjunto(item){
+            if(this.controlador == 0){
+                this.modalEditar(item)
+            }else if(this.controlador == 1){
+                this.agregarProducto(item)
+            }else if(this.controlador == 2){
+                this.buscarClientes(item.codigo)
+                $('#modalClientes').modal('hide');
+            }
+        }
     },
     watch:{
         listaVentasPadre(){

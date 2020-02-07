@@ -23,7 +23,7 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <form class="kt-form kt-form--label-right" name="oprd_form" id="oprd_form" method="post">
+                        <form class="kt-form kt-form--label-right" action="" @submit.prevent="insertarCabecera()">
                         <div class="kt-portlet__body" data-scroll="true" data-height="200" data-scrollbar-shown="true">
                             <div class="row justify-content-start">
 
@@ -54,26 +54,29 @@
 
                                 <div class="col-2 col-form-label">Vendedor</div>
                                 <div class="col-3">
-                                    <select required="required" class="form-control" name="EmpCode" id="EmpCode">
-                                        <option value="1" selected="selected">Seleccione...</option>
+                                    <select required="required" class="form-control" v-model="vendedor">
+                                        <option selected="selected">Seleccione...</option>
+                                        <option selected="selected">1</option>
+                                        <option selected="selected">2</option>
                                     </select>
+                                    {{vendedor}}
                                 </div>
                                 <div class="col-1"></div>
                                 <div class="col-2 col-form-label">Fecha Emi</div>
-                                <div class="col"><input type="date" name="FechaReg" id="FechaReg" class="form-control" readonly="readonly"></div>
+                                <div class="col"><input type="date" name="FechaReg" id="FechaReg" class="form-control" v-model="fecha"></div>
 
                                 <div class="w-100"></div>
                                 <div class="col-2 col-form-label">Tipo Venta</div>
                                 <div class="col-3">
-                                    <select name="PedTipo" required="required" class="form-control">
+                                    <select name="PedTipo" required="required" class="form-control" v-model="tipo_venta">
                                         <option value="A" selected="selected">Artículo</option>
                                         <option value="S">Servicio</option>
                                     </select>
                                 </div>
                                 <div class="col-1"></div>
                                 <div class="col-2 col-form-label">Folio</div>
-                                <div class="col-2"><input type="text" name="Serie" class="form-control" placeholder="Serie"></div>
-                                <div class="col-2"><input type="text" name="Folio" class="form-control" disabled="disabled" placeholder="Folio"></div>
+                                <div class="col-2"><input type="text" name="Serie" class="form-control" placeholder="Serie" v-model="serie"></div>
+                                <div class="col-2"><input type="text" name="Folio" class="form-control"  placeholder="Folio" v-model="folio"></div>
 
 
                                 <div class="w-100"></div>
@@ -137,7 +140,7 @@
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
                                 <div class="col-2 col-form-label">Desc.Global</div>
-                                <div class="col"><input type="text" name="DescGlobal" id="DescGlobal" class="form-control" ></div>
+                                <div class="col"><input type="text" name="DescGlobal" id="DescGlobal" class="form-control" v-model="desc_global" ></div>
 
                                 <div class="w-100"></div>
                                 <div class="col-6"></div>
@@ -169,7 +172,7 @@
                                     </button>
                                 </div>
                                 <div class="table-responsive">
-                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas"></datatable>
+                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador"></datatable>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +217,14 @@ export default {
             razon: '',
             ruc: '',
             direccion: '',
-            controlador: 0    // 1 - productos, 2 - clientes
+            controlador: 0, // 1 - productos, 2 - clientes
+            vendedor: '',
+            serie: 'F001',
+            folio: '',
+            fecha: '',
+            tipo_venta: '',
+            desc_global: 0,
+            id_cabecera: 0
 
 
         }
@@ -285,7 +295,7 @@ export default {
             $('#modalClientes').modal('show');
         },
         abrirModalAgregarProducto(){
-            this.controlador= 1
+            this.controlador = 1
             $('#modalProducto').modal('show');
         },
         seleccionarAlmacen(){
@@ -306,7 +316,32 @@ export default {
                 this.direccion = response.data[0].direccion
                 this.ruc = response.data[0].ruc
             })
-            
+        },
+        insertarCabecera(){
+            var me = this;
+            let formDatos = new FormData();
+            formDatos.append('cod_cliente', this.buscarCodigo);
+            formDatos.append('ruc_cliente', this.ruc);
+            formDatos.append('dir_cliente', this.direccion);
+            formDatos.append('razon', this.razon);
+            formDatos.append('id_users', Number(this.vendedor));
+            formDatos.append('fecha', this.fecha);
+            formDatos.append('tipo_venta', this.tipo_venta);
+            formDatos.append('serie', this.serie);
+            formDatos.append('folio', this.folio);
+            formDatos.append('sub_total', this.subTotal);
+            formDatos.append('desc_global', this.desc_global);
+            formDatos.append('igv_total', this.igv);
+            formDatos.append('total', this.total);
+
+            axios.post('/c_fact', formDatos).then((response)=>{
+                this.id_cabecera = response.data
+            })
+            let formArray = new FormData();
+            formArray.append('respuesta', this.ventas);
+            axios.post('/d_fact', formArray).then((response)=>{
+                //console.log(response.data)
+            })
         }
         
     },

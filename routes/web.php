@@ -203,5 +203,7 @@ Route::resource('almacen', 'AlmacenController');
 Route::resource('producto', 'ProductoController');
 Route::resource('proveedor', 'ProveedorController');
 Route::resource('cliente', 'ClienteController');
+Route::resource('c_fact', 'CFactController');
+Route::resource('d_fact', 'DFactController');
 
 //Route::get('/home', 'HomeController@index')->name('home');
