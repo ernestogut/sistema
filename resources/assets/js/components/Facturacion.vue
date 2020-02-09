@@ -13,6 +13,16 @@
                     </div>
                 </div>
             </div>
+
+            <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="controlador"  :factura="true">
+
+                <!--@emitirEvProductos="recibirVenta"
+                :eliminarItem="eliminarItem"
+                :listaVentasPadre="ventas"
+                :buscarClientes="buscarCliente"-->
+            </datatable>
+
+
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -55,21 +65,19 @@
                                 <div class="col-2 col-form-label">Vendedor</div>
                                 <div class="col-3">
                                     <select required="required" class="form-control" v-model="vendedor">
-                                        <option selected="selected">Seleccione...</option>
-                                        <option selected="selected">1</option>
-                                        <option selected="selected">2</option>
+                                        <option disabled value="">Seleccione...</option>
+                                        <option v-for="usuario in arrayUsuarios" :value="usuario.id">{{usuario.usuario}}</option>
                                     </select>
-                                    {{vendedor}}
                                 </div>
                                 <div class="col-1"></div>
                                 <div class="col-2 col-form-label">Fecha Emi</div>
-                                <div class="col"><input type="date" name="FechaReg" id="FechaReg" class="form-control" v-model="fecha"></div>
+                                <div class="col"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="fecha"></div>
 
                                 <div class="w-100"></div>
                                 <div class="col-2 col-form-label">Tipo Venta</div>
                                 <div class="col-3">
-                                    <select name="PedTipo" required="required" class="form-control" v-model="tipo_venta">
-                                        <option value="A" selected="selected">Artículo</option>
+                                    <select name="PedTipo" class="form-control" v-model="tipo_venta">
+                                        <option value="A">Artículo</option>
                                         <option value="S">Servicio</option>
                                     </select>
                                 </div>
@@ -172,7 +180,7 @@
                                     </button>
                                 </div>
                                 <div class="table-responsive">
-                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador"></datatable>
+                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador" :factura="false"></datatable>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +197,7 @@
                                     </button>
                                 </div>
                                 <div class="table-responsive">
-                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayClientes" :cabeceras="cabecerasCliente" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador" :buscarClientes="buscarCliente"></datatable>
+                                    <datatable :eliminarItem="eliminarItem" :arrayItems="arrayClientes" :cabeceras="cabecerasCliente" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador" :buscarClientes="buscarCliente" :factura="false"></datatable>
                                 </div>
                             </div>
                         </div>
@@ -204,9 +212,12 @@ export default {
         return{
             arrayClientes: [],
             arrayItems: [],
+            arrayFacturas: [],
+            arrayUsuarios: [],
             cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Precio', 'Descripcion', 'Imagen', 'Almacen','Acciones'],
             cabecerasCliente: ['#', 'Codigo', 'Razón social', 'Dirección', 'RUC', 'Acciones'],
             iconos: 'icon-plus',
+            cabecerasFactura: ['#', 'ID', 'Razón social', 'Serie', 'Folio', 'Fecha', 'Total', 'Acciones'],
             ventas: [],
             arrayAlmacen: [],
             almacen_id: '',
@@ -222,7 +233,7 @@ export default {
             serie: 'F001',
             folio: '',
             fecha: '',
-            tipo_venta: '',
+            tipo_venta: 'A',
             desc_global: 0,
             id_cabecera: 0
 
@@ -230,8 +241,10 @@ export default {
         }
     },
     mounted(){
+        this.listarFacturas()
         this.listarItem()
         this.listarClientes()
+        this.listarUsuarios();
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
     },
     methods:{
@@ -273,6 +286,19 @@ export default {
                 this.miTabla();
             })
         },
+        listarFacturas(){
+            var urlItem = '/c_fact';
+            axios.get(urlItem).then(response=>{
+                this.arrayFacturas = response.data;
+                this.miTabla();
+            })
+        },
+        listarUsuarios(){
+            var urlItem = '/user';
+            axios.get(urlItem).then(response=>{
+                this.arrayUsuarios = response.data;
+            })
+        },
         eliminarItem(item, index){
             if(confirm(`Está seguro de eliminar el item ${item.codigo}?`)){
                 axios.delete(`/producto/${item.id}`)
@@ -288,6 +314,7 @@ export default {
         },
         abrirModalVenta(){
             this.seleccionarAlmacen();
+            this.obtenerFecha()
             $('#modalVenta').modal('show');
         },
         abrirModalClientes(){
@@ -336,12 +363,22 @@ export default {
 
             axios.post('/c_fact', formDatos).then((response)=>{
                 this.id_cabecera = response.data
+                console.log(response.data)
+                axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
+                })
+                $('#modalVenta').modal('hide');
+                alert('Guardado correctamente');
+                $( function () {
+                    $('#myTable').DataTable().destroy();
+                } );
+                this.listarFacturas();
             })
-            let formArray = new FormData();
-            formArray.append('respuesta', this.ventas);
-            axios.post('/d_fact', formArray).then((response)=>{
-                //console.log(response.data)
+            .catch(error=>{
+                alert('Hubo un error al guardar')
             })
+        },
+        obtenerFecha(){
+            this.fecha = this.$moment().format("YYYY-MM-DD")
         }
         
     },

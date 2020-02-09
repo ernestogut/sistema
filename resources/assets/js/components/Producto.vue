@@ -1,5 +1,5 @@
 <template>
-    <modulo :variables="variables" :ruta="ruta" :cabeceras="cabeceras" :titulo="titulo" :tituloModal="tituloModal"></modulo>
+    <modulo :variables="variables" :ruta="ruta" :cabeceras="cabeceras" :titulo="titulo" :tituloModal="tituloModal" :factura="false"></modulo>
 </template>
 <script>
 

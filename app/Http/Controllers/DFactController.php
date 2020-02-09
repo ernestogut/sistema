@@ -37,8 +37,38 @@ class DFactController extends Controller
     {
         if(!$request->ajax()) return redirect('/');
 
-
-        dd($request);
+        //dd($request->id_cabecera);
+        $detalle = $request->ventas;
+        
+        foreach ($detalle as $key => $value) {
+            //# code...
+            //var_dump($key);
+            //var_dump($value);
+            $dfact = new D_fact();
+            $dfact->id_fact = $request->id_cabecera;
+            $dfact->codigo_producto = $value['codigo'];
+            $dfact->descripcion_producto = $value['descripcion'];
+            $dfact->precio_producto = $value['precio'];
+            $dfact->cantidad_producto = $value['cantidad'];
+            $dfact->descuento_producto = $value['descuento'];
+            $dfact->total_producto = $value['total'];
+            $dfact->save();
+            
+        }
+        //return $detalle;
+        //$dfact = new D_fact();
+        /*foreach($detalle as $value){
+            /*$dfact->id_fact = $request->id_cabecera;
+            $dfact->codigo_producto = $value->codigo_producto;
+            $dfact->descripcion_producto = $value->descripcion_producto;
+            $dfact->precio_producto = $value->precio_producto;
+            $dfact->cantidad_producto = $value->cantidad_producto;
+            $dfact->descuento_producto = $value->descuento_producto;
+            $dfact->almacen_producto = $value->almacen_producto;
+            $dfact->total_producto = $value->total_producto;
+            $dfact->save();
+            echo json_decode($value)->codigo;
+        }*/
         /*foreach ($request->respuesta as $venta) {
             dd($venta->cantidad);
         }

@@ -19,36 +19,8 @@ class UserController extends Controller
         //verifica si la peticion se la esta haciendo por ajax y si no es asi se lo redirige a /
         if(!$request->ajax()) return redirect('/');
         //listar todos los registros de la tabla categoria
-        $buscar = $request->buscar;
-        $criterio = $request->criterio;
-
-        if($buscar==''){
-            $personas = User::join('personas','users.id', '=', 'personas.id')
-            ->join('roles', 'users.idrole', '=', 'roles.id')
-            ->select('personas.id','personas.nombre','personas.tipo_documento','personas.num_documento','personas.direccion','personas.telefono',
-            'personas.email', 'users.usuario', 'users.password', 'users.condicion', 'users.idrole', 'roles.nombre as rol')
-
-            ->orderBy('personas.id', 'desc')->paginate(5);
-        }else{
-            $personas =User::join('personas','users.id', '=', 'personas.id')
-            ->join('roles', 'users.idrole', '=', 'roles.id')
-            ->select('personas.id','personas.nombre','personas.tipo_documento','personas.num_documento','personas.direccion','personas.telefono',
-            'personas.email', 'users.usuario', 'users.password', 'users.condicion', 'users.idrole', 'roles.nombre as rol')
-            ->where('personas.'.$criterio, 'like', '%'.$buscar.'%')
-            ->orderBy('personas.id', 'desc')->paginate(5);
-        }
-        //$proveedores = Categoria::paginate(5);
-        return [
-            'pagination' => [
-                'total' => $personas->total(),
-                'current_page' => $personas->currentPage(),
-                'per_page' => $personas->perPage(),
-                'last_page' => $personas->lastPage(),
-                'from' => $personas->firstItem(),
-                'to' => $personas->lastItem(),
-            ],
-            'personas' => $personas
-        ];
+        $usuarios = User::select('id', 'usuario')->get();
+        return $usuarios;
 
     }
 

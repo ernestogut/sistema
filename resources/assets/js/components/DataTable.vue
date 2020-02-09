@@ -18,8 +18,14 @@
                             </template>
                         </td>
                         <td class="text-center align-middle">
-                            <span class="btn btn-primary btn-sm boton"  @click="funcionConjunto(item)"><i :class="icono"></i></span>
-                            <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
+                            <div v-if="!factura">
+                                <span class="btn btn-primary btn-sm boton"  @click="funcionConjunto(item)"><i :class="icono"></i></span>
+                                <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
+                            </div>
+                            <div v-else>
+                                <span class="btn btn-primary btn-sm boton"><i class="icon icon-eye-open"></i></span>
+                                <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -36,7 +42,8 @@ export default {
         icono: String,
         listaVentasPadre: Array,
         controlador: Number,
-        buscarClientes: Function
+        buscarClientes: Function,
+        factura: Boolean
     },
     data(){
         return{
