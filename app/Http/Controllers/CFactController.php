@@ -43,7 +43,7 @@ class CFactController extends Controller
         $cabecera->ruc_cliente = $request->ruc_cliente;
         $cabecera->dir_cliente = $request->dir_cliente;
         $cabecera->razon = $request->razon;
-        $cabecera->id_users = $request->id_users;
+        $cabecera->id_user = $request->id_user;
         $cabecera->fecha = $request->fecha;
         $cabecera->tipo_venta = $request->tipo_venta;
         $cabecera->serie = $request->serie;

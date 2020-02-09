@@ -22,7 +22,7 @@ class CreateDFactsTable extends Migration
             $table->float('precio_producto');
             $table->integer('cantidad_producto');
             $table->float('descuento_producto');
-            $table->string('almacen_producto');
+            $table->string('almacen_producto')->nullable();
             $table->float('total_producto');
             $table->timestamps();
         });

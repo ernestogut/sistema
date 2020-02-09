@@ -423,6 +423,7 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
     );
 
     public static $classMap = array (
+        'AlmacensTableSeeder' => __DIR__ . '/../..' . '/database/seeds/AlmacensTableSeeder.php',
         'App\\Almacen' => __DIR__ . '/../..' . '/app/Almacen.php',
         'App\\Articulo' => __DIR__ . '/../..' . '/app/Articulo.php',
         'App\\C_fact' => __DIR__ . '/../..' . '/app/C_fact.php',
@@ -445,6 +446,7 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         'App\\Http\\Controllers\\CategoriaController' => __DIR__ . '/../..' . '/app/Http/Controllers/CategoriaController.php',
         'App\\Http\\Controllers\\ClienteController' => __DIR__ . '/../..' . '/app/Http/Controllers/ClienteController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\DFactController' => __DIR__ . '/../..' . '/app/Http/Controllers/DFactController.php',
         'App\\Http\\Controllers\\DashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/DashboardController.php',
         'App\\Http\\Controllers\\DatoController' => __DIR__ . '/../..' . '/app/Http/Controllers/DatoController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
@@ -524,6 +526,7 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         'Carbon\\Traits\\Units' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Traits/Units.php',
         'Carbon\\Traits\\Week' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Traits/Week.php',
         'Carbon\\Translator' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Translator.php',
+        'ClientesTableSeeder' => __DIR__ . '/../..' . '/database/seeds/ClientesTableSeeder.php',
         'Cron\\AbstractField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/AbstractField.php',
         'Cron\\CronExpression' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/CronExpression.php',
         'Cron\\DayOfMonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/DayOfMonthField.php',
@@ -3223,6 +3226,7 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         'PhpParser\\Parser\\Tokens' => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser/Parser/Tokens.php',
         'PhpParser\\PrettyPrinterAbstract' => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser/PrettyPrinterAbstract.php',
         'PhpParser\\PrettyPrinter\\Standard' => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser/PrettyPrinter/Standard.php',
+        'ProductosTableSeeder' => __DIR__ . '/../..' . '/database/seeds/ProductosTableSeeder.php',
         'Prophecy\\Argument' => __DIR__ . '/..' . '/phpspec/prophecy/src/Prophecy/Argument.php',
         'Prophecy\\Argument\\ArgumentsWildcard' => __DIR__ . '/..' . '/phpspec/prophecy/src/Prophecy/Argument/ArgumentsWildcard.php',
         'Prophecy\\Argument\\Token\\AnyValueToken' => __DIR__ . '/..' . '/phpspec/prophecy/src/Prophecy/Argument/Token/AnyValueToken.php',

@@ -351,7 +351,7 @@ export default {
             formDatos.append('ruc_cliente', this.ruc);
             formDatos.append('dir_cliente', this.direccion);
             formDatos.append('razon', this.razon);
-            formDatos.append('id_users', Number(this.vendedor));
+            formDatos.append('id_user', Number(this.vendedor));
             formDatos.append('fecha', this.fecha);
             formDatos.append('tipo_venta', this.tipo_venta);
             formDatos.append('serie', this.serie);
