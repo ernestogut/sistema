@@ -205,5 +205,8 @@ Route::resource('proveedor', 'ProveedorController');
 Route::resource('cliente', 'ClienteController');
 Route::resource('c_fact', 'CFactController');
 Route::resource('d_fact', 'DFactController');
+Route::resource('tipo_comprobante', 'TipoComprobanteController');
+Route::resource('comprobante', 'ComprobanteController');
+
 
 //Route::get('/home', 'HomeController@index')->name('home');

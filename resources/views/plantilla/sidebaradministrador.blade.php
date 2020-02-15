@@ -35,8 +35,16 @@
                         <li  @click="menu=6" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-notebook"></i> Clientes</a>
                         </li>
-                        <li  @click="menu=13" class="nav-item">
+                        <li  @click="menu=4" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-notebook"></i> Proveedor</a>
+                        </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Gestión</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=15" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-wallet"></i> Comprobantes</a>
                         </li>
                     </ul>
                 </li>

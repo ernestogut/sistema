@@ -13,16 +13,15 @@
                     </div>
                 </div>
             </div>
-
+            <div class="d-flex flex-wrap justify-content-around align-items-center">
+                <div v-for="comprobante in arrayComprobantes" :key="comprobante.id">
+                    <input type="radio" v-model="comprobanteEscogido" v-bind:value="comprobante.id">
+                    <label >{{comprobante.nombre}}</label>
+                </div>
+                {{comprobanteEscogido}}
+            </div>
             <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="controlador"  :factura="true">
-
-                <!--@emitirEvProductos="recibirVenta"
-                :eliminarItem="eliminarItem"
-                :listaVentasPadre="ventas"
-                :buscarClientes="buscarCliente"-->
             </datatable>
-
-
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -66,7 +65,7 @@
                                 <div class="col-3">
                                     <select required="required" class="form-control" v-model="vendedor">
                                         <option disabled value="">Seleccione...</option>
-                                        <option v-for="usuario in arrayUsuarios" :value="usuario.id">{{usuario.usuario}}</option>
+                                        <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
                                     </select>
                                 </div>
                                 <div class="col-1"></div>
@@ -214,12 +213,15 @@ export default {
             arrayItems: [],
             arrayFacturas: [],
             arrayUsuarios: [],
+            arrayComprobantes: [],
+            arrayAlmacen: [],
+            ventas: [],
             cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Precio', 'Descripcion', 'Imagen', 'Almacen','Acciones'],
             cabecerasCliente: ['#', 'Codigo', 'Razón social', 'Dirección', 'RUC', 'Acciones'],
             iconos: 'icon-plus',
             cabecerasFactura: ['#', 'ID', 'Razón social', 'Serie', 'Folio', 'Fecha', 'Total', 'Acciones'],
-            ventas: [],
-            arrayAlmacen: [],
+            //datos de la factura
+            comprobanteEscogido: '',
             almacen_id: '',
             total: 0,
             subTotal: 0,
@@ -236,14 +238,11 @@ export default {
             tipo_venta: 'A',
             desc_global: 0,
             id_cabecera: 0
-
-
         }
     },
     mounted(){
+        this.listarTComprobantes();
         this.listarFacturas()
-        this.listarItem()
-        this.listarClientes()
         this.listarUsuarios();
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
     },
@@ -269,7 +268,7 @@ export default {
         },
         miTabla(){
             $( function () {
-                $('#myTable').DataTable();
+                $('table.display').DataTable();
             } );
         },
         listarItem(){
@@ -299,6 +298,12 @@ export default {
                 this.arrayUsuarios = response.data;
             })
         },
+        listarTComprobantes(){
+            var urlItem = '/tipo_comprobante';
+            axios.get(urlItem).then(response=>{
+                this.arrayComprobantes = response.data;
+            })
+        },
         eliminarItem(item, index){
             if(confirm(`Está seguro de eliminar el item ${item.codigo}?`)){
                 axios.delete(`/producto/${item.id}`)
@@ -307,7 +312,7 @@ export default {
                         
                     })
                     $( function () {
-                        $('#myTable').DataTable().destroy();
+                        $('table.display').DataTable().destroy();
                     } );
                     this.listarItem();
             }
@@ -318,10 +323,12 @@ export default {
             $('#modalVenta').modal('show');
         },
         abrirModalClientes(){
+            this.listarClientes()
             this.controlador = 2
             $('#modalClientes').modal('show');
         },
         abrirModalAgregarProducto(){
+            this.listarItem()
             this.controlador = 1
             $('#modalProducto').modal('show');
         },
@@ -337,7 +344,6 @@ export default {
         },
         buscarCliente(codigo){
             axios.get(`/cliente/${codigo}`).then((response)=>{
-                console.log(response.data[0])
                 this.buscarCodigo = response.data[0].codigo
                 this.razon = response.data[0].razon
                 this.direccion = response.data[0].direccion
@@ -347,6 +353,7 @@ export default {
         insertarCabecera(){
             var me = this;
             let formDatos = new FormData();
+            formDatos.append('id_tipo_comprobante', Number(this.comprobanteEscogido));
             formDatos.append('cod_cliente', this.buscarCodigo);
             formDatos.append('ruc_cliente', this.ruc);
             formDatos.append('dir_cliente', this.direccion);
@@ -363,13 +370,12 @@ export default {
 
             axios.post('/c_fact', formDatos).then((response)=>{
                 this.id_cabecera = response.data
-                console.log(response.data)
                 axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
                 })
                 $('#modalVenta').modal('hide');
                 alert('Guardado correctamente');
                 $( function () {
-                    $('#myTable').DataTable().destroy();
+                    $('table.display').DataTable().destroy();
                 } );
                 this.listarFacturas();
             })

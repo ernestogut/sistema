@@ -1,6 +1,6 @@
 <template>
     <div class="card-body">
-            <table class="table table-striped table-bordered dt-responsive nowrap" id="myTable" style="width:100%">
+            <table class="table table-striped table-bordered dt-responsive nowrap display"  style="width:100%">
                 <thead>
                     <tr>
                         <th scope="col" class="text-center align-middle" v-for="cabecera of cabeceras" :key="cabecera.id">{{cabecera}}</th>
@@ -23,7 +23,7 @@
                                 <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
                             </div>
                             <div v-else>
-                                <span class="btn btn-primary btn-sm boton"><i class="icon icon-eye-open"></i></span>
+                                <span class="btn btn-primary btn-sm boton" @click="funcionConjunto(item)"><i class="icon-eye" ></i></span>
                                 <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
                             </div>
                         </td>
@@ -37,12 +37,13 @@ export default {
     props:{
         modalEditar: Function,
         eliminarItem: Function,
+        buscarClientes: Function,
+        listarSeries: Function,
         arrayItems: Array,
         cabeceras: Array,
-        icono: String,
         listaVentasPadre: Array,
+        icono: String,
         controlador: Number,
-        buscarClientes: Function,
         factura: Boolean
     },
     data(){
@@ -55,7 +56,6 @@ export default {
             this.$emit('emitirEvProductos', ventas)
         },
         agregarProducto(item){
-            console.log(item.codigo)
             var obj = {}
             var controlador = false
             for(const i in item){
@@ -96,6 +96,7 @@ export default {
             $('#modalProducto').modal('hide');
         },
         funcionConjunto(item){
+            // controlador = 0 -> editar, 1 -> agregar productos, 2 -> buscar productos, 3 -> listar series
             if(this.controlador == 0){
                 this.modalEditar(item)
             }else if(this.controlador == 1){
@@ -103,6 +104,8 @@ export default {
             }else if(this.controlador == 2){
                 this.buscarClientes(item.codigo)
                 $('#modalClientes').modal('hide');
+            }else if(this.controlador == 3){
+                this.listarSeries(item.id)
             }
         }
     },

@@ -39,6 +39,7 @@ class CFactController extends Controller
     {
         if(!$request->ajax()) return redirect('/');
         $cabecera = new C_fact();
+        $cabecera->id_tipo_comprobante = $request->id_tipo_comprobante;
         $cabecera->cod_cliente = $request->cod_cliente;
         $cabecera->ruc_cliente = $request->ruc_cliente;
         $cabecera->dir_cliente = $request->dir_cliente;
@@ -92,6 +93,7 @@ class CFactController extends Controller
     {
         if(!$request->ajax()) return redirect('/');
         $cabecera = C_fact::find($id);
+        $cabecera->id_tipo_comprobante = $request->id_tipo_comprobante;
         $cabecera->cod_cliente = $request->cod_cliente;
         $cabecera->ruc_cliente = $request->ruc_cliente;
         $cabecera->dir_cliente = $request->dir_cliente;

@@ -15,6 +15,8 @@ class CreateCFactsTable extends Migration
     {
         Schema::create('c_facts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('id_tipo_comprobante');
+            $table->foreign('id_tipo_comprobante')->references('id')->on('tipo_comprobantes');
             $table->string('cod_cliente');
             $table->string('ruc_cliente');
             $table->string('dir_cliente');

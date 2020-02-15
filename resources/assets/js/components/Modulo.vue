@@ -4,7 +4,7 @@
                 <div class="card-header">
                     <div class="d-flex flex-row justify-content-between align-items-center">  
                         <h4>{{titulo}}</h4>
-                        <!-- Button trigger modal -->
+                        <!-- Abrir modal -->
                         <button type="button" class="btn btn-primary boton" data-toggle="modal" @click="abrirModalRegistrar()">
                         Nuevo
                         </button>
@@ -23,11 +23,19 @@
                                 <div class="modal-body">
                                     <form id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
                                         <div class="form-row">
+                                            <div class="form-group col-md-6" v-if="tituloModal == 'comprobante'">
+                                                <label >Tipo de comprobante</label>
+                                                <select class="form-control" v-model="comprobanteElegido">
+                                                    <option disabled value="">Escoje...</option>
+                                                    <option v-for="comprobante in arrayComprobantes" :key="comprobante.id" :value="comprobante.id">{{comprobante.nombre}}</option>
+                                                </select>
+                                            </div>
                                             <div class="form-group col-md-6" v-for="(variable) of variables" :key="variable.key">
                                                 <label :for="variable.for">{{variable.titulo}}</label>
                                                 <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
                                                 v-model="variable.var" :placeholder="variable.placeholder">
                                             </div>
+                                            <!--Si es producto, se añaden estos atributos-->
                                             <div class="d-flex flex-wrap justify-content-between" v-if="tituloModal == 'producto'">
                                                 <div>
                                                     <label for="exampleFormControlFile1"></label>
@@ -44,8 +52,9 @@
                                                     <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                                 </select>
                                             </div>
+                                            <!--Fin atributos productos-->
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary boton"data-dismiss="modal">Cerrar</button>
+                                                <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
                                                 <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
                                                 <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
                                             </div>
@@ -57,10 +66,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
             <spinner v-if="loading"></spinner>
-            <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated" :controlador="controlador"></datatable>
-        </div>         
+            <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated" :controlador="controlador" :factura="factura" :listarSeries="listarSeries" ></datatable>        
     </main>
 </template>
 <script>
@@ -68,7 +75,7 @@
 import datatables from 'datatables'
 
 export default {
-    props: ['variables', 'ruta', 'cabeceras', 'titulo', 'tituloModal'],
+    props: ['variables', 'ruta', 'cabeceras', 'titulo', 'tituloModal', 'factura', 'controlador', 'idTabla', 'listarSeries'],
     mounted(){
         this.listarItem()
     },
@@ -83,11 +90,12 @@ export default {
             imagen: '',
             imagenMiniatura: '',
             arrayAlmacen: [],
+            arrayComprobantes: [],
             almacen_id: '',
             iconos: 'icon-pencil',
             loading: false,
             initiated: false,
-            controlador: 0
+            comprobanteElegido: ''
 
         }
     },
@@ -141,14 +149,20 @@ export default {
             for(var i = 0;  i < this.variables.length; i++){
                 this.variables[i].var = ''
             }
-            this.seleccionarAlmacen()
+            //Si es agregar producto, agregar atributos especiales del producto
+            if(this.tituloModal == 'producto'){
+                this.seleccionarAlmacen()
+            }else if(this.tituloModal == 'comprobante'){
+                this.listarComprobantes()
+            }
+            //
             this.modoEditable = false;
             $('#modalRegistroItem').modal('show')
 
         },
         miTabla(){
             $( function () {
-                $('#myTable').DataTable();
+                $('table.display').DataTable();
             } );
         },
         listarItem(){
@@ -168,6 +182,12 @@ export default {
                     me.arrayAlmacen = response.data;
                 })
             },
+        listarComprobantes(){
+            var urlItem = '/tipo_comprobante';
+            axios.get(urlItem).then(response=>{
+                this.arrayComprobantes = response.data;
+            })
+        },
         agregarItem(){
             /*if(this.variables[0].var.trim() === '' || this.variables[1].var.trim() === '' || this.variables[2].var.trim() === ''){
                 alert('Debes completar todos los campos')
@@ -179,17 +199,21 @@ export default {
             for(var i = 0; i < this.variables.length; i++){
                 formDatos.append(this.variables[i].name,this.variables[i].var);
             }
+            //Si es agregar producto, agregar atributos especiales del producto
             if(this.tituloModal == 'producto'){
                 formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen)
+            }else if(this.tituloModal == 'comprobante'){
+                formDatos.append('id_tipo_comprobante', this.comprobanteElegido)
             }
+            //
             for(var j = 0;  j < this.variables.length; j++){
                 this.variables[j].var = ''
             }
 
             axios.post(`${this.ruta}`, formDatos).then((response)=>{
                 $( function () {
-                    $('#myTable').DataTable().destroy();
+                    $('table.display').DataTable().destroy();
                 } );
                 this.listarItem();
                 
@@ -208,12 +232,14 @@ export default {
             if(this.tituloModal == 'producto'){
                 formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen) 
+            }else if(this.tituloModal == 'comprobante'){
+                formDatos.append('id_tipo_comprobante', this.comprobanteElegido)
             }
             for(var j = 0;  j < this.variables.length; j++){
                 this.variables[j].var = ''
             }
             formDatos.append("_method", "put");
-            var mi = $('#myTable').DataTable()
+            var mi = $('table.display').DataTable()
             axios.post(`${this.ruta}/${item}`, formDatos).then((response) =>{
                 mi.destroy()
                 this.listarItem();
@@ -228,7 +254,7 @@ export default {
                         
                     })
                     $( function () {
-                        $('#myTable').DataTable().destroy();
+                        $('table.display').DataTable().destroy();
                     } );
                     this.listarItem();
             }

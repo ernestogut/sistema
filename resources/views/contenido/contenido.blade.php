@@ -47,6 +47,9 @@
             <template v-if="menu==14">
                 <componente-prueba></componente-prueba>
             </template>
+            <template v-if="menu==15">
+                <comprobante></comprobante>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <venta></venta>
