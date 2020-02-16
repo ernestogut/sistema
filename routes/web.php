@@ -168,6 +168,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/user/actualizar','UserController@update' );
         Route::put('/user/desactivar','UserController@desactivar' );
         Route::put('/user/activar','UserController@activar' );
+        Route::get('/user/logeado', 'UserController@usuarioLogeado'); 
+
 
         /**
          * rutas ingresos
@@ -207,6 +209,7 @@ Route::resource('c_fact', 'CFactController');
 Route::resource('d_fact', 'DFactController');
 Route::resource('tipo_comprobante', 'TipoComprobanteController');
 Route::resource('comprobante', 'ComprobanteController');
+//Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 
 //Route::get('/home', 'HomeController@index')->name('home');

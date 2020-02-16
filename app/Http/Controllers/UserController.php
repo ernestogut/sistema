@@ -64,6 +64,11 @@ class UserController extends Controller
 
 
     }
+    public function usuarioLogeado()
+    {
+        $usuario = auth()->user();
+        return $usuario;
+    }
 
     /**
      * Update the specified resource in storage.

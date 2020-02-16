@@ -1,9 +1,9 @@
 <template>
     <div class="tamaño">
-        <modulo :variables="variables" :ruta="ruta" :cabeceras="cabeceras" :titulo="titulo" :tituloModal="tituloModal" :factura="true" :controlador="3" :listarSeries="listarSeries">
+        <modulo :variables="variables" :ruta="ruta" :cabeceras="cabeceras" :titulo="titulo" :tituloModal="tituloModal" :factura="true" :controlador="3" :listarSeries="listarSeries" :idTabla="'myTable'">
 
         </modulo>
-        <div class="modal fade" tabindex="-1" role="dialog" id="modalSeries" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal fade" tabindex="-1" role="dialog" id="modalSeries" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaSeries">
                 <div class="modal-dialog modal-xl">
                     <div class="card-body">
                         <div class="modal-content" >
@@ -14,7 +14,7 @@
                                 </button>
                             </div>
                             <div class="table-responsive">
-                                <datatable :arrayItems="arraySeries" :cabeceras="cabecerasSerie" :controlador="4"  :factura="true"></datatable>
+                                <datatable :arrayItems="arraySeries" :cabeceras="cabecerasSerie" :controlador="4"  :factura="true" :idTabla="'myTableSeries'"></datatable>
                             </div>
                         </div>
                     </div>
@@ -25,6 +25,9 @@
 <script>
 
 export default {
+    mounted(){
+        $(this.$refs.tablaSeries).on("hidden.bs.modal", this.limpiarTablaSeries) 
+    },
     data(){
         return{
             titulo: 'Comprobantes',
@@ -65,12 +68,23 @@ export default {
         }
     },
     methods:{
+        limpiarTablaSeries(){
+            $('#myTableSeries').DataTable().destroy();
+        },
         listarSeries(id){
             axios.get(`/comprobante/${id}`).then((response)=>{
                 this.arraySeries = response.data
+                this.miTabla();
             })
             $('#modalSeries').modal('show')
-        }
+        },
+        miTabla(){
+            $( function () {
+                $('#myTableSeries').DataTable({
+                    searching: true
+                });
+            } );
+        },
     }
 }
 </script>

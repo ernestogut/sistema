@@ -1,6 +1,6 @@
 <template>
     <div class="card-body">
-            <table class="table table-striped table-bordered dt-responsive nowrap display"  style="width:100%">
+            <table class="table table-striped table-bordered dt-responsive nowrap"  :id="idTabla" style="width:100%">
                 <thead>
                     <tr>
                         <th scope="col" class="text-center align-middle" v-for="cabecera of cabeceras" :key="cabecera.id">{{cabecera}}</th>
@@ -35,7 +35,8 @@
 <script>
 export default {
     props:{
-        modalEditar: Function,
+        funcionBoton: Function,
+        //modalEditar: Function,
         eliminarItem: Function,
         buscarClientes: Function,
         listarSeries: Function,
@@ -43,6 +44,7 @@ export default {
         cabeceras: Array,
         listaVentasPadre: Array,
         icono: String,
+        idTabla: String,
         controlador: Number,
         factura: Boolean
     },
@@ -98,14 +100,16 @@ export default {
         funcionConjunto(item){
             // controlador = 0 -> editar, 1 -> agregar productos, 2 -> buscar productos, 3 -> listar series
             if(this.controlador == 0){
-                this.modalEditar(item)
+                this.funcionBoton(item)
             }else if(this.controlador == 1){
                 this.agregarProducto(item)
             }else if(this.controlador == 2){
-                this.buscarClientes(item.codigo)
+                this.funcionBoton(item.codigo)
                 $('#modalClientes').modal('hide');
             }else if(this.controlador == 3){
-                this.listarSeries(item.id)
+                this.funcionBoton(item.id)
+            }else if(this.controlador == 4){
+                this.funcionBoton(item)
             }
         }
     },

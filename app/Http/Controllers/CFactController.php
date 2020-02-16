@@ -64,10 +64,12 @@ class CFactController extends Controller
      * @param  \App\C_fact  $c_fact
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, $tipo_comprobante)
     {
         if(!$request->ajax()) return redirect('/');
-        $cabecera = C_fact::find($id);
+        /*$cabecera = C_fact::find($id);
+        return $cabecera;*/
+        $cabecera = C_fact::select('id as num_doc', 'razon', 'serie', 'folio', 'fecha', 'total')->where('id_tipo_comprobante', '=', $tipo_comprobante)->orderBy('id', 'desc')->get();
         return $cabecera;
     }
 

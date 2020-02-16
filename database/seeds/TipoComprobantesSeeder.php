@@ -16,5 +16,9 @@ class TipoComprobantesSeeder extends Seeder
             'nombre' => 'Factura',
             'descripcion' => 'Facturación con sunat',
         ]);
+        DB::table('tipo_comprobantes')->insert([
+            'nombre' => 'Boleta',
+            'descripcion' => 'Boleta electrónica',
+        ]);
     }
 }

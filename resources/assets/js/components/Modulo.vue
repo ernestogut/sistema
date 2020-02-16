@@ -66,8 +66,9 @@
                         </div>
                     </div>
                 </div>
+            {{tabla}}
             <spinner v-if="loading"></spinner>
-            <datatable :modalEditar="modalEditar" :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated" :controlador="controlador" :factura="factura" :listarSeries="listarSeries" ></datatable>        
+            <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated" :controlador="controlador" :factura="factura" :idTabla="idTabla" :funcionBoton="(controlador!=3)?modalEditar:listarSeries"></datatable>        
     </main>
 </template>
 <script>
@@ -75,7 +76,7 @@
 import datatables from 'datatables'
 
 export default {
-    props: ['variables', 'ruta', 'cabeceras', 'titulo', 'tituloModal', 'factura', 'controlador', 'idTabla', 'listarSeries'],
+    props: ['variables', 'ruta', 'cabeceras', 'titulo', 'tituloModal', 'factura', 'controlador', 'idTabla', 'listarSeries', 'tabla'],
     mounted(){
         this.listarItem()
     },
@@ -162,7 +163,9 @@ export default {
         },
         miTabla(){
             $( function () {
-                $('table.display').DataTable();
+                $('#myTable').DataTable({
+                    searching: true
+                });
             } );
         },
         listarItem(){
@@ -213,7 +216,7 @@ export default {
 
             axios.post(`${this.ruta}`, formDatos).then((response)=>{
                 $( function () {
-                    $('table.display').DataTable().destroy();
+                    $('#myTable').DataTable().destroy();
                 } );
                 this.listarItem();
                 
@@ -239,7 +242,7 @@ export default {
                 this.variables[j].var = ''
             }
             formDatos.append("_method", "put");
-            var mi = $('table.display').DataTable()
+            var mi = $('#myTable').DataTable()
             axios.post(`${this.ruta}/${item}`, formDatos).then((response) =>{
                 mi.destroy()
                 this.listarItem();
@@ -254,7 +257,7 @@ export default {
                         
                     })
                     $( function () {
-                        $('table.display').DataTable().destroy();
+                        $('#myTable').DataTable().destroy();
                     } );
                     this.listarItem();
             }

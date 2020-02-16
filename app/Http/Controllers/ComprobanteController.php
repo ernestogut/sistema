@@ -62,6 +62,11 @@ class ComprobanteController extends Controller
         $comprobante = Comprobante::select('serie', 'numero', 'año')->where('id_tipo_comprobante', '=', $id)->get();
         return $comprobante;
     }
+    /*public function obtenerSeries($id)
+    {
+        $series = Comprobante::select('serie')->where('id_tipo_comprobante', '=', $id)->get();
+        return $series;
+    }*/
 
     /**
      * Show the form for editing the specified resource.
