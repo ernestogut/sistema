@@ -50,6 +50,9 @@
             <template v-if="menu==15">
                 <comprobante></comprobante>
             </template>
+            <template v-if="menu==16">
+                <tipo-comprobante></tipo-comprobante>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <venta></venta>

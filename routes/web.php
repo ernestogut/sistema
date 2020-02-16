@@ -209,6 +209,13 @@ Route::resource('c_fact', 'CFactController');
 Route::resource('d_fact', 'DFactController');
 Route::resource('tipo_comprobante', 'TipoComprobanteController');
 Route::resource('comprobante', 'ComprobanteController');
+Route::resource('serie_comprobante', 'SerieComprobanteController');
+
+
+
+Route::get('/insertar', function(){
+    DB::select('call insertfact(?,?)', ['chispita_dos',1]);
+});
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 

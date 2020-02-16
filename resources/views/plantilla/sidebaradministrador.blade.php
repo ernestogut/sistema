@@ -46,6 +46,9 @@
                         <li  @click="menu=15" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-wallet"></i> Comprobantes</a>
                         </li>
+                        <li  @click="menu=16" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-wallet"></i> Tipo Comprobantes</a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item nav-dropdown">

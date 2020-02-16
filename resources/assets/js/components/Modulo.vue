@@ -68,7 +68,7 @@
                 </div>
             {{tabla}}
             <spinner v-if="loading"></spinner>
-            <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated" :controlador="controlador" :factura="factura" :idTabla="idTabla" :funcionBoton="(controlador!=3)?modalEditar:listarSeries"></datatable>        
+            <datatable :eliminarItem="eliminarItem" :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" v-else-if="initiated" :controlador="controlador" :factura="factura" :idTabla="idTabla" :funcionBoton="(controlador!=3 || controlador!=6)?modalEditar:listarSeries" :listarSeries="listarSeries" @emitirEvId="recibirId"></datatable>        
     </main>
 </template>
 <script>
@@ -76,9 +76,24 @@
 import datatables from 'datatables'
 
 export default {
-    props: ['variables', 'ruta', 'cabeceras', 'titulo', 'tituloModal', 'factura', 'controlador', 'idTabla', 'listarSeries', 'tabla'],
+    //props: ['variables', 'ruta', 'cabeceras', 'titulo', 'tituloModal', 'factura', 'controlador', 'idTabla', 'listarSeries', 'tabla'],
+    props:{
+        variables: Array,
+        ruta: String,
+        cabeceras: Array,
+        titulo: String,
+        tituloModal: String,
+        factura: Boolean,
+        controlador: Number,
+        idTabla: String,
+        listarSeries: Function,
+        //arrayItems: Array,
+        tabla: Array
+    },
     mounted(){
-        this.listarItem()
+        if(this.tituloModal != 'tipo de combrobante'){
+            this.listarItem()
+        }
     },
     data(){
         return{
@@ -96,8 +111,7 @@ export default {
             iconos: 'icon-pencil',
             loading: false,
             initiated: false,
-            comprobanteElegido: ''
-
+            comprobanteElegido: '',
         }
     },
     computed:{
@@ -118,6 +132,11 @@ export default {
                 this.imagenMiniatura = e.target.result;
             }
             reader.readAsDataURL(archivo)
+        },
+        recibirId(id){
+            console.log('id')
+            this.id_comprobante = id
+            this.$emit('emitirEvId', this.id_comprobante)
         },
         modalEditar(item){
             this.seleccionarAlmacen()
@@ -208,6 +227,8 @@ export default {
                 formDatos.append('imagen', this.imagen)
             }else if(this.tituloModal == 'comprobante'){
                 formDatos.append('id_tipo_comprobante', this.comprobanteElegido)
+            }else if(this.tituloModal == 'tipo de combrobante'){
+                formDatos.append('id_tipo_comprobante', this.id_comprobante)
             }
             //
             for(var j = 0;  j < this.variables.length; j++){

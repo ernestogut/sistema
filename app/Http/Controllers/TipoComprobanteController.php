@@ -37,7 +37,10 @@ class TipoComprobanteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $tipo_comprobante = new TipoComprobante();
+        $tipo_comprobante->nombre = $request->nombre;
+        $tipo_comprobante->descripcion = $request->descripcion;
+        $tipo_comprobante->save();
     }
 
     /**
@@ -69,9 +72,12 @@ class TipoComprobanteController extends Controller
      * @param  \App\TipoComprobante  $tipoComprobante
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TipoComprobante $tipoComprobante)
+    public function update(Request $request, $id)
     {
-        //
+        $tipo_comprobante = TipoComprobante::find($id);
+        $tipo_comprobante->nombre = $request->nombre;
+        $tipo_comprobante->descripcion = $request->descripcion;
+        $tipo_comprobante->save();
     }
 
     /**
