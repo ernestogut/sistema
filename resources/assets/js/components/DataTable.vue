@@ -26,7 +26,8 @@
                             </div>
                             <div v-else>
                                 <span class="btn btn-primary btn-sm boton" @click="funcionConjunto(item)"><i class="icon-eye" ></i></span>
-                                <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
+                                <span class="btn btn-danger btn-sm boton" v-if="controlador!=6"><i class="icon-trash"  ></i></span>
+                                <span class="btn btn-danger btn-sm boton" v-if="controlador==6" @click="funcionConjuntoTrash(item)"><i :class="(item.estado==0)?'icon-heart':'icon-trash'"  ></i></span>
                             </div>
                         </td>
                     </tr>
@@ -38,6 +39,7 @@
 export default {
     props:{
         funcionBoton: Function,
+        funcionBotonTrash: Function,
         //modalEditar: Function,
         eliminarItem: Function,
         buscarClientes: Function,
@@ -52,7 +54,8 @@ export default {
     },
     data(){
         return{
-            arrayVentas: []
+            arrayVentas: [],
+            iconoHabilitarDeshabilitar: 0
         }
     },
     methods:{
@@ -117,10 +120,15 @@ export default {
                 this.emitirID_tipoComprobante(item.id)
                 this.listarSeries(item.id)
                 $('#modalSeries').modal('show')
+            }else if(this.factura){
+                this.funcionBoton()
             }
             /*else if(this.controlador == 4){
                 this.funcionBoton(item)
             }*/
+        },
+        funcionConjuntoTrash(item){
+            this.funcionBotonTrash(item)
         }
     },
     watch:{

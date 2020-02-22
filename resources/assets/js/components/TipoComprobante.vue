@@ -21,7 +21,7 @@
                                         Nuevo
                                     </button>
                                 </div>
-                                <datatable :arrayItems="arraySeries" :cabeceras="cabecerasSerie" :controlador="6"  :factura="true" :idTabla="'myTableSeries'"></datatable>
+                                <datatable :arrayItems="arraySeries" :cabeceras="cabecerasSerie" :controlador="6"  :factura="true" :idTabla="'myTableSeries'" :funcionBotonTrash="condicionSerie"></datatable>
                             </div>
                         </div>
                     </div>
@@ -39,25 +39,40 @@
                             </div>
                             <div class="modal-body">
                                 <form action="" @submit.prevent="agregarSerie()" enctype="multipart/form-data">
-                                    <div class="form-group">
-                                        <label for="serie">Serie</label>
-                                        <input type="text" class="form-control" id="serie" placeholder="Example input" v-model="objetoSerie.serie">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="serie">Serie</label>
+                                            <input type="text" class="form-control" id="serie" placeholder="Example input" v-model="objetoSerie.serie">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="numero_inicial">Numero inicial</label>
+                                            <input type="text" class="form-control" id="numero_inicial" placeholder="Another input" v-model="objetoSerie.numeroInicial">
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="numero_inicial">Numero inicial</label>
-                                        <input type="text" class="form-control" id="numero_inicial" placeholder="Another input" v-model="objetoSerie.numeroInicial">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="numero_actual">Numero actual</label>
+                                            <input type="text" class="form-control" id="numero_actual" placeholder="Another input" v-model="objetoSerie.numeroActual">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="numero_final">Numero final</label>
+                                            <input type="text" class="form-control" id="numero_final" placeholder="Another input" v-model="objetoSerie.numeroFinal">
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="numero_final">Numero final</label>
-                                        <input type="text" class="form-control" id="numero_final" placeholder="Another input" v-model="objetoSerie.numeroFinal">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="año">Año</label>
-                                        <input type="text" class="form-control" id="año" placeholder="Another input" v-model="objetoSerie.año">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="estado">Estado</label>
-                                        <input type="text" class="form-control" id="estado" placeholder="Another input" v-model="objetoSerie.estado">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="año">Año</label>
+                                            <input type="text" class="form-control" id="año" placeholder="Another input" v-model="objetoSerie.año">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="estado">Estado</label>
+                                            <select v-model="objetoSerie.estado" class="form-control">
+                                                <!--<option disabled value="">Escoje un almacén</option>-->
+                                                <option value="1">Habilitado</option>
+                                                <option value="0">Desabilitado</option>
+                                            </select>
+                                            <!--<input type="text" class="form-control" id="estado" placeholder="Another input" v-model="objetoSerie.estado">-->
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" @click="cerrarModalAserie()">
@@ -112,7 +127,7 @@ export default {
             tituloSerie: 'Tipo de combrobantes',
             tituloModalSerie: 'tipo de comprobante',
             rutaSerie: '/serie_comprobante',
-            cabecerasSerie: ['#', 'Serie',  'Numero inicial', 'Numero final', 'Año', 'Estado', 'Acciones'],
+            cabecerasSerie: ['#', 'Serie',  'Numero inicial', 'Numero actual', 'Numero final', 'Año', 'Estado', 'Acciones'],
             arraySeries: [],
             objetoSerie: 
             
@@ -120,12 +135,14 @@ export default {
                 id_comprobante: null,
                 serie: '',
                 numeroInicial: 1,
+                numeroActual: 0,
                 numeroFinal: null,
                 año: '',
                 estado: 1
             },
-            
+            //controladorTrash: 1 // 1 -> Deshabilitar, 2 -> Habilitar
         }
+
     },
     methods:{
         recibirId(id){
@@ -158,6 +175,7 @@ export default {
             formDatos.append('id_tipo_comprobante', this.objetoSerie.id_comprobante)
             formDatos.append('serie', this.objetoSerie.serie)
             formDatos.append('numero_inicial', this.objetoSerie.numeroInicial)
+            formDatos.append('numero_actual', this.objetoSerie.numeroActual)
             formDatos.append('numero_final', this.objetoSerie.numeroFinal)
             formDatos.append('anio', this.objetoSerie.año)
             formDatos.append('estado', this.objetoSerie.estado)
@@ -168,7 +186,34 @@ export default {
                 } );
                 this.listarSeries(this.objetoSerie.id_comprobante);
             })
-        }
+        },
+        condicionSerie(item){
+            let formDatos = new FormData();
+            if(item.estado == 0){
+                formDatos.append('estado', 1)
+                formDatos.append("_method", "put");
+                axios.post(`serie_comprobante/${item.id}`, formDatos).then((response)=>{
+                    alert('Serie habilitada')
+                    $( function () {
+                        $('#myTableSeries').DataTable().destroy();
+                    } );
+                    this.listarSeries(this.objetoSerie.id_comprobante);
+                    })
+            }else if(item.estado == 1){
+                formDatos.append('estado', 0)
+                formDatos.append("_method", "put");
+                axios.post(`serie_comprobante/${item.id}`, formDatos).then((response)=>{
+                    alert('Serie deshabilitada')
+                    $( function () {
+                        $('#myTableSeries').DataTable().destroy();
+                    } );
+                    this.listarSeries(this.objetoSerie.id_comprobante);
+                    
+                })
+            }
+            
+            
+        },
     }
 }
 </script>

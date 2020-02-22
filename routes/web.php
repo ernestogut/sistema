@@ -204,12 +204,17 @@ Route::group(['middleware' => ['auth']], function () {
 Route::resource('almacen', 'AlmacenController');
 Route::resource('producto', 'ProductoController');
 Route::resource('proveedor', 'ProveedorController');
+Route::get('cliente/listarClientesModal', 'ClienteController@listarClientesModal')->name('cliente.listar');;
 Route::resource('cliente', 'ClienteController');
 Route::resource('c_fact', 'CFactController');
 Route::resource('d_fact', 'DFactController');
 Route::resource('tipo_comprobante', 'TipoComprobanteController');
 Route::resource('comprobante', 'ComprobanteController');
 Route::resource('serie_comprobante', 'SerieComprobanteController');
+Route::resource('tipo_documento', 'TipoDocumentoController');
+Route::get('serie_comprobante/{id}/listarSeries', 'SerieComprobanteController@listarSeries')->name('serie_comprobante.listar');;
+
+
 
 
 

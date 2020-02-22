@@ -13,10 +13,11 @@ class ClientesTableSeeder extends Seeder
     public function run()
     {
         DB::table('clientes')->insert([
+            'id_tipo_doc' => '1',
             'codigo' => 'C123456789101',
             'razon' => 'razon cliente',
             'direccion' => 'direccion cliente',
-            'ruc' => '123456789101'
+            'num_documento' => '123456789101'
         ]);
     }
 }

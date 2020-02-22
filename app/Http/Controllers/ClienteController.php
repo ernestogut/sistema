@@ -18,11 +18,23 @@ class ClienteController extends Controller
         if(!$request->ajax()){
             return redirect('/');
         }else{
-            $cliente = Cliente::All();
+            /*$cliente = Cliente::All();
+            return $cliente;*/
+            $cliente = Cliente::select('clientes.id', 'clientes.codigo','clientes.razon','clientes.direccion','tipo_documentos.tipo_doc as tipo_documento','clientes.num_documento')->join('tipo_documentos','clientes.id_tipo_doc', '=', 'tipo_documentos.id')->get();
+            /*$cliente = Cliente::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
             return $cliente;
         }
     }
-
+    public function listarClientesModal()
+    {
+      
+            /*$cliente = Cliente::All();
+            return $cliente;*/
+            $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->get();
+            /*$cliente = Cliente::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
+            return $cliente;
+    
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -46,10 +58,11 @@ class ClienteController extends Controller
             return redirect('/');
         }else{
             $cliente = new Cliente();
+            $cliente->id_tipo_doc = $request->id_tipo_doc;
             $cliente->codigo = $request->codigo;
             $cliente->razon = $request->razon;
             $cliente->direccion = $request->direccion;
-            $cliente->ruc = $request->ruc;
+            $cliente->num_documento = $request->num_documento;
             $cliente->save();
             return $cliente;
         }
@@ -63,7 +76,10 @@ class ClienteController extends Controller
      */
     public function show(String $codigo)
     {
-        $cliente = Cliente::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();
+
+        /*$cliente = Cliente::select('clientes.codigo','clientes.razon','clientes.direccion','tipo_documentos.tipo_doc as tipo_documento','clientes.num_documento')->join('tipo_documentos','clientes.id_tipo_doc', '=', 'tipo_documentos.id')->get();*/
+        
+        $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->where('codigo', '=', $codigo)->get();
         return $cliente;
     }
 
@@ -91,10 +107,11 @@ class ClienteController extends Controller
             return redirect('/');
         }else{
             $cliente = Cliente::find($id);
+            $cliente->id_tipo_doc = $request->id_tipo_doc;
             $cliente->codigo = $request->codigo;
             $cliente->razon = $request->razon;
             $cliente->direccion = $request->direccion;
-            $cliente->ruc = $request->ruc;
+            $cliente->num_documento = $request->num_documento;
             $cliente->save();
             return $cliente;
         }

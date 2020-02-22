@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\SerieComprobante;
 use Illuminate\Http\Request;
 
+
 class SerieComprobanteController extends Controller
 {
     /**
@@ -15,7 +16,7 @@ class SerieComprobanteController extends Controller
     public function index()
     {
 
-        $serie_comprobante = SerieComprobante::select('serie', 'numero_inicial', 'numero_final', 'anio', 'estado')->get();
+        $serie_comprobante = SerieComprobante::select('serie', 'numero_inicial', 'numero_actual', 'numero_final', 'anio', 'estado')->get();
         return $serie_comprobante;
     }
 
@@ -41,6 +42,7 @@ class SerieComprobanteController extends Controller
         $serie_comprobante->id_tipo_comprobante = $request->id_tipo_comprobante;
         $serie_comprobante->serie = $request->serie;
         $serie_comprobante->numero_inicial = $request->numero_inicial;
+        $serie_comprobante->numero_actual = $request->numero_actual;
         $serie_comprobante->numero_final = $request->numero_final;
         $serie_comprobante->anio = $request->anio;
         $serie_comprobante->estado = $request->estado;
@@ -55,7 +57,12 @@ class SerieComprobanteController extends Controller
      */
     public function show($id)
     {
-        $serie_comprobante = SerieComprobante::select('serie', 'numero_inicial', 'numero_final', 'anio', 'estado')->where('id_tipo_comprobante', '=', $id)->get();
+        $serie_comprobante = SerieComprobante::select('id', 'serie', 'numero_inicial', 'numero_actual', 'numero_final', 'anio', 'estado')->where('id_tipo_comprobante', '=', $id)->get();
+        return $serie_comprobante;
+    }
+    public function listarSeries($id)
+    {
+        $serie_comprobante = SerieComprobante::select('id', 'serie', 'numero_inicial', 'numero_actual', 'numero_final', 'anio', 'estado')->where('id_tipo_comprobante', '=', $id)->where('estado', '=', 1)->get();
         return $serie_comprobante;
     }
 
@@ -80,11 +87,12 @@ class SerieComprobanteController extends Controller
     public function update(Request $request, $id)
     {
         $serie_comprobante = SerieComprobante::find($id);
-        $serie_comprobante->id_tipo_comprobante = $request->id_tipo_comprobante;
+        /*$serie_comprobante->id_tipo_comprobante = $request->id_tipo_comprobante;
         $serie_comprobante->serie = $request->serie;
         $serie_comprobante->numero_inicial = $request->numero_inicial;
+        $serie_comprobante->numero_actual = $request->numero_actual;
         $serie_comprobante->numero_final = $request->numero_final;
-        $serie_comprobante->anio = $request->anio;
+        $serie_comprobante->anio = $request->anio;*/
         $serie_comprobante->estado = $request->estado;
         $serie_comprobante->save();
     }

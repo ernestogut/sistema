@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\C_fact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CFactController extends Controller
 {
@@ -39,7 +40,11 @@ class CFactController extends Controller
     {
         if(!$request->ajax()) return redirect('/');
         $cabecera = new C_fact();
-        $cabecera->id_tipo_comprobante = $request->id_tipo_comprobante;
+        DB::select("call insertarCabeceraFact(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[$request->id_serie, $request->id_tipo_comprobante, $request->cod_cliente,$request->ruc_cliente,$request->dir_cliente,$request->razon,$request->id_user,$request->fecha,$request->tipo_venta,$request->serie,$request->sub_total,$request->desc_global,$request->igv_total,$request->total]);
+
+
+
+        /*$cabecera->id_tipo_comprobante = $request->id_tipo_comprobante;
         $cabecera->cod_cliente = $request->cod_cliente;
         $cabecera->ruc_cliente = $request->ruc_cliente;
         $cabecera->dir_cliente = $request->dir_cliente;
@@ -55,7 +60,7 @@ class CFactController extends Controller
         $cabecera->total = $request->total;
         $cabecera->save(); 
         $ultimo_id = $cabecera->id;
-        return $ultimo_id;
+        return $ultimo_id;*/
     }
 
     /**

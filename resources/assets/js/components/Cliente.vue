@@ -9,7 +9,7 @@ export default {
             titulo: 'Cliente',
             tituloModal: 'cliente',
             ruta: '/cliente',
-            cabeceras: ['#', 'Codigo', 'Razón social', 'Dirección', 'RUC', 'Acciones'],
+            cabeceras: ['#', 'Codigo', 'Razón social', 'Dirección', 'Tipo de documento', 'Numero de documento', 'Acciones'],
             variables: [
                 {
                     for: 'codigo',
@@ -39,13 +39,13 @@ export default {
                     titulo: 'Dirección'
                 },
                 {
-                    for: 'ruc',
-                    type: 'ruc',
-                    name: 'ruc',
-                    id: 'ruc',
-                    placeholder: 'Ingrese el RUC',
+                    for: 'num_documento',
+                    type: 'num_documento',
+                    name: 'num_documento',
+                    id: 'num_documento',
+                    placeholder: 'Ingrese el numero de documento',
                     var: '',
-                    titulo: 'RUC'
+                    titulo: 'Numero de documento'
                 }
             ],
         }

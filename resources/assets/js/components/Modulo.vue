@@ -30,6 +30,13 @@
                                                     <option v-for="comprobante in arrayComprobantes" :key="comprobante.id" :value="comprobante.id">{{comprobante.nombre}}</option>
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-3" v-if="tituloModal == 'cliente'">
+                                                <label >Tipo de documento</label>
+                                                <select class="form-control" v-model="tipoDocumentoElegido">
+                                                    <option disabled value="">Tipo de documento</option>
+                                                    <option v-for="documento in arrayDocumentos" :key="documento.id" :value="documento.id">{{documento.tipo_doc}}</option>
+                                                </select>
+                                            </div>
                                             <div class="form-group col-md-6" v-for="(variable) of variables" :key="variable.key">
                                                 <label :for="variable.for">{{variable.titulo}}</label>
                                                 <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
@@ -52,6 +59,7 @@
                                                     <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                                 </select>
                                             </div>
+                                            
                                             <!--Fin atributos productos-->
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
@@ -107,11 +115,13 @@ export default {
             imagenMiniatura: '',
             arrayAlmacen: [],
             arrayComprobantes: [],
+            arrayDocumentos: [],
             almacen_id: '',
             iconos: 'icon-pencil',
             loading: false,
             initiated: false,
             comprobanteElegido: '',
+            tipoDocumentoElegido: null
         }
     },
     computed:{
@@ -134,7 +144,6 @@ export default {
             reader.readAsDataURL(archivo)
         },
         recibirId(id){
-            console.log('id')
             this.id_comprobante = id
             this.$emit('emitirEvId', this.id_comprobante)
         },
@@ -172,8 +181,8 @@ export default {
             //Si es agregar producto, agregar atributos especiales del producto
             if(this.tituloModal == 'producto'){
                 this.seleccionarAlmacen()
-            }else if(this.tituloModal == 'comprobante'){
-                this.listarComprobantes()
+            }else if(this.tituloModal == 'cliente'){
+                this.listarDocumentos()
             }
             //
             this.modoEditable = false;
@@ -210,6 +219,12 @@ export default {
                 this.arrayComprobantes = response.data;
             })
         },
+        listarDocumentos(){
+            var urlItem = '/tipo_documento';
+            axios.get(urlItem).then(response=>{
+                this.arrayDocumentos = response.data;
+            })
+        },
         agregarItem(){
             /*if(this.variables[0].var.trim() === '' || this.variables[1].var.trim() === '' || this.variables[2].var.trim() === ''){
                 alert('Debes completar todos los campos')
@@ -225,8 +240,8 @@ export default {
             if(this.tituloModal == 'producto'){
                 formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen)
-            }else if(this.tituloModal == 'comprobante'){
-                formDatos.append('id_tipo_comprobante', this.comprobanteElegido)
+            }else if(this.tituloModal == 'cliente'){
+                formDatos.append('id_tipo_doc', this.tipoDocumentoElegido)
             }else if(this.tituloModal == 'tipo de combrobante'){
                 formDatos.append('id_tipo_comprobante', this.id_comprobante)
             }
