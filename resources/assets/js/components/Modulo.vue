@@ -30,10 +30,10 @@
                                                     <option v-for="comprobante in arrayComprobantes" :key="comprobante.id" :value="comprobante.id">{{comprobante.nombre}}</option>
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-3" v-if="tituloModal == 'cliente'">
+                                            <div class="form-group col-md-6" v-if="tituloModal == 'cliente' || tituloModal == 'tipo de comprobante'">
                                                 <label >Tipo de documento</label>
                                                 <select class="form-control" v-model="tipoDocumentoElegido">
-                                                    <option disabled value="">Tipo de documento</option>
+                                                    <option value=""></option>
                                                     <option v-for="documento in arrayDocumentos" :key="documento.id" :value="documento.id">{{documento.tipo_doc}}</option>
                                                 </select>
                                             </div>
@@ -44,21 +44,21 @@
                                             </div>
                                             <!--Si es producto, se añaden estos atributos-->
                                             <div class="d-flex flex-wrap justify-content-between" v-if="tituloModal == 'producto'">
-                                                <div>
-                                                    <label for="exampleFormControlFile1"></label>
-                                                    <input type="file" class="form-control-file" @change="obtenerImagenProducto" id="exampleFormControlFile1">
+                                                <div class="upload-btn-wrapper">
+                                                    <button class="botonArchivo">Subir un archivo</button>
+                                                    <input type="file" @change="obtenerImagenProducto">
                                                 </div>
                                                 <div class="imagenContenedor">
                                                     <img :src="imagenProducto" id="imagen" alt="">
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-3" v-if="tituloModal == 'producto'">
+                                            <!--<div class="form-group col-md-3" v-if="tituloModal == 'producto'">
                                                 <label >Almacén</label>
                                                 <select class="form-control" v-model="almacen_id">
                                                     <option disabled value="">Escoje un almacén</option>
                                                     <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                                 </select>
-                                            </div>
+                                            </div>-->
                                             
                                             <!--Fin atributos productos-->
                                             <div class="modal-footer">
@@ -121,7 +121,7 @@ export default {
             loading: false,
             initiated: false,
             comprobanteElegido: '',
-            tipoDocumentoElegido: null
+            tipoDocumentoElegido: 1
         }
     },
     computed:{
@@ -148,7 +148,11 @@ export default {
             this.$emit('emitirEvId', this.id_comprobante)
         },
         modalEditar(item){
-            this.seleccionarAlmacen()
+            /*if(this.tituloModal == 'producto'){
+                this.seleccionarAlmacen()
+            }else */if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
+                this.listarDocumentos()
+            }
             axios.get(`${this.ruta}/${item.id}`).then((response)=>{
                 var arrayValoresRecientes = Object.values(response.data)
                 var arrayValores = [];
@@ -178,10 +182,12 @@ export default {
             for(var i = 0;  i < this.variables.length; i++){
                 this.variables[i].var = ''
             }
+            
             //Si es agregar producto, agregar atributos especiales del producto
             if(this.tituloModal == 'producto'){
-                this.seleccionarAlmacen()
-            }else if(this.tituloModal == 'cliente'){
+                this.imagenMiniatura = ''
+                //this.seleccionarAlmacen()
+            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
                 this.listarDocumentos()
             }
             //
@@ -238,9 +244,9 @@ export default {
             }
             //Si es agregar producto, agregar atributos especiales del producto
             if(this.tituloModal == 'producto'){
-                formDatos.append('almacen_id', this.almacen_id)
+                //formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen)
-            }else if(this.tituloModal == 'cliente'){
+            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
                 formDatos.append('id_tipo_doc', this.tipoDocumentoElegido)
             }else if(this.tituloModal == 'tipo de combrobante'){
                 formDatos.append('id_tipo_comprobante', this.id_comprobante)
@@ -249,7 +255,6 @@ export default {
             for(var j = 0;  j < this.variables.length; j++){
                 this.variables[j].var = ''
             }
-
             axios.post(`${this.ruta}`, formDatos).then((response)=>{
                 $( function () {
                     $('#myTable').DataTable().destroy();
@@ -269,9 +274,11 @@ export default {
                 formDatos.append(this.variables[i].name,this.variables[i].var);
             }
             if(this.tituloModal == 'producto'){
-                formDatos.append('almacen_id', this.almacen_id)
+                //formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen) 
-            }else if(this.tituloModal == 'comprobante'){
+            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
+                formDatos.append('id_tipo_doc', this.tipoDocumentoElegido)
+            }else if(this.tituloModal == 'tipo de comprobante'){
                 formDatos.append('id_tipo_comprobante', this.comprobanteElegido)
             }
             for(var j = 0;  j < this.variables.length; j++){
@@ -312,5 +319,28 @@ export default {
 }
 #imagen{
     max-width: 100%;
+}
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.botonArchivo {
+  border: 2px solid gray;
+  color: gray;
+  background-color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
 }
 </style>

@@ -42,27 +42,27 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="serie">Serie</label>
-                                            <input type="text" class="form-control" id="serie" placeholder="Example input" v-model="objetoSerie.serie">
+                                            <input type="text" class="form-control" id="serie" placeholder="Ingresa la serie" v-model="objetoSerie.serie">
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="numero_inicial">Numero inicial</label>
-                                            <input type="text" class="form-control" id="numero_inicial" placeholder="Another input" v-model="objetoSerie.numeroInicial">
+                                            <input type="text" class="form-control" id="numero_inicial" placeholder="Establece un número inicial" v-model="objetoSerie.numeroInicial">
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="numero_actual">Numero actual</label>
-                                            <input type="text" class="form-control" id="numero_actual" placeholder="Another input" v-model="objetoSerie.numeroActual">
+                                            <input type="text" class="form-control" id="numero_actual" placeholder="" v-model="objetoSerie.numeroActual" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="numero_final">Numero final</label>
-                                            <input type="text" class="form-control" id="numero_final" placeholder="Another input" v-model="objetoSerie.numeroFinal">
+                                            <input type="text" class="form-control" id="numero_final" placeholder="Establece un número final" v-model="objetoSerie.numeroFinal">
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="año">Año</label>
-                                            <input type="text" class="form-control" id="año" placeholder="Another input" v-model="objetoSerie.año">
+                                            <input type="text" class="form-control" id="año" placeholder="Ingresa el año" v-model="objetoSerie.año">
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="estado">Estado</label>
@@ -102,7 +102,7 @@ export default {
             titulo: 'Tipo de combrobantes',
             tituloModal: 'tipo de comprobante',
             ruta: '/tipo_comprobante',
-            cabeceras: ['#', 'Nombre', 'Descripcion', 'Acciones'],
+            cabeceras: ['#', 'Nombre', 'Documento', 'Descripcion', 'Acciones'],
             variables: [
                 {
                     for: 'nombre',
@@ -135,7 +135,7 @@ export default {
                 id_comprobante: null,
                 serie: '',
                 numeroInicial: 1,
-                numeroActual: 0,
+                numeroActual: null,
                 numeroFinal: null,
                 año: '',
                 estado: 1
@@ -213,6 +213,14 @@ export default {
             }
             
             
+        },
+    },
+    watch:{
+        objetoSerie:{
+            handler: function(){
+                    this.objetoSerie.numeroActual = this.objetoSerie.numeroInicial-1
+                },
+            deep: true
         },
     }
 }

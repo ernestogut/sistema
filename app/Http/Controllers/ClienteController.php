@@ -25,15 +25,20 @@ class ClienteController extends Controller
             return $cliente;
         }
     }
-    public function listarClientesModal()
+    public function listarClientesModal($documento)
     {
       
             /*$cliente = Cliente::All();
             return $cliente;*/
-            $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->get();
+            $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->where('id_tipo_doc', '=', $documento)->get();
             /*$cliente = Cliente::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
             return $cliente;
     
+    }
+    public function buscarCliente($codigo)
+    {
+        $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->where('codigo', '=', $codigo)->get();
+        return $cliente;
     }
     /**
      * Show the form for creating a new resource.
@@ -74,12 +79,12 @@ class ClienteController extends Controller
      * @param  \App\Cliente  $cliente
      * @return \Illuminate\Http\Response
      */
-    public function show(String $codigo)
+    public function show($id)
     {
 
         /*$cliente = Cliente::select('clientes.codigo','clientes.razon','clientes.direccion','tipo_documentos.tipo_doc as tipo_documento','clientes.num_documento')->join('tipo_documentos','clientes.id_tipo_doc', '=', 'tipo_documentos.id')->get();*/
         
-        $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->where('codigo', '=', $codigo)->get();
+        $cliente = Cliente::find($id);
         return $cliente;
     }
 
@@ -126,6 +131,6 @@ class ClienteController extends Controller
     public function destroy($id)
     {
         $cliente = Cliente::find($id);
-        $cliente.delete();
+        $cliente->delete();
     }
 }

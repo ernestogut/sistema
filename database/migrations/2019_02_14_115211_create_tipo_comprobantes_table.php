@@ -15,6 +15,8 @@ class CreateTipoComprobantesTable extends Migration
     {
         Schema::create('tipo_comprobantes', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('id_tipo_doc');
+            $table->foreign('id_tipo_doc')->references('id')->on('tipo_documentos');
             $table->string('nombre');
             $table->string('descripcion');
             $table->timestamps();

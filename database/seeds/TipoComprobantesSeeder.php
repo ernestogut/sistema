@@ -13,18 +13,22 @@ class TipoComprobantesSeeder extends Seeder
     public function run()
     {
         DB::table('tipo_comprobantes')->insert([
+            'id_tipo_doc' => '1',
             'nombre' => 'Factura Cliente',
             'descripcion' => 'Factura Cliente',
         ]);
         DB::table('tipo_comprobantes')->insert([
+            'id_tipo_doc' => '2',
             'nombre' => 'Boleta Cliente',
             'descripcion' => 'Boleta Cliente',
         ]);
         DB::table('tipo_comprobantes')->insert([
+            'id_tipo_doc' => '2',
             'nombre' => 'Nota de Crédito Cliente',
             'descripcion' => 'Nota de Crédito Cliente',
         ]);
         DB::table('tipo_comprobantes')->insert([
+            'id_tipo_doc' => '1',
             'nombre' => 'Nota de Débito Cliente',
             'descripcion' => 'Nota de Débito Cliente',
         ]);

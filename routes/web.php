@@ -202,9 +202,12 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 Route::resource('almacen', 'AlmacenController');
+Route::post('producto/modificarInventario', 'ProductoController@modificarInventario')->name('producto.inventario'); 
 Route::resource('producto', 'ProductoController');
 Route::resource('proveedor', 'ProveedorController');
-Route::get('cliente/listarClientesModal', 'ClienteController@listarClientesModal')->name('cliente.listar');;
+Route::get('cliente/{documento}/listarClientesModal', 'ClienteController@listarClientesModal')->name('cliente.listar');
+Route::get('cliente/{id}/buscarCliente', 'ClienteController@buscarCliente')->name('cliente.buscar');
+Route::get('tipo_comprobante/obtenerComprobantes', 'TipoComprobanteController@obtenerComprobantes')->name('tipo_comprobante.listar');
 Route::resource('cliente', 'ClienteController');
 Route::resource('c_fact', 'CFactController');
 Route::resource('d_fact', 'DFactController');

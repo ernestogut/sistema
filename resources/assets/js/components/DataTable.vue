@@ -19,9 +19,9 @@
                         </td>
                         <td class="text-center align-middle">
                             <div v-if="!factura">
-                                <span class="btn btn-primary btn-sm boton"  @click="funcionConjunto(item)"><i :class="icono"></i></span>
+                                <span class="btn btn-primary btn-sm boton"  @click="(controlador!=5)?funcionConjunto(item):funcionBoton(item)"><i :class="icono"></i></span>
                                 <span class="btn btn-primary btn-sm boton"  @click="funcionConjunto(item)" v-if="controlador == 5"><i class="icon-eye" ></i></span>
-                                <span class="btn btn-danger btn-sm boton" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
+                                <span class="btn btn-danger btn-sm boton" v-if="controlador != 5" @click="eliminarItem(item, index)"><i class="icon-trash"></i></span>
 
                             </div>
                             <div v-else>
@@ -37,6 +37,14 @@
 </template>
 <script>
 export default {
+    created(){
+        let datosLS = JSON.parse(localStorage.getItem('ventas'));
+        if(datosLS === null){
+            this.arrayVentas = []
+        }else{
+            this.arrayVentas = datosLS
+        }
+    },
     props:{
         funcionBoton: Function,
         funcionBotonTrash: Function,
@@ -101,6 +109,7 @@ export default {
                 this.arrayVentas.push(obj)
                 this.emitirEventoArray(this.arrayVentas);
             }
+            localStorage.setItem('ventas', JSON.stringify(this.arrayVentas))
         },
         cerrarModalProductos(){
             $('#modalProducto').modal('hide');
@@ -121,7 +130,7 @@ export default {
                 this.listarSeries(item.id)
                 $('#modalSeries').modal('show')
             }else if(this.factura){
-                this.funcionBoton()
+                this.funcionBoton(item)
             }
             /*else if(this.controlador == 4){
                 this.funcionBoton(item)

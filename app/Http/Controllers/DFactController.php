@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\D_fact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DFactController extends Controller
 {
@@ -44,6 +45,7 @@ class DFactController extends Controller
             //# code...
             //var_dump($key);
             //var_dump($value);
+            DB::select("call disminuirInventario(?,?)",[$value['codigo'],$value['cantidad']]);
             $dfact = new D_fact();
             $dfact->id_fact = $request->id_cabecera;
             $dfact->codigo_producto = $value['codigo'];
@@ -53,7 +55,6 @@ class DFactController extends Controller
             $dfact->descuento_producto = $value['descuento'];
             $dfact->total_producto = $value['total'];
             $dfact->save();
-            
         }
         //return $detalle;
         //$dfact = new D_fact();

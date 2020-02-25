@@ -9,7 +9,7 @@ export default {
             titulo: 'Productos',
             tituloModal: 'producto',
             ruta: '/producto',
-            cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Precio', 'Descripcion', 'Imagen', 'Almacen','Acciones'],
+            cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Cantidad', 'Precio', 'Descripcion', 'Imagen','Acciones'],
             variables: [
                 {
                     for: 'codigo',
@@ -37,6 +37,15 @@ export default {
                     placeholder: 'Ingrese el modelo',
                     var: '',
                     titulo: 'Modelo'
+                },
+                {
+                    for: 'cantidad',
+                    type: 'cantidad',
+                    name: 'cantidad',
+                    id: 'cantidad',
+                    placeholder: 'Ingrese la cantidad',
+                    var: '',
+                    titulo: 'Cantidad'
                 },
                 {
                     for: 'precio',

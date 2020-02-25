@@ -15,7 +15,8 @@ class TipoComprobanteController extends Controller
      */
     public function index()
     {
-        $tipo_comprobante = TipoComprobante::all();
+        $tipo_comprobante = TipoComprobante::select('tipo_comprobantes.id',  'tipo_comprobantes.nombre', 'tipo_documentos.tipo_doc', 'tipo_comprobantes.descripcion')->join('tipo_documentos', 'tipo_comprobantes.id_tipo_doc', '=', 'tipo_documentos.id')->get();
+        //$tipo_comprobante = TipoComprobante::all();
         return $tipo_comprobante;
     }
 
@@ -28,6 +29,11 @@ class TipoComprobanteController extends Controller
     {
         //
     }
+    public function obtenerComprobantes()
+    {
+        $tipo_comprobante = TipoComprobante::select('tipo_comprobantes.id', 'tipo_comprobantes.id_tipo_doc', 'tipo_comprobantes.nombre', 'tipo_documentos.tipo_doc')->join('tipo_documentos', 'tipo_comprobantes.id_tipo_doc', '=', 'tipo_documentos.id')->get();
+        return $tipo_comprobante;
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -38,6 +44,7 @@ class TipoComprobanteController extends Controller
     public function store(Request $request)
     {
         $tipo_comprobante = new TipoComprobante();
+        $tipo_comprobante->id_tipo_doc = $request->id_tipo_doc;
         $tipo_comprobante->nombre = $request->nombre;
         $tipo_comprobante->descripcion = $request->descripcion;
         $tipo_comprobante->save();
@@ -49,9 +56,10 @@ class TipoComprobanteController extends Controller
      * @param  \App\TipoComprobante  $tipoComprobante
      * @return \Illuminate\Http\Response
      */
-    public function show(TipoComprobante $tipoComprobante)
+    public function show($id)
     {
-        //
+        $tipo_comprobante = TipoComprobante::find($id);
+        return $tipo_comprobante;
     }
 
     /**
@@ -75,6 +83,7 @@ class TipoComprobanteController extends Controller
     public function update(Request $request, $id)
     {
         $tipo_comprobante = TipoComprobante::find($id);
+        $tipo_comprobante->id_tipo_doc = $request->id_tipo_doc;
         $tipo_comprobante->nombre = $request->nombre;
         $tipo_comprobante->descripcion = $request->descripcion;
         $tipo_comprobante->save();

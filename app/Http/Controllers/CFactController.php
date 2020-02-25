@@ -39,11 +39,12 @@ class CFactController extends Controller
     public function store(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
-        $cabecera = new C_fact();
+        //$cabecera = new C_fact();
         DB::select("call insertarCabeceraFact(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[$request->id_serie, $request->id_tipo_comprobante, $request->cod_cliente,$request->ruc_cliente,$request->dir_cliente,$request->razon,$request->id_user,$request->fecha,$request->tipo_venta,$request->serie,$request->sub_total,$request->desc_global,$request->igv_total,$request->total]);
 
 
-
+        $cabecera = C_fact::orderBy('id', 'desc')->first()->id;
+        return $cabecera;
         /*$cabecera->id_tipo_comprobante = $request->id_tipo_comprobante;
         $cabecera->cod_cliente = $request->cod_cliente;
         $cabecera->ruc_cliente = $request->ruc_cliente;

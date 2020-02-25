@@ -16,10 +16,11 @@ class ProductosTableSeeder extends Seeder
             'codigo' => 'P001',
             'marca' => 'Shengshou',
             'modelo' => 'Legend',
+            'cantidad' => 50,
             'precio' => 22.00,
             'descripcion' => 'Cubo gama baja',
             'imagen' => '0.jpg',
-            'almacen_id' => 1
+            //'almacen_id' => 1
         ]);
     }
 }
