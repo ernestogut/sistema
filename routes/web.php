@@ -215,7 +215,8 @@ Route::resource('tipo_comprobante', 'TipoComprobanteController');
 Route::resource('comprobante', 'ComprobanteController');
 Route::resource('serie_comprobante', 'SerieComprobanteController');
 Route::resource('tipo_documento', 'TipoDocumentoController');
-Route::get('serie_comprobante/{id}/listarSeries', 'SerieComprobanteController@listarSeries')->name('serie_comprobante.listar');;
+Route::get('serie_comprobante/{id}/listarSeries', 'SerieComprobanteController@listarSeries')->name('serie_comprobante.listar');
+Route::resource('speed', 'SpeedController');
 
 
 
