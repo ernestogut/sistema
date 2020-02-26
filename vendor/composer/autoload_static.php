@@ -427,6 +427,7 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         'App\\Almacen' => __DIR__ . '/../..' . '/app/Almacen.php',
         'App\\Articulo' => __DIR__ . '/../..' . '/app/Articulo.php',
         'App\\C_fact' => __DIR__ . '/../..' . '/app/C_fact.php',
+        'App\\CabeceraIngreso' => __DIR__ . '/../..' . '/app/CabeceraIngreso.php',
         'App\\Categoria' => __DIR__ . '/../..' . '/app/Categoria.php',
         'App\\Cliente' => __DIR__ . '/../..' . '/app/Cliente.php',
         'App\\Comprobante' => __DIR__ . '/../..' . '/app/Comprobante.php',

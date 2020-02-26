@@ -43,6 +43,7 @@ Vue.component('facturacion', require('./components/Facturacion.vue').default);
 Vue.component('datatable', require('./components/DataTable.vue').default);
 Vue.component('comprobante', require('./components/Comprobante.vue').default);
 Vue.component('tipo-comprobante', require('./components/TipoComprobante.vue').default);
+Vue.component('ingreso-almacen', require('./components/IngresoAlmacen.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -10,6 +10,7 @@ return array(
     'App\\Almacen' => $baseDir . '/app/Almacen.php',
     'App\\Articulo' => $baseDir . '/app/Articulo.php',
     'App\\C_fact' => $baseDir . '/app/C_fact.php',
+    'App\\CabeceraIngreso' => $baseDir . '/app/CabeceraIngreso.php',
     'App\\Categoria' => $baseDir . '/app/Categoria.php',
     'App\\Cliente' => $baseDir . '/app/Cliente.php',
     'App\\Comprobante' => $baseDir . '/app/Comprobante.php',
