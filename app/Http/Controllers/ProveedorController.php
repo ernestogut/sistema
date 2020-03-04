@@ -18,7 +18,8 @@ class ProveedorController extends Controller
         if(!$request->ajax()){
             return redirect('/');
         }else{
-            $proveedor = Proveedor::All();
+            $proveedor = Proveedor::select('proveedores.id', 'proveedores.codigo', 'proveedores.nombre', 'tipo_documentos.tipo_doc as tipo_documento', 'proveedores.num_documento','proveedores.correo', 'proveedores.telefono_contacto', 'proveedores.num_documento')->join('tipo_documentos','proveedores.id_tipo_doc', '=', 'tipo_documentos.id')->get();
+            /*$proveedor = proveedor::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
             return $proveedor;
         }
     }
@@ -45,7 +46,9 @@ class ProveedorController extends Controller
         #if($request->hasFile('imagen')){
          #   $proveedor['imagen']=$request->file('imagen')->store('uploads', 'public');
         #}
+        $proveedor->codigo = $request->codigo;
         $proveedor->nombre = $request->nombre;
+        $proveedor->id_tipo_doc = $request->id_tipo_doc;
         $proveedor->num_documento = $request->num_documento;
         $proveedor->correo = $request->correo;
         $proveedor->telefono_contacto = $request->telefono_contacto;
@@ -57,7 +60,11 @@ class ProveedorController extends Controller
         #return response()->json($proveedor);
         return $proveedor;
     }
-
+    public function buscarProveedor($codigo)
+    {
+        $proveedor = Proveedor::select('codigo', 'razon', 'direccion', 'num_documento')->where('codigo', '=', $codigo)->get();
+        return $proveedor;
+    }
     /**
      * Display the specified resource.
      *
@@ -66,7 +73,7 @@ class ProveedorController extends Controller
      */
     public function show($id)
     {
-        $proveedor = Producto::find($id);
+        $proveedor = Proveedor::find($id);
         return $proveedor;
     }
 
@@ -94,7 +101,9 @@ class ProveedorController extends Controller
         #if($request->hasFile('imagen')){
          #   $proveedor['imagen']=$request->file('imagen')->store('uploads', 'public');
         #}
+        $proveedor->codigo = $request->codigo;
         $proveedor->nombre = $request->nombre;
+        $proveedor->id_tipo_doc = $request->id_tipo_doc;
         $proveedor->num_documento = $request->num_documento;
         $proveedor->correo = $request->correo;
         $proveedor->telefono_contacto = $request->telefono_contacto;

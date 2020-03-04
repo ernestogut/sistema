@@ -26,58 +26,49 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <form class="kt-form kt-form--label-right" action="" @submit.prevent="insertarCabecera()">
-                        <div class="kt-portlet__body" data-scroll="true" data-height="200" data-scrollbar-shown="true">
-                            <div class="row justify-content-start">
-
-                                <div class="col-2 col-form-label">Codigo de proveedor</div>
-                                    <div class="input-group col">
-                                        <div class="btn input-group-prepend btn_subbuscar" id="Btn_SubBuscar" idsubform="1">
-                                            <span class="input-group-text buscador" @click="(objetoFactura.cod_cliente.length > 0)?buscarCliente(objetoFactura.cod_cliente):abrirModalClientes()"><i class="fa fa-search" aria-hidden="true" ></i ></span>
-                                            <input type="text" class="form-control" name="SdnCode" v-model="objetoFactura.cod_cliente" placeholder="Escriba ó Busque...">
-                                        </div>
+                        <form  action="" @submit.prevent="insertarCabecera()">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label>Almacen</label>
+                                    <select v-model="objetoIngreso.id_almacen" class="form-control">
+                                        <option disabled value="">Escoje un almacén</option>
+                                        <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
+                                    </select>
                                 </div>
-                            </div>
-                                <!--<div class="col-2 col-form-label">Vendedor</div>
-                                <div class="col-3">
-                                    <select required="required" class="form-control" v-model="objetoFactura.id_user">
+                                <div class="form-group col-md-4">
+                                    <label>Vendedor</label>
+                                    <select required="required" class="form-control" v-model="objetoIngreso.id_usuario">
                                         <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
                                     </select>
                                 </div>
-                                <div class="col-1"></div>
-                                <div class="col-2 col-form-label">Fecha Emi</div>
-                                <div class="col"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoFactura.fecha"></div>
-
-                                <div class="w-100"></div>
-                                <div class="col-1"></div>
-                                
-
-
-                                <div class="w-100"></div>
+                                <div class="form-group col-md-4">
+                                    <label>Fecha de emisión</label>
+                                    <input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoIngreso.fecha_emision">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Motivo</label>
+                                    <input type="text" class="form-control" v-model="objetoIngreso.motivo">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Documento</label>
+                                    <input type="text" class="form-control" disabled>
+                                </div>
                             </div>
-
-                            <input type="button" name="addRow" id="addRow" value="Agrega1" style="display: none">
-
-                            
-                                <table id="D001" class="display pageResize D001" style="width:100%"></table>
-                        -->
-                        <div class="row">
-                            <div class="col-md-6 ml-auto">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Agregar productos</button>
-                            </div>
-                        </div>
+                                <div class="form-group">
+                                    <label>Observación</label>
+                                    <input type="text" class="form-control" v-model="objetoIngreso.observacion">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Agregar productos</button>
+                                </div>
                         <div class="table-responsive scroll">   
                             <table class="table table-bordered table-sm ">
                                 <thead>
                                     <tr>
                                         <th scope="col" class="text-center align-middle">#</th>
                                         <th scope="col" class="text-center align-middle">Codigo</th>
-                                        <th scope="col" class="text-center align-middle">Descripcion</th>
-                                        <th scope="col" class="text-center align-middle">Precio</th>
+                                        <th scope="col" class="text-center align-middle">Producto</th>
                                         <th scope="col" class="text-center align-middle">Cantidad</th>
-                                        <th scope="col" class="text-center align-middle">Descuento</th>
-                                        <th scope="col" class="text-center align-middle">Almacen</th>
-                                        <th scope="col" class="text-center align-middle">Total</th>
                                         <th scope="col" class="text-center align-middle">Acciones</th>
                                     </tr>
                                 </thead>
@@ -85,19 +76,10 @@
                                     <tr v-for="(venta, index) in ventas" :key="venta.id">
                                         <th scope="row" class="text-center align-middle">{{index+1}}</th>
                                         <td class="text-center align-middle">{{venta.codigo}}</td>
-                                        <td class="text-center align-middle">{{venta.descripcion}}</td>
+                                        <td class="text-center align-middle">{{venta.producto}}</td>
                                         <td class="text-center align-middle" >   
-                                            <input type="number" v-model="venta.precio" @input="generarTotal(venta)">
+                                            <input type="number" class="form-control input-sm" v-model="venta.cantidad" @input="generarTotal(venta)">
                                         </td>
-                                        <td class="text-center align-middle"><input type="number" v-model="venta.cantidad" @input="generarTotal(venta)"></td>
-                                        <td class="text-center align-middle"><input type="number" v-model="venta.descuento" @input="generarTotal(venta)"></td>
-                                        <td class="text-center align-middle">
-                                            <select v-model="almacen_id">
-                                                <option disabled value="">Escoje un almacén</option>
-                                                <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
-                                            </select>
-                                        </td>
-                                        <td class="text-center align-middle"><input v-model="venta.total" disabled></td>
                                         <td class="text-center align-middle">
                                             <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
                                         </td>
@@ -109,7 +91,6 @@
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary">Guardar</button>
                         </div>
-                    </div>
                     </form>
                     </div>  
                 </div>
@@ -138,14 +119,14 @@
                         <div class="card-body">
                             <div class="modal-content" >
                                 <div class="modal-header">
-                                    Clientes
+                                    Proveedores
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable :arrayItems="arrayClientes" :cabeceras="cabecerasCliente" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="controlador" :funcionBoton="buscarCliente" :factura="false" :idTabla="'myTableClientes'"></datatable>
+                                    <datatable :arrayItems="arrayClientes" :cabeceras="cabecerasCliente" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="10" :funcionBoton="buscarProveedor" :factura="false" :idTabla="'myTableProveedores'"></datatable>
                                 </div>
                             </div>
                         </div>
@@ -190,35 +171,26 @@ export default {
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Cantidad', 'Precio', 'Descripcion','Imagen', 'Acciones'],
-            cabecerasCliente: ['#', 'Codigo', 'Razón social', 'Dirección', 'Numero de documento', 'Acciones'],
+            cabeceras: ['#', 'Codigo', 'Producto', 'Precio', 'Cantidad', 'Acciones'],
+            cabecerasCliente: ['#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto', 'Acciones'],
             iconos: 'icon-plus',
-            cabecerasFactura: ['#', 'ID', 'Razón social', 'Serie', 'Folio', 'Fecha', 'Total', 'Acciones'],
+            cabecerasFactura: ['#', 'Num documento', 'Almacén', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación', 'Acciones'],
             usuarioLogueado: {},
             comprobanteEscogido: '',
             tipoDocumento: null,
             //datos de la factura
             almacen_id: '',
-            objetoFactura: 
+            objetoIngreso: 
                 {
-                    id_serie: null,
-                    id_tipo_comprobante: null,
-                    cod_cliente: '',
-                    ruc_cliente: '',
-                    dir_cliente: '',
-                    razon: '',
-                    id_user: null,
-                    fecha: '',
-                    tipo_venta: 'A',
-                    serie: 'F001',
-                    folio: '',
-                    sub_total: 0,
-                    desc_global: 0,
-                    igv_total: 0,
-                    total: 0
+                    id_almacen: null,
+                    id_usuario: null,
+                    fecha_emision: null,
+                    motivo: '',
+                    observacion: ''
                 },
             controlador: 0, // 1 - productos, 2 - clientes, 4 -> facturas
-            objetoDetalleFact: {}
+            objetoDetalleFact: {},
+            id_cabecera_ingreso: null
         }
     },
     mounted(){
@@ -226,9 +198,9 @@ export default {
         //this.listarFacturas()
         this.listarUsuarios();
         this.controlador = 4
-       // $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
+        $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
         //$(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-        //$(this.$refs.tablaClientes).on("hidden.bs.modal", this.limpiarTablaClientes)
+        //$(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
     },
     methods:{
         capturarComprobante(item){
@@ -238,22 +210,19 @@ export default {
             this.ventas = []
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
             this.controlador = 4
-            this.objetoFactura.id_tipo_comprobante =  null
-            this.objetoFactura.cod_cliente =  ''
-            this.objetoFactura.ruc_cliente =  ''
-            this.objetoFactura.dir_cliente =  ''
-            this.objetoFactura.razon =  ''
-            this.objetoFactura.fecha =  ''
-            this.objetoFactura.tipo_venta =  'A'
-            this.objetoFactura.folio = ''
+            this.objetoIngreso.id_almacen = null
+            this.objetoIngreso.id_usuario = null
+            this.objetoIngreso.fecha_emision = null
+            this.objetoIngreso.motivo = ''
+            this.objetoIngreso.observacion = ''
             
         },
         limpiarTablaProductos(){
             $('#myTableProductos').DataTable().destroy();
             this.listarTipodeComprobante()
         },
-        limpiarTablaClientes(){
-            $('#myTableClientes').DataTable().destroy();
+        limpiarTablaProveedores(){
+            $('#myTableProveedores').DataTable().destroy();
             this.listarTipodeComprobante()
         },
         generarTotal(item){
@@ -279,7 +248,7 @@ export default {
         },
         listarItem(){
             this.loading = true
-            var urlItem = '/producto';
+            var urlItem = '/speed';
             axios.get(urlItem).then(response=>{
                 this.arrayItems = response.data;
                 this.loading = false;
@@ -298,7 +267,7 @@ export default {
             })
         },
         listarFacturas(){
-            var urlItem = '/c_fact';
+            var urlItem = '/cabecera_ingreso';
             this.loading = true
             axios.get(urlItem).then(response=>{
                 this.arrayFacturas = response.data;
@@ -381,7 +350,7 @@ export default {
                 alert('Debes elegir algun comprobante') 
             }else{*/
                 //this.colocarFolio()
-                //this.seleccionarAlmacen();
+                this.seleccionarAlmacen();
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
             //}
@@ -423,37 +392,26 @@ export default {
         insertarCabecera(){
             var me = this;
             let formDatos = new FormData();
-            formDatos.append('id_serie', this.objetoFactura.id_serie);
-            formDatos.append('id_tipo_comprobante', Number(this.comprobanteEscogido));
-            formDatos.append('cod_cliente', this.objetoFactura.cod_cliente);
-            formDatos.append('ruc_cliente', this.objetoFactura.ruc_cliente);
-            formDatos.append('dir_cliente', this.objetoFactura.dir_cliente);
-            formDatos.append('razon', this.objetoFactura.razon);
-            formDatos.append('id_user', Number(this.objetoFactura.id_user));
-            formDatos.append('fecha', this.objetoFactura.fecha);
-            formDatos.append('tipo_venta', this.objetoFactura.tipo_venta);
-            formDatos.append('serie', this.objetoFactura.serie);
-            formDatos.append('folio', this.objetoFactura.folio);
-            formDatos.append('sub_total', this.objetoFactura.sub_total);
-            formDatos.append('desc_global', this.objetoFactura.desc_global);
-            formDatos.append('igv_total', this.objetoFactura.igv_total);
-            formDatos.append('total', this.objetoFactura.total);
-
-            axios.post('/c_fact', formDatos).then((response)=>{
-                this.id_cabecera = response.data
-                axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
+            formDatos.append('id_almacen', this.objetoIngreso.id_almacen);
+            formDatos.append('id_usuario', this.objetoIngreso.id_usuario);
+            formDatos.append('fecha_emision', this.objetoIngreso.fecha_emision);
+            formDatos.append('motivo', this.objetoIngreso.motivo);
+            formDatos.append('observacion', this.objetoIngreso.observacion);
+            axios.post('/cabecera_ingreso', formDatos).then((response)=>{
+                this.id_cabecera_ingreso = response.data
+                axios.post('/detalle_ingreso', {'ventas': this.ventas, 'id_cabecera_ingreso': this.id_cabecera_ingreso}).then((response)=>{
                 })
                 $('#modalVenta').modal('hide');
                 alert('Guardado correctamente');
                 $('#myTable').DataTable().destroy();
-                this.listarTipodeComprobante();
+                this.listarFacturas();
             })
             .catch(error=>{
                 alert('Hubo un error al guardar')
             })
         },
         obtenerFecha(){
-            this.objetoFactura.fecha = this.$moment().format("YYYY-MM-DD")
+            this.objetoIngreso.fecha_emision = this.$moment().format("YYYY-MM-DD")
         }
         
     },

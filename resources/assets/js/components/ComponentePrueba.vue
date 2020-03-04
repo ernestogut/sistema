@@ -22,9 +22,9 @@
                     <div class="modal-body">
                         <div class="productos d-flex flex-wrap justify-content-around">
                             <div class="card d-flex justify-content-center align-items-center" style="width: 14rem;" v-for="producto in arrayProductos" :key="producto.key">
-                                <img :src="`images/${producto.imagen}`" class="card-img-top" id="imagen" alt="..." >
+                                <img :src="producto.imagen" class="card-img-top" id="imagen" alt="..." >
                                 <div class="card-body">
-                                    <h5 class="card-text">{{producto.marca}} {{producto.modelo}}</h5>
+                                    <h5 class="card-text">{{producto.codigo}} - {{producto.producto}}</h5>
                                     <p>S/ {{producto.precio}}</p>
                                 </div>
                             </div>
@@ -56,7 +56,7 @@ export default {
     },
     methods:{
         listarItem(){
-            var urlItem = 'producto';
+            var urlItem = 'speed';
             axios.get(urlItem).then(response=>{
                 this.arrayProductos = response.data;
             })

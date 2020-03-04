@@ -217,14 +217,8 @@ Route::resource('serie_comprobante', 'SerieComprobanteController');
 Route::resource('tipo_documento', 'TipoDocumentoController');
 Route::get('serie_comprobante/{id}/listarSeries', 'SerieComprobanteController@listarSeries')->name('serie_comprobante.listar');
 Route::resource('speed', 'SpeedController');
-
-
-
-
-
-Route::get('/insertar', function(){
-    DB::select('call insertfact(?,?)', ['chispita_dos',1]);
-});
+Route::resource('cabecera_ingreso', 'CabeceraIngresoController');
+Route::resource('detalle_ingreso', 'DetalleIngresoController');
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 

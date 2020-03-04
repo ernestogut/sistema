@@ -42,7 +42,7 @@
                 <almacen></almacen>
             </template>
             <template v-if="menu==13">
-                <producto></producto>
+                <producto-speed></producto-speed>
             </template>
             <template v-if="menu==14">
                 <componente-prueba></componente-prueba>

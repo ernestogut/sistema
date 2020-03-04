@@ -15,6 +15,13 @@ class CreateCabeceraIngresosTable extends Migration
     {
         Schema::create('cabecera_ingresos', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('id_almacen');
+            $table->foreign('id_almacen')->references('id')->on('almacens');
+            $table->integer('id_usuario');
+            //$table->foreign('id_usuario')->references('id')->on('users');
+            $table->date('fecha_emision');
+            $table->string('motivo');
+            $table->longText('observacion');
             $table->timestamps();
         });
     }

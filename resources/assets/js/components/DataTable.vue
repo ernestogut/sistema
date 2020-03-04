@@ -14,7 +14,7 @@
                                 {{value}}
                             </template>
                             <template v-else>
-                                <img :src="(value==null)?'images/0.jpg':`images/${value}`" alt="" width="60">
+                                <img :src="(controlador!=1)?((value==null)?'images/0.jpg':`images/${value}`):((value==null)?'images/0.jpg':value)" alt="" width="60">
                             </template>
                         </td>
                         <td class="text-center align-middle">
@@ -76,12 +76,14 @@ export default {
         agregarProducto(item){
             var obj = {}
             var controlador = false
+            
             for(const i in item){
+                console.log(i)
                 if(i == 'codigo'){
                     obj.codigo = item[i]
                 }
-                if(i == 'descripcion'){
-                    obj.descripcion = item[i]
+                if(i == 'producto'){
+                    obj.producto = item[i]
                 }
                 if(i == 'precio'){
                     obj.precio = item[i]

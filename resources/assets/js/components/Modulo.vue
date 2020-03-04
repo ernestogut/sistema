@@ -30,7 +30,7 @@
                                                     <option v-for="comprobante in arrayComprobantes" :key="comprobante.id" :value="comprobante.id">{{comprobante.nombre}}</option>
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-6" v-if="tituloModal == 'cliente' || tituloModal == 'tipo de comprobante'">
+                                            <div class="form-group col-md-6" v-if="tituloModal == 'cliente' || tituloModal == 'tipo de comprobante' || tituloModal == 'proveedor'">
                                                 <label >Tipo de documento</label>
                                                 <select class="form-control" v-model="tipoDocumentoElegido">
                                                     <option value=""></option>
@@ -150,7 +150,7 @@ export default {
         modalEditar(item){
             /*if(this.tituloModal == 'producto'){
                 this.seleccionarAlmacen()
-            }else */if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
+            }else */if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante' || this.tituloModal== 'proveedor'){
                 this.listarDocumentos()
             }
             axios.get(`${this.ruta}/${item.id}`).then((response)=>{
@@ -187,7 +187,7 @@ export default {
             if(this.tituloModal == 'producto'){
                 this.imagenMiniatura = ''
                 //this.seleccionarAlmacen()
-            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
+            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante' || this.tituloModal == 'proveedor'){
                 this.listarDocumentos()
             }
             //
@@ -246,7 +246,7 @@ export default {
             if(this.tituloModal == 'producto'){
                 //formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen)
-            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
+            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante' || this.tituloModal == 'proveedor'){
                 formDatos.append('id_tipo_doc', this.tipoDocumentoElegido)
             }else if(this.tituloModal == 'tipo de combrobante'){
                 formDatos.append('id_tipo_comprobante', this.id_comprobante)
@@ -276,7 +276,7 @@ export default {
             if(this.tituloModal == 'producto'){
                 //formDatos.append('almacen_id', this.almacen_id)
                 formDatos.append('imagen', this.imagen) 
-            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante'){
+            }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante' || this.tituloModal == 'proveedor'){
                 formDatos.append('id_tipo_doc', this.tipoDocumentoElegido)
             }else if(this.tituloModal == 'tipo de comprobante'){
                 formDatos.append('id_tipo_comprobante', this.comprobanteElegido)

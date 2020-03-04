@@ -123,7 +123,7 @@
                                     <tr v-for="(venta, index) in ventas" :key="venta.id">
                                         <th scope="row" class="text-center align-middle">{{index+1}}</th>
                                         <td class="text-center align-middle">{{venta.codigo}}</td>
-                                        <td class="text-center align-middle">{{venta.descripcion}}</td>
+                                        <td class="text-center align-middle">{{venta.producto}}</td>
                                         <td class="text-center align-middle" >   
                                             <input type="number" v-model="venta.precio" @input="generarTotal(venta)">
                                         </td>
@@ -185,7 +185,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable  :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador" :factura="false" :idTabla="'myTableProductos'" v-else-if="initiated"></datatable>
+                                    <datatable  :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="1" :factura="false" :idTabla="'myTableProductos'" v-else-if="initiated"></datatable>
                                 </div>
                             </div>
                         </div>
@@ -248,7 +248,7 @@ export default {
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['#', 'Codigo', 'Marca', 'Modelo', 'Cantidad', 'Precio', 'Descripcion','Imagen', 'Acciones'],
+            cabeceras: ['#', 'Codigo', 'Producto', 'Precio', 'Cantidad', 'Acciones'],
             cabecerasCliente: ['#', 'Codigo', 'Razón social', 'Dirección', 'Numero de documento', 'Acciones'],
             iconos: 'icon-plus',
             cabecerasFactura: ['#', 'ID', 'Razón social', 'Serie', 'Folio', 'Fecha', 'Total', 'Acciones'],
@@ -337,7 +337,7 @@ export default {
         },
         listarItem(){
             this.loading = true
-            var urlItem = '/producto';
+            var urlItem = '/speed';
             axios.get(urlItem).then(response=>{
                 this.arrayItems = response.data;
                 this.loading = false;
