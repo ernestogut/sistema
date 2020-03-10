@@ -21,7 +21,7 @@ class CreateCFactsTable extends Migration
             $table->string('ruc_cliente');
             $table->string('dir_cliente');
             $table->string('razon');
-            $table->integer('id_user');
+            $table->unsignedBigInteger('id_user');
             $table->string('fecha');
             $table->string('tipo_venta');
             $table->string('serie');

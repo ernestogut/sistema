@@ -78,7 +78,6 @@ export default {
             var controlador = false
             
             for(const i in item){
-                console.log(i)
                 if(i == 'codigo'){
                     obj.codigo = item[i]
                 }
@@ -88,6 +87,7 @@ export default {
                 if(i == 'precio'){
                     obj.precio = item[i]
                 }
+                obj.almacen = 1;
                 obj.cantidad = 1
                 obj.descuento = 1
                 obj.total = obj.cantidad*obj.precio
@@ -109,6 +109,7 @@ export default {
                 this.emitirEventoArray(this.arrayVentas);
             }else{
                 this.arrayVentas.push(obj)
+                console.log(this.arrayVentas)
                 this.emitirEventoArray(this.arrayVentas);
             }
             localStorage.setItem('ventas', JSON.stringify(this.arrayVentas))

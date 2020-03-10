@@ -52,7 +52,7 @@
                                     {{ csrf_field() }}
                                 </form>
                             </div>
-                            <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle nav-link mr-4    " data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                                     <span class="d-md-down-none text-white">{{Auth::user()->usuario}} </span>
                             </a>
                         </li>

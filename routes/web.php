@@ -200,7 +200,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 });
 
-
+Route::get('almacen/{codigo}/cantidadesAlmacen', 'AlmacenController@cantidadesAlmacen');
+//Route::get('inventario/{codigo}/cantidadesAlmacenInventario', 'InventarioController@cantidadesAlmacenInventario');
 Route::resource('almacen', 'AlmacenController');
 Route::post('producto/modificarInventario', 'ProductoController@modificarInventario')->name('producto.inventario'); 
 Route::resource('producto', 'ProductoController');
@@ -219,6 +220,7 @@ Route::get('serie_comprobante/{id}/listarSeries', 'SerieComprobanteController@li
 Route::resource('speed', 'SpeedController');
 Route::resource('cabecera_ingreso', 'CabeceraIngresoController');
 Route::resource('detalle_ingreso', 'DetalleIngresoController');
+Route::resource('inventario', 'InventarioController');
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 

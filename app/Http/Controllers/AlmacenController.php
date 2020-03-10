@@ -22,6 +22,19 @@ class AlmacenController extends Controller
             return $almacen;
         }   
     }
+    public function cantidadesAlmacen(Request $request, $codigo)
+    {
+        if(!$request->ajax()){
+           return redirect('/');
+        }else{
+            $almacen = Almacen::select('almacens.id', 'almacens.codigo', 'almacens.descripcion','almacens.direccion', 'inventarios.cantidad as cantidad', 'inventarios.id as id_inventario')->leftJoin('inventarios','almacens.id', '=', 'inventarios.id_almacen')->where('inventarios.id_producto', '=', $codigo)->get();
+
+            foreach ($almacen as $valor){
+                $valor['editable'] = true;
+            }
+            return $almacen;
+        }   
+    }
 
     /**
      * Show the form for creating a new resource.

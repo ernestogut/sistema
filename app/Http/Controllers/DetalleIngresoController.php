@@ -46,7 +46,10 @@ class DetalleIngresoController extends Controller
             //# code...
             //var_dump($key);
             //var_dump($value);
-            DB::connection("speed")->statement("call aumentarInventario(?,?)",[$value['codigo'],$value['cantidad']]);   
+            DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo'],$value['cantidad'],$value['almacen']]);
+
+            $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo'])->sum('cantidad');
+            DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo'],$suma_total]);   
             /*DB::select("call disminuirInventario(?,?)",[$value['codigo'],$value['cantidad']]);*/
             $detalle_ingreso = new DetalleIngreso();
             $detalle_ingreso->id_cabecera_ingreso = $request->id_cabecera_ingreso;

@@ -17,7 +17,10 @@ class CreateCabeceraIngresosTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('id_almacen');
             $table->foreign('id_almacen')->references('id')->on('almacens');
-            $table->integer('id_usuario');
+            $table->unsignedBigInteger('id_usuario');
+            $table->foreign('id_usuario')->references('id')->on('users');
+            //$table->integer('id_usuario');
+            //$table->integer('id_usuario');
             //$table->foreign('id_usuario')->references('id')->on('users');
             $table->date('fecha_emision');
             $table->string('motivo');

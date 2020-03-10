@@ -33,13 +33,69 @@
                         </td>-->
                         <td class="text-center align-middle">
                             <div>
-                                <span class="btn btn-primary btn-sm boton"  ><i class="icon-pencil"></i></span>
+                                <span class="btn btn-primary btn-sm boton" @click="abrirModalCantidades(producto)" ><i class="icon-pencil"></i></span>
                                 <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Cantidades</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item cursor-pointer" v-for="almacen in arrayAlmacen" :key="almacen.id" @click="abrirModalModificarCantidad(almacen)">
+                        
+                                    <span v-if="almacen.editable">{{almacen.id}}. Existen {{almacen.cantidad}} unidad(es) en el almacen de {{almacen.descripcion}}</span>
+                                    <span v-else>
+                                        {{almacen.id}}. No existen unidades en el almacen de {{almacen.descripcion}}
+                                    </span>
+                                    
+                                        
+                                    <!--<div>
+                                        <span class="badge badge-primary badge-pill" id="eliminar" @click="eliminarTiempo(item, index)" v-show="!modoWcaRecibido || item.tiempoReal < 3000" >x</span>
+                                    </div>-->
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="modalModificarCantidad">
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modificar cantidad</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="" @submit.prevent="(modoEditable)?modificarCantidad(idAlmacen):insertarCantidad()" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label >Cantidad</label>
+                                <input type="number" class="form-control" id="formGroupExampleInput" placeholder="Ingresa la cantidad" v-model="objetoProdAlmacen.cantidad">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <spinner v-if="loading"></spinner>
+                            <button type="submit" class="btn btn-primary" v-if="!modoEditable && !loading">Guardar</button>
+                            <button type="submit" class="btn btn-primary" v-else-if="modoEditable && !loading">Actualizar</button>
+                        </div>      
+                    </form>  
+                </div>
+            </div>
         </div>
 </main>
   
@@ -49,10 +105,22 @@
 export default {
     mounted(){
         this.listarItem();
+        this.listarAlmacenes()
     },
     data(){
         return{
-            arrayProductos: []
+            loading: false,
+            arrayAlmacenFijo: [],
+            arrayProductos: [],
+            arrayAlmacen: [],
+            objetoProdAlmacen: {
+                id_producto: null,
+                id_almacen: null,
+                cantidad: null,
+            },
+            idAlmacen: '',
+            enAlmacen: false,
+            modoEditable: false 
         }
     },
     methods:{
@@ -63,6 +131,12 @@ export default {
                 this.tablaProductos();
             })
         },
+        listarAlmacenes(){
+            var urlItem = 'almacen';
+            axios.get(urlItem).then(response=>{
+                this.arrayAlmacenFijo = response.data;
+            })
+        },
         tablaProductos(){
             $( function () {
                 $('#idTablaProductos').DataTable({
@@ -70,10 +144,97 @@ export default {
                 });
             } );
         },
+        abrirModalCantidades(producto){
+            $('#modalCantidades').modal('show');
+            let me= this;
+            var contador = 0
+            axios.get(`almacen/${producto.codigo}/cantidadesAlmacen`).then(function (response){
+                if(response.data.length < 1){
+                    me.enAlmacen = false;
+                    me.arrayAlmacen = me.arrayAlmacenFijo
+                }else{
+                    if(response.data.length == me.arrayAlmacenFijo.length){
+                        me.enAlmacen = true;
+                        me.arrayAlmacen = response.data;
+                    }else{
+                        for(var i = 0; i < me.arrayAlmacenFijo.length; i++){
+                            
+                            contador = 0
+                            
+                            for(var j = 0; j < response.data.length; j++){
+                                //console.log(response.data[j])
+                                //console.log(me.arrayAlmacenFijo[i])
+                                if(response.data[j].id != me.arrayAlmacenFijo[i].id){
+                                    
+                                    contador += 1
+                                    //console.log('contador' + '->' + contador)
+                                    if(contador == response.data.length){
+                                      //  console.log('son iguales')
+                                        me.arrayAlmacen = response.data;
+                                        me.arrayAlmacen.push(me.arrayAlmacenFijo[i])
+                                        me.arrayAlmacen[i].editable = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    me.enAlmacen = true;
+                    //me.arrayAlmacen = response.data;
+                    console.log(me.arrayAlmacen);
+                }
+            })
+            this.objetoProdAlmacen.id_producto = producto.codigo;
+        },
+        abrirModalModificarCantidad(almacen){
+            if(almacen.editable){
+                this.modoEditable = true;
+            }else{
+                this.modoEditable = false;
+            }
+            this.idAlmacen = almacen.id_inventario;
+            //console.log(this.modoEditable)
+            $('#modalModificarCantidad').modal('show');
+            this.objetoProdAlmacen.id_almacen = almacen.id
+        },
+        insertarCantidad(){
+            //console.log(this.objetoProdAlmacen)
+            this.loading = true
+            let formDatos = new FormData()
+            formDatos.append('id_producto', this.objetoProdAlmacen.id_producto)
+            formDatos.append('id_almacen', this.objetoProdAlmacen.id_almacen)
+            formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
+            axios.post('/inventario', formDatos).then((response)=>{
+                this.loading = false;
+                $('#modalModificarCantidad').modal('hide');
+                //alert('quedo')
+            }).catch((error)=>{
+                alert('error')
+            })
+        },
+        modificarCantidad(idAlmacen){
+            //console.log(this.objetoProdAlmacen)
+            let formDatos = new FormData()
+            this.loading = true
+            formDatos.append('id_producto', this.objetoProdAlmacen.id_producto)
+            formDatos.append('id_almacen', this.objetoProdAlmacen.id_almacen)
+            formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
+            formDatos.append("_method", "put");
+            axios.post(`/inventario/${idAlmacen}`, formDatos).then((response)=>{
+                this.loading = false;
+                $('#modalModificarCantidad').modal('hide');
+                //alert('quedo')
+            }).catch((error)=>{
+                alert('error')
+            })
+        }
     }
 }
 </script>
 
 <style>
+
+.cursor-pointer{
+    cursor: pointer;
+}
 
 </style>

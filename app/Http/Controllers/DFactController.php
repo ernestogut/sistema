@@ -46,8 +46,14 @@ class DFactController extends Controller
             //# code...
             //var_dump($key);
             //var_dump($value);
-            DB::connection("speed")->statement("call disminuirInventario(?,?)",[$value['codigo'],$value['cantidad']]);
-            Artisan::call('cache:clear');
+
+            DB::connection("mysql")->statement("call disminuirInventarioAlm(?,?,?)",[$value['codigo'],$value['cantidad'],$value['almacen']]);
+
+            $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo'])->sum('cantidad');
+
+            DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo'],$suma_total]);
+            
+            //Artisan::call('cache:clear');
             /*DB::select("call disminuirInventario(?,?)",[$value['codigo'],$value['cantidad']]);*/
             $dfact = new D_fact();
             $dfact->id_fact = $request->id_cabecera;
@@ -55,6 +61,7 @@ class DFactController extends Controller
             $dfact->descripcion_producto = $value['producto'];
             $dfact->precio_producto = $value['precio'];
             $dfact->cantidad_producto = $value['cantidad'];
+            $dfact->almacen_producto = $value['almacen'];
             $dfact->descuento_producto = $value['descuento'];
             $dfact->total_producto = $value['total'];
             $dfact->save();

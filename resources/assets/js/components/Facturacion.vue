@@ -130,7 +130,7 @@
                                         <td class="text-center align-middle"><input type="number" v-model="venta.cantidad" @input="generarTotal(venta)"></td>
                                         <td class="text-center align-middle"><input type="number" v-model="venta.descuento" @input="generarTotal(venta)"></td>
                                         <td class="text-center align-middle">
-                                            <select v-model="almacen_id">
+                                            <select v-model="venta.almacen">
                                                 <option disabled value="">Escoje un almacén</option>
                                                 <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                             </select>

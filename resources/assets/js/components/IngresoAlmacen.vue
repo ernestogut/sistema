@@ -78,7 +78,7 @@
                                         <td class="text-center align-middle">{{venta.codigo}}</td>
                                         <td class="text-center align-middle">{{venta.producto}}</td>
                                         <td class="text-center align-middle" >   
-                                            <input type="number" class="form-control input-sm" v-model="venta.cantidad" @input="generarTotal(venta)">
+                                            <input type="number" class="form-control input-sm" v-model="venta.cantidad">
                                         </td>
                                         <td class="text-center align-middle">
                                             <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
@@ -109,24 +109,6 @@
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
                                     <datatable  :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador" :factura="false" :idTabla="'myTableProductos'" v-else-if="initiated"></datatable>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade" tabindex="-1" role="dialog" id="modalClientes" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaClientes">
-                    <div class="modal-dialog modal-xl">
-                        <div class="card-body">
-                            <div class="modal-content" >
-                                <div class="modal-header">
-                                    Proveedores
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="table-responsive">
-                                    <spinner v-if="loading"></spinner>
-                                    <datatable :arrayItems="arrayClientes" :cabeceras="cabecerasCliente" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="10" :funcionBoton="buscarProveedor" :factura="false" :idTabla="'myTableProveedores'"></datatable>
                                 </div>
                             </div>
                         </div>
@@ -195,7 +177,7 @@ export default {
     },
     mounted(){
         //this.listarTComprobantes();
-        //this.listarFacturas()
+        this.listarIngresos()
         this.listarUsuarios();
         this.controlador = 4
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
@@ -225,19 +207,6 @@ export default {
             $('#myTableProveedores').DataTable().destroy();
             this.listarTipodeComprobante()
         },
-        generarTotal(item){
-            item.total = item.precio * item.cantidad
-            var lista = []
-            var suma = 0
-            for(var i = 0; i < this.ventas.length; i++){
-                lista.push(this.ventas[i].total)
-            }
-            suma = lista.reduce((a, b) => a + b, 0)
-            this.objetoFactura.sub_total = suma
-            this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
-            this.objetoFactura.total =  Math.round((this.objetoFactura.sub_total + this.objetoFactura.igv_total)*100)/100 
-           
-        },
         recibirVenta(venta){
             this.ventas = venta
         },
@@ -266,7 +235,7 @@ export default {
                 this.tablaClientes();
             })
         },
-        listarFacturas(){
+        listarIngresos(){
             var urlItem = '/cabecera_ingreso';
             this.loading = true
             axios.get(urlItem).then(response=>{
@@ -288,7 +257,8 @@ export default {
         listarUsuarios(){
             var urlItem = '/user/logeado';
             axios.get(urlItem).then(response=>{
-                this.objetoFactura.id_user = response.data.id
+                this.objetoIngreso.id_usuario = response.data.id
+                
             })
             var urlItem = '/user';
             axios.get(urlItem).then(response=>{
@@ -350,6 +320,7 @@ export default {
                 alert('Debes elegir algun comprobante') 
             }else{*/
                 //this.colocarFolio()
+                this.listarUsuarios();
                 this.seleccionarAlmacen();
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
@@ -370,6 +341,7 @@ export default {
             let me= this;
             var url='/almacen';
             axios.get(url).then(function (response){
+                me.objetoIngreso.id_almacen = response.data[0].id
                 me.arrayAlmacen = response.data;
             })
         },
@@ -399,12 +371,16 @@ export default {
             formDatos.append('observacion', this.objetoIngreso.observacion);
             axios.post('/cabecera_ingreso', formDatos).then((response)=>{
                 this.id_cabecera_ingreso = response.data
+                for(var i = 0; i < this.ventas.length; i++){
+                    this.ventas[i].almacen = this.objetoIngreso.id_almacen;
+                }
+                //this.ventas.almacen = this.objetoIngreso.id_almacen;
                 axios.post('/detalle_ingreso', {'ventas': this.ventas, 'id_cabecera_ingreso': this.id_cabecera_ingreso}).then((response)=>{
                 })
                 $('#modalVenta').modal('hide');
                 alert('Guardado correctamente');
                 $('#myTable').DataTable().destroy();
-                this.listarFacturas();
+                this.listarIngresos();
             })
             .catch(error=>{
                 alert('Hubo un error al guardar')
@@ -413,32 +389,7 @@ export default {
         obtenerFecha(){
             this.objetoIngreso.fecha_emision = this.$moment().format("YYYY-MM-DD")
         }
-        
     },
-    watch:{
-        ventas:{
-            handler: function(){
-                var lista = []
-                var suma = 0
-                for(var i = 0; i < this.ventas.length; i++){
-                    lista.push(this.ventas[i].total)
-                }
-                suma = lista.reduce((a, b) => a + b, 0)
-                this.objetoFactura.sub_total = suma
-                this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
-                this.objetoFactura.total =  Math.round((this.objetoFactura.sub_total + this.objetoFactura.igv_total)*100)/100 
-                },
-            deep: true
-        },
-        comprobanteEscogido(){
-            this.listarSeries()
-            $( function () {
-                $('#myTable').DataTable().destroy();
-            } );
-            this.listarTipodeComprobante()
-
-        }
-    }
 }
 </script>
 
