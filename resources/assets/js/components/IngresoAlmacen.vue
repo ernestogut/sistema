@@ -36,7 +36,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label>Vendedor</label>
+                                    <label>Responsable</label>
                                     <select required="required" class="form-control" v-model="objetoIngreso.id_usuario">
                                         <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
                                     </select>

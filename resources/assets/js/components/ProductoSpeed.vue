@@ -51,7 +51,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="card-body">
+                        <spinner v-if="loading"></spinner>
+                        <div class="card-body" v-else-if="initiated">
                             <ul class="list-group">
                                 <li class="list-group-item cursor-pointer" v-for="almacen in arrayAlmacen" :key="almacen.id" @click="abrirModalModificarCantidad(almacen)">
                         
@@ -75,7 +76,7 @@
             <div class="modal-dialog modal-sm modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modificar cantidad</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">{{(modoEditable)?'Modificar cantidad':'Insertar Cantidad'}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -110,6 +111,7 @@ export default {
     data(){
         return{
             loading: false,
+            initiated: false,
             arrayAlmacenFijo: [],
             arrayProductos: [],
             arrayAlmacen: [],
@@ -145,6 +147,7 @@ export default {
             } );
         },
         abrirModalCantidades(producto){
+            this.loading = true
             $('#modalCantidades').modal('show');
             let me= this;
             var contador = 0
@@ -178,10 +181,11 @@ export default {
                             }
                         }
                     }
-                    me.enAlmacen = true;
+                    
                     //me.arrayAlmacen = response.data;
-                    console.log(me.arrayAlmacen);
                 }
+                me.loading = false;
+                me.initiated = true;
             })
             this.objetoProdAlmacen.id_producto = producto.codigo;
         },

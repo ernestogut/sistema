@@ -45,13 +45,16 @@
                 <producto-speed></producto-speed>
             </template>
             <template v-if="menu==14">
-                <componente-prueba></componente-prueba>
+                <traspaso-almacen></traspaso-almacen>
             </template>
             <template v-if="menu==15">
                 <comprobante></comprobante>
             </template>
             <template v-if="menu==16">
                 <tipo-comprobante></tipo-comprobante>
+            </template>
+            <template v-if="menu==17">
+                <cierre-caja></cierre-caja>
             </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">

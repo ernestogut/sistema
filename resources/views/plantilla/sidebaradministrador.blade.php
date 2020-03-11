@@ -16,16 +16,30 @@
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Financiero</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=17" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Cierre de caja</a>
+                        </li>
+                        <li  @click="menu=18" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Movimiento de caja</a>
+                        </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Inventario</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=12" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-bag"></i> Almacenes</a>
                         </li>
-                        <li  @click="menu=13" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Productos</a>
+                        <li  @click="menu=3" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-wallet"></i> Ingresos</a>
                         </li>
                         <li  @click="menu=14" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Prueba</a>
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Traspaso de Almacen</a>
+                        </li>
+                        <li  @click="menu=13" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Productos</a>
                         </li>
                     </ul>
                 </li>
@@ -51,9 +65,6 @@
                 <li class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-wallet"></i> Compras</a>
                     <ul class="nav-dropdown-items">
-                        <li  @click="menu=3" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-wallet"></i> Ingresos</a>
-                        </li>
                         <li  @click="menu=4" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-notebook"></i> Proveedores</a>
                         </li>

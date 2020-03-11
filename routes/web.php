@@ -221,6 +221,9 @@ Route::resource('speed', 'SpeedController');
 Route::resource('cabecera_ingreso', 'CabeceraIngresoController');
 Route::resource('detalle_ingreso', 'DetalleIngresoController');
 Route::resource('inventario', 'InventarioController');
+Route::resource('cabecera_traslado', 'CabeceraTrasladoController');
+Route::resource('detalle_traslado', 'DetalleTrasladoController');
+Route::resource('cierre_caja', 'CierreCajaController');
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 
