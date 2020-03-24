@@ -21,7 +21,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
+                                    <fo rm id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
                                         <div class="form-row">
                                             <div class="form-group col-md-6" v-if="tituloModal == 'comprobante'">
                                                 <label >Tipo de comprobante</label>

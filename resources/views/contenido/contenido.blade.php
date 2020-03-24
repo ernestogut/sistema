@@ -3,11 +3,14 @@
     @if(Auth::check())
         @if(Auth::user()->idrole == 1)
             <template v-if="menu==0">
-                <dashboard></dashboard>
+                <apertura-caja></apertura-caja>
             </template>
             <template v-if="menu==1">
-                <categoria></categoria>
+                <dashboard></dashboard>
             </template>
+            <!--<template >
+                <categoria></categoria>
+            </template>-->
             <template v-if="menu==2">
                 <articulo></articulo>
             </template>

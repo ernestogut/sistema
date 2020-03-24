@@ -47,6 +47,7 @@ Vue.component('ingreso-almacen', require('./components/IngresoAlmacen.vue').defa
 Vue.component('producto-speed', require('./components/ProductoSpeed.vue').default);
 Vue.component('traspaso-almacen', require('./components/TraspasoAlmacen.vue').default);
 Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
+Vue.component('apertura-caja', require('./components/AperturaCaja.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -55,7 +56,7 @@ Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
 
 
 
-const app = new Vue({
+var app = new Vue({
     el: '#app',
     data :{
         menu : 0,
