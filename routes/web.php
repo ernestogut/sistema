@@ -165,7 +165,7 @@ Route::group(['middleware' => ['auth']], function () {
          */
         Route::get('/user', 'UserController@index');
         Route::post('/user/registrar','UserController@store' );
-        Route::put('/user/actualizar','UserController@update' );
+        Route::put('/user/actualizar/{id}','UserController@update' );
         Route::put('/user/desactivar','UserController@desactivar' );
         Route::put('/user/activar','UserController@activar' );
         Route::get('/user/logeado', 'UserController@usuarioLogeado'); 
@@ -201,6 +201,8 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('almacen/{codigo}/cantidadesAlmacen', 'AlmacenController@cantidadesAlmacen');
+Route::get('cierre_caja/{codigo}/verificarEstadoCaja', 'CierreCajaController@verificarEstadoCaja');
+Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
 //Route::get('inventario/{codigo}/cantidadesAlmacenInventario', 'InventarioController@cantidadesAlmacenInventario');
 Route::resource('almacen', 'AlmacenController');
 Route::post('producto/modificarInventario', 'ProductoController@modificarInventario')->name('producto.inventario'); 
@@ -224,6 +226,7 @@ Route::resource('inventario', 'InventarioController');
 Route::resource('cabecera_traslado', 'CabeceraTrasladoController');
 Route::resource('detalle_traslado', 'DetalleTrasladoController');
 Route::resource('cierre_caja', 'CierreCajaController');
+Route::resource('movimiento_caja', 'MovimientoCajaController');
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 

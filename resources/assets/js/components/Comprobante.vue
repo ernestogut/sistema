@@ -33,8 +33,8 @@ export default {
             titulo: 'Comprobantes',
             tituloModal: 'comprobante',
             ruta: '/comprobante',
-            cabeceras: ['#', 'Tipo de comprobante', 'Serie', 'Número', 'Año', 'Acciones'],
-            cabecerasSerie: ['#', 'Serie', 'Numero', 'Año', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Tipo de comprobante', 'Serie', 'Número', 'Año'],
+            cabecerasSerie: ['Acciones', '#', 'Serie', 'Numero', 'Año'],
             arraySeries: [],
             variables: [
                 {

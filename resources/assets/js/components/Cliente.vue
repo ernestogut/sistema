@@ -9,7 +9,7 @@ export default {
             titulo: 'Cliente',
             tituloModal: 'cliente',
             ruta: '/cliente',
-            cabeceras: ['#', 'Codigo', 'Razón social', 'Dirección', 'Tipo de documento', 'Numero de documento', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Codigo', 'Razón social', 'Dirección', 'Tipo de documento', 'Numero de documento'],
             variables: [
                 {
                     for: 'codigo',

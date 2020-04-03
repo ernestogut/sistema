@@ -1,20 +1,29 @@
 <template>
 <main class="main">
-    <div class="card-body">
-            <table class="table table-striped table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
+    
+    <div class="card-body" >
+        <spinner v-if="loading"></spinner>
+            <table v-else-if="initiated" class="table table-striped table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
                 <thead>
                     <tr>
+                        <th scope="col" class="text-center align-middle" >Acciones</th>
                         <th scope="col" class="text-center align-middle" >#</th>
                         <th scope="col" class="text-center align-middle" >Codigo</th>
                         <th scope="col" class="text-center align-middle" >Producto</th>
                         <th scope="col" class="text-center align-middle" >Precio</th>
                         <th scope="col" class="text-center align-middle" >Cantidad</th>
                         <!--<th scope="col" class="text-center align-middle" >Imagen</th>-->
-                        <th scope="col" class="text-center align-middle" >Acciones</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(producto, index) of arrayProductos" :key="producto.key">
+                    <tr v-for="(producto, index) of $root.arrayProductos" :key="producto.key" :class="(producto.stock < 5)?'table-danger':''">
+                        <td class="text-center align-middle">
+                            <div>
+                                <span class="btn btn-primary btn-sm boton" @click="abrirModalCantidades(producto)" ><i class="icon-pencil"></i></span>
+                                <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
+                            </div>
+                        </td>
                         <th scope="row" class="text-center align-middle">{{index+1}}</th>
                         <td class="text-center align-middle">
                             {{producto.codigo}}
@@ -31,12 +40,7 @@
                         <!--<td class="text-center align-middle">
                             <img :src="(producto.imagen==null)?'images/0.jpg':producto.imagen" alt="" width="60">
                         </td>-->
-                        <td class="text-center align-middle">
-                            <div>
-                                <span class="btn btn-primary btn-sm boton" @click="abrirModalCantidades(producto)" ><i class="icon-pencil"></i></span>
-                                <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
-                            </div>
-                        </td>
+                        
                     </tr>
                 </tbody>
             </table>
@@ -127,9 +131,14 @@ export default {
     },
     methods:{
         listarItem(){
+            this.loading = true
             var urlItem = 'speed';
             axios.get(urlItem).then(response=>{
                 this.arrayProductos = response.data;
+                this.$root.arrayProductos = response.data;
+                console.log(this.$root.arrayProductos)
+                this.loading = false;
+                this.initiated = true;
                 this.tablaProductos();
             })
         },
@@ -147,7 +156,7 @@ export default {
             } );
         },
         abrirModalCantidades(producto){
-            this.loading = true
+            //this.loading = true
             $('#modalCantidades').modal('show');
             let me= this;
             var contador = 0
@@ -184,8 +193,8 @@ export default {
                     
                     //me.arrayAlmacen = response.data;
                 }
-                me.loading = false;
-                me.initiated = true;
+                //me.loading = false;
+                //me.initiated = true;
             })
             this.objetoProdAlmacen.id_producto = producto.codigo;
         },
@@ -197,6 +206,7 @@ export default {
             }
             this.idAlmacen = almacen.id_inventario;
             //console.log(this.modoEditable)
+            this.objetoProdAlmacen.cantidad = null;
             $('#modalModificarCantidad').modal('show');
             this.objetoProdAlmacen.id_almacen = almacen.id
         },

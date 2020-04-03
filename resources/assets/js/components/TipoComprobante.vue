@@ -46,23 +46,23 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="numero_inicial">Numero inicial</label>
-                                            <input type="text" class="form-control" id="numero_inicial" placeholder="Establece un número inicial" v-model="objetoSerie.numeroInicial">
+                                            <input type="text" class="form-control" id="numero_inicial" placeholder="Establece un número inicial" v-model="objetoSerie.numero_inicial">
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="numero_actual">Numero actual</label>
-                                            <input type="text" class="form-control" id="numero_actual" placeholder="" v-model="objetoSerie.numeroActual" disabled>
+                                            <input type="text" class="form-control" id="numero_actual" placeholder="" v-model="objetoSerie.numero_actual" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="numero_final">Numero final</label>
-                                            <input type="text" class="form-control" id="numero_final" placeholder="Establece un número final" v-model="objetoSerie.numeroFinal">
+                                            <input type="text" class="form-control" id="numero_final" placeholder="Establece un número final" v-model="objetoSerie.numero_final">
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="año">Año</label>
-                                            <input type="text" class="form-control" id="año" placeholder="Ingresa el año" v-model="objetoSerie.año">
+                                            <input type="text" class="form-control" id="año" placeholder="Ingresa el año" v-model="objetoSerie.anio">
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="estado">Estado</label>
@@ -102,7 +102,7 @@ export default {
             titulo: 'Tipo de combrobantes',
             tituloModal: 'tipo de comprobante',
             ruta: '/tipo_comprobante',
-            cabeceras: ['#', 'Nombre', 'Documento', 'Descripcion', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Nombre', 'Documento', 'Descripcion'],
             variables: [
                 {
                     for: 'nombre',
@@ -127,17 +127,17 @@ export default {
             tituloSerie: 'Tipo de combrobantes',
             tituloModalSerie: 'tipo de comprobante',
             rutaSerie: '/serie_comprobante',
-            cabecerasSerie: ['#', 'Serie',  'Numero inicial', 'Numero actual', 'Numero final', 'Año', 'Estado', 'Acciones'],
+            cabecerasSerie: ['Acciones', '#', 'Serie',  'Numero inicial', 'Numero actual', 'Numero final', 'Año', 'Estado'],
             arraySeries: [],
             objetoSerie: 
             
             {
-                id_comprobante: null,
+                id_tipo_comprobante: null,
                 serie: '',
-                numeroInicial: 1,
-                numeroActual: null,
-                numeroFinal: null,
-                año: '',
+                numero_inicial: 1,
+                numero_actual: null,
+                numero_final: null,
+                anio: '',
                 estado: 1
             },
             //controladorTrash: 1 // 1 -> Deshabilitar, 2 -> Habilitar
@@ -146,7 +146,7 @@ export default {
     },
     methods:{
         recibirId(id){
-            this.objetoSerie.id_comprobante = id
+            this.objetoSerie.id_tipo_comprobante = id
         },
         limpiarTablaSeries(){
             $('#myTableSeries').DataTable().destroy();
@@ -171,20 +171,12 @@ export default {
             $('#agregarSeries').modal('hide')
         },
         agregarSerie(){
-            let formDatos = new FormData();
-            formDatos.append('id_tipo_comprobante', this.objetoSerie.id_comprobante)
-            formDatos.append('serie', this.objetoSerie.serie)
-            formDatos.append('numero_inicial', this.objetoSerie.numeroInicial)
-            formDatos.append('numero_actual', this.objetoSerie.numeroActual)
-            formDatos.append('numero_final', this.objetoSerie.numeroFinal)
-            formDatos.append('anio', this.objetoSerie.año)
-            formDatos.append('estado', this.objetoSerie.estado)
-            axios.post(`${this.rutaSerie}`, formDatos).then((response)=>{
+            axios.post(`${this.rutaSerie}`, this.objetoSerie).then((response)=>{
                 this.cerrarModalAserie();
                 $( function () {
                     $('#myTableSeries').DataTable().destroy();
                 } );
-                this.listarSeries(this.objetoSerie.id_comprobante);
+                this.listarSeries(this.objetoSerie.id_tipo_comprobante);
             })
         },
         condicionSerie(item){
@@ -193,22 +185,41 @@ export default {
                 formDatos.append('estado', 1)
                 formDatos.append("_method", "put");
                 axios.post(`serie_comprobante/${item.id}`, formDatos).then((response)=>{
-                    alert('Serie habilitada')
+                    Vue.swal({
+                        title: 'Serie Habilitada!',
+                        text: 'La serie ha sido habilitada con éxito!',
+                        icon: 'success'
+                    });
                     $( function () {
                         $('#myTableSeries').DataTable().destroy();
                     } );
-                    this.listarSeries(this.objetoSerie.id_comprobante);
+                    this.listarSeries(this.objetoSerie.id_tipo_comprobante);
+                    }).catch(error=>{
+                        Vue.swal({
+                            title: 'Error al habilitar!',
+                            text: 'La serie no ha podido ser habilitada!',
+                            icon: 'error'
+                        });
                     })
             }else if(item.estado == 1){
                 formDatos.append('estado', 0)
                 formDatos.append("_method", "put");
                 axios.post(`serie_comprobante/${item.id}`, formDatos).then((response)=>{
-                    alert('Serie deshabilitada')
+                    Vue.swal({
+                        title: 'Serie deshabilitada!',
+                        text: 'La serie ha sido deshabilitada con éxito!',
+                        icon: 'success'
+                    });
                     $( function () {
                         $('#myTableSeries').DataTable().destroy();
                     } );
-                    this.listarSeries(this.objetoSerie.id_comprobante);
-                    
+                    this.listarSeries(this.objetoSerie.id_tipo_comprobante);
+                }).catch(error=>{
+                    Vue.swal({
+                        title: 'Error al deshabilitar!',
+                        text: 'La serie no ha podido ser deshabilitada!',
+                        icon: 'error'
+                    });
                 })
             }
             
@@ -218,7 +229,7 @@ export default {
     watch:{
         objetoSerie:{
             handler: function(){
-                    this.objetoSerie.numeroActual = this.objetoSerie.numeroInicial-1
+                    this.objetoSerie.numero_actual = this.objetoSerie.numero_inicial-1
                 },
             deep: true
         },

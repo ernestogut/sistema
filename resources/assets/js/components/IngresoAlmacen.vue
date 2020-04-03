@@ -153,10 +153,10 @@ export default {
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['#', 'Codigo', 'Producto', 'Precio', 'Cantidad', 'Acciones'],
-            cabecerasCliente: ['#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
+            cabecerasCliente: ['Acciones', '#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto'],
             iconos: 'icon-plus',
-            cabecerasFactura: ['#', 'Num documento', 'Almacén', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación', 'Acciones'],
+            cabecerasFactura: ['Acciones', '#', 'Num documento', 'Almacén', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
             usuarioLogueado: {},
             comprobanteEscogido: '',
             tipoDocumento: null,
@@ -362,14 +362,7 @@ export default {
             $('#modalInformacionFact').modal('show')
         },
         insertarCabecera(){
-            var me = this;
-            let formDatos = new FormData();
-            formDatos.append('id_almacen', this.objetoIngreso.id_almacen);
-            formDatos.append('id_usuario', this.objetoIngreso.id_usuario);
-            formDatos.append('fecha_emision', this.objetoIngreso.fecha_emision);
-            formDatos.append('motivo', this.objetoIngreso.motivo);
-            formDatos.append('observacion', this.objetoIngreso.observacion);
-            axios.post('/cabecera_ingreso', formDatos).then((response)=>{
+            axios.post('/cabecera_ingreso', this.objetoIngreso).then((response)=>{
                 this.id_cabecera_ingreso = response.data
                 for(var i = 0; i < this.ventas.length; i++){
                     this.ventas[i].almacen = this.objetoIngreso.id_almacen;
@@ -378,12 +371,20 @@ export default {
                 axios.post('/detalle_ingreso', {'ventas': this.ventas, 'id_cabecera_ingreso': this.id_cabecera_ingreso}).then((response)=>{
                 })
                 $('#modalVenta').modal('hide');
-                alert('Guardado correctamente');
+                Vue.swal({
+                    title: 'Ingreso exitoso!',
+                    text: 'El ingreso ha sido realizado con éxito!',
+                    icon: 'success'
+                });
                 $('#myTable').DataTable().destroy();
                 this.listarIngresos();
             })
             .catch(error=>{
-                alert('Hubo un error al guardar')
+                Vue.swal({
+                    title: 'Ingreso fallido!',
+                    text: 'Ha habido un error al procesar el ingreso!',
+                    icon: 'error'
+                });
             })
         },
         obtenerFecha(){

@@ -12,6 +12,9 @@ window.Vue = require('vue');
 
 
 import moment from 'moment'
+import VueSweetalert2 from 'vue-sweetalert2';
+
+Vue.use(VueSweetalert2);
 Object.defineProperty(Vue.prototype, '$moment', {value: moment})
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -48,6 +51,7 @@ Vue.component('producto-speed', require('./components/ProductoSpeed.vue').defaul
 Vue.component('traspaso-almacen', require('./components/TraspasoAlmacen.vue').default);
 Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
 Vue.component('apertura-caja', require('./components/AperturaCaja.vue').default);
+Vue.component('movimiento-caja', require('./components/MovimientoCaja.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -60,6 +64,7 @@ var app = new Vue({
     el: '#app',
     data :{
         menu : 0,
+        arrayProductos: [],
         notifications: []
     },
     created(){

@@ -164,10 +164,10 @@ export default {
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['#', 'Codigo', 'Producto', 'Precio', 'Cantidad', 'Acciones'],
-            cabecerasCliente: ['#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
+            cabecerasCliente: ['Acciones', '#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto'],
             iconos: 'icon-plus',
-            cabecerasTraslado: ['#', 'Num documento', 'Almacén origen', 'Almacén destino', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación', 'Acciones'],
+            cabecerasTraslado: ['Acciones', '#', 'Num documento', 'Almacén origen', 'Almacén destino', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
             usuarioLogueado: {},
             comprobanteEscogido: '',
             tipoDocumento: null,
@@ -192,18 +192,12 @@ export default {
         }
     },
     mounted(){
-        //this.listarTComprobantes();
         this.listarTraslados()
         this.listarUsuarios();
         this.controlador = 4
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
-        //$(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-        //$(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
     },
     methods:{
-        /*capturarComprobante(item){
-            this.objetoComprobante = item
-        },*/
         limpiarTabla(){
             this.ventas = []
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
@@ -242,16 +236,6 @@ export default {
                 this.tablaProductos();
             })
         },
-       /* listarClientes(){
-            this.loading = true
-            var urlItem = `/cliente/${this.objetoComprobante.id_tipo_doc}/listarClientesModal`;
-            axios.get(urlItem).then(response=>{
-                this.arrayClientes = response.data;
-                this.loading = false;
-                this.initiated = true;
-                this.tablaClientes();
-            })
-        },*/
         listarTraslados(){
             var urlItem = '/cabecera_traslado';
             this.loading = true
@@ -262,15 +246,6 @@ export default {
                 this.miTabla();
             })
         },
-        /*listarTipodeComprobante(){
-            this.loading = true
-            axios.get(`/c_fact/${this.comprobanteEscogido}`).then(response=>{
-                this.arrayFacturas = response.data;
-                this.loading = false;
-                this.initiated = true;
-                this.miTabla();
-            })
-        },*/
         listarUsuarios(){
             var urlItem = '/user/logeado';
             axios.get(urlItem).then(response=>{
@@ -282,48 +257,6 @@ export default {
                 this.arrayUsuarios = response.data;
             })
         },
-        /*listarTComprobantes(){
-            var urlItem = '/tipo_comprobante/obtenerComprobantes';
-            axios.get(urlItem).then(response=>{
-                this.arrayComprobantes = response.data;
-            })
-        },
-        listarSeries(){
-            axios.get(`/serie_comprobante/${this.comprobanteEscogido}/listarSeries`).then(response=>{
-                if(response.data.length > 0){
-                    this.arraySeries = response.data;
-                    this.objetoFactura.id_serie = response.data[0].id;
-                }else{
-                    alert('Debes registrar series')
-                }
-                
-            })
-        },
-        colocarFolio(){
-            var combo = document.getElementById("selectSeries");
-            var selected = combo.options[combo.selectedIndex].text;
-            this.objetoFactura.serie = selected;
-        },*/
-        /*eliminarItem(item, index){
-            if(confirm(`Está seguro de eliminar el item ${item.codigo}?`)){
-                axios.delete(`/producto/${item.id}`)
-                    .then(()=>{
-                        this.arrayItems.splice(index,1)
-                        
-                    })
-                    $( function () {
-                        $('table.display').DataTable().destroy();
-                    } );
-                    this.listarItem();
-            }
-        },*/
-        /*tablaClientes(){
-            $( function () {
-                $('#myTableClientes').DataTable({
-                    searching: true
-                });
-            } );
-        },*/
         tablaProductos(){
             $( function () {
                 $('#myTableProductos').DataTable({
@@ -332,23 +265,12 @@ export default {
             } );
         },
         abrirModalVenta(){
-            
-            /*if(this.comprobanteEscogido == 0){
-                alert('Debes elegir algun comprobante') 
-            }else{*/
-                //this.colocarFolio()
                 this.listarUsuarios();
                 this.seleccionarAlmacen();
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
-            //}
-            
         },
-        /*abrirModalClientes(){
-            this.listarClientes()
-            this.controlador = 2
-            $('#modalClientes').modal('show');
-        },*/
+       
         abrirModalAgregarProducto(){
             this.listarItem()
             this.controlador = 1
@@ -366,22 +288,10 @@ export default {
             this.ventas.splice(index,1)
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
-       /* buscarCliente(codigo){
-            axios.get(`/cliente/${codigo}/buscarCliente`).then((response)=>{
-                this.objetoFactura.cod_cliente = response.data[0].codigo
-                this.objetoFactura.ruc_cliente = response.data[0].num_documento
-                this.objetoFactura.dir_cliente = response.data[0].direccion
-                this.objetoFactura.razon = response.data[0].razon
-            })
-        },*/
         verFactura(item){
             axios.get(`/detalle_traslado/${item.num_documento}`).then((response)=>{
-                //this.arrayDetalleTraslado = reponse.data
                 this.arrayDetalleTraslado.cabecera = response.data[0];
                 this.arrayDetalleTraslado.detalle = response.data[1];
-                //console.log(response.data[0].num_doc_detalle);
-                //console.log(response.data[0].num_doc_cabecera);
-                //console.log(response.data[1][0]);
             })
 
             
@@ -391,30 +301,29 @@ export default {
             if(this.objetoIngreso.id_almacen_origen == this.objetoIngreso.id_almacen_destino){
                 alert('El almacen de destino no puede ser el mismo que el de origen')
             }else{
-                var me = this;
-                let formDatos = new FormData();
-                formDatos.append('id_almacen_origen', this.objetoIngreso.id_almacen_origen);
-                formDatos.append('id_almacen_destino', this.objetoIngreso.id_almacen_destino);
-                formDatos.append('id_usuario', this.objetoIngreso.id_usuario);
-                formDatos.append('fecha_emision', this.objetoIngreso.fecha_emision);
-                formDatos.append('motivo', this.objetoIngreso.motivo);
-                formDatos.append('observacion', this.objetoIngreso.observacion);
-                axios.post('/cabecera_traslado', formDatos).then((response)=>{
+                axios.post('/cabecera_traslado', this.objetoIngreso).then((response)=>{
                     this.id_cabecera_traslado = response.data
                     for(var i = 0; i < this.ventas.length; i++){
                         this.ventas[i].almacen_origen = this.objetoIngreso.id_almacen_origen;
                         this.ventas[i].almacen_destino = this.objetoIngreso.id_almacen_destino;
                     }
-                    //this.ventas.almacen = this.objetoIngreso.id_almacen;
                     axios.post('/detalle_traslado', {'ventas': this.ventas, 'id_cabecera_traslado': this.id_cabecera_traslado}).then((response)=>{
                     })
                     $('#modalVenta').modal('hide');
-                    alert('Traslado realizado con éxito');
+                    Vue.swal({
+                        title: 'Traslado exitoso!',
+                        text: 'El traslado ha sido procesado con éxito!',
+                        icon: 'success'
+                    });
                     $('#myTable').DataTable().destroy();
                     this.listarTraslados();
                 })
                 .catch(error=>{
-                    alert('Hubo un error al guardar')
+                    Vue.swal({
+                        title: 'Traslado fallido',
+                        text: 'El traslado no ha podido ser procesado',
+                        icon: 'error'
+                    });
                 })
             }
         },

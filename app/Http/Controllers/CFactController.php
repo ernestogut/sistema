@@ -16,7 +16,7 @@ class CFactController extends Controller
     public function index(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
-        $cabecera = C_fact::select('id as num_doc', 'razon', 'serie', 'folio', 'fecha', 'total')->orderBy('id', 'desc')->get();
+        $cabecera = C_fact::select('id as num_doc', 'razon', 'serie', 'folio', 'fecha', 'total')->orderBy('id', 'desc')->where('fecha', '=', date('Y-m-d'))->get();
         return $cabecera;
     }
 
@@ -41,6 +41,12 @@ class CFactController extends Controller
         if(!$request->ajax()) return redirect('/');
         //$cabecera = new C_fact();
         DB::select("call insertarCabeceraFact(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[$request->id_serie, $request->id_tipo_comprobante, $request->cod_cliente,$request->ruc_cliente,$request->dir_cliente,$request->razon,$request->id_user,$request->fecha,$request->tipo_venta,$request->serie,$request->sub_total,$request->desc_global,$request->igv_total,$request->total]);
+
+
+        DB::select("call generarCuentas(?,?,?)",[$request->total, $request->fecha, $request->id_almacen]);
+
+
+
 
 
         $cabecera = C_fact::orderBy('id', 'desc')->first()->id;
@@ -75,7 +81,7 @@ class CFactController extends Controller
         if(!$request->ajax()) return redirect('/');
         /*$cabecera = C_fact::find($id);
         return $cabecera;*/
-        $cabecera = C_fact::select('id as num_doc', 'razon', 'serie', 'folio', 'fecha', 'total')->where('id_tipo_comprobante', '=', $tipo_comprobante)->orderBy('id', 'desc')->get();
+        $cabecera = C_fact::select('id as num_doc', 'razon', 'serie', 'folio', 'fecha', 'total')->where('id_tipo_comprobante', '=', $tipo_comprobante)->orderBy('id', 'desc')->where('fecha', '=', date('Y-m-d'))->get();
         return $cabecera;
     }
 

@@ -59,15 +59,27 @@
             <template v-if="menu==17">
                 <cierre-caja></cierre-caja>
             </template>
+            <template v-if="menu==18">
+                <movimiento-caja></movimiento-caja>
+            </template>
         @elseif(Auth::user()->idrole == 2)
+            <template v-if="menu==0">
+                <apertura-caja></apertura-caja>
+            </template>
             <template v-if="menu==5">
-                <venta></venta>
+                <facturacion></facturacion>
             </template>
             <template v-if="menu==6">
                 <cliente></cliente>
             </template>
             <template v-if="menu==10">
                     <consultaventa></consultaventa>
+            </template>
+            <template v-if="menu==17">
+                <cierre-caja></cierre-caja>
+            </template>
+            <template v-if="menu==18">
+                <movimiento-caja></movimiento-caja>
             </template>
         @elseif(Auth::user()->idrole == 3)
             <template v-if="menu==1">

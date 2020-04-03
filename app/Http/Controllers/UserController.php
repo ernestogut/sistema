@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Persona;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -77,36 +78,12 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         if(!$request->ajax()) return redirect('/');
-
-        try{
-            DB::beginTransaction();
-            $user = User::findOrFail($request->id);
-            $persona = Persona::findOrFail($user->id);
-
-
-
-            $persona->nombre = $request->nombre;
-            $persona->tipo_documento = $request->tipo_documento;
-            $persona->num_documento = $request->num_documento;
-            $persona->direccion = $request->direccion;
-            $persona->telefono = $request->telefono;
-            $persona->email = $request->email;
-            $persona->save();
-
-            $user->usuario= $request->usuario;
-            $user->password = bcrypt($request->password);
-            $user->condicion = '1';
-            $user->idrole = $request->idrole;
-            $user->save();
-
-            DB::commit();
-
-        } catch(Exception $e){
-            DB::rollBack();
-        }
+        $usuario = User::find($id);
+        $usuario->id_almacen = $request->id_almacen;
+        $usuario->save();
     }
 
     /**

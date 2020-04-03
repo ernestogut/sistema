@@ -8,15 +8,6 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) of arrayItems" :key="item.key">
-                        <th scope="row" class="text-center align-middle">{{index+1}}</th>
-                        <td v-for="(value, key) in item" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'" class="text-center align-middle">
-                            <template v-if="key != 'imagen'">
-                                {{value}}
-                            </template>
-                            <template v-else>
-                                <img :src="(controlador!=1)?((value==null)?'images/0.jpg':`images/${value}`):((value==null)?'images/0.jpg':value)" alt="" width="60">
-                            </template>
-                        </td>
                         <td class="text-center align-middle">
                             <div v-if="!factura">
                                 <span class="btn btn-primary btn-sm boton"  @click="(controlador!=5)?funcionConjunto(item):funcionBoton(item)"><i :class="icono"></i></span>
@@ -29,6 +20,15 @@
                                 <span class="btn btn-danger btn-sm boton" v-if="controlador!=6"><i class="icon-trash"  ></i></span>
                                 <span class="btn btn-danger btn-sm boton" v-if="controlador==6" @click="funcionConjuntoTrash(item)"><i :class="(item.estado==0)?'icon-heart':'icon-trash'"  ></i></span>
                             </div>
+                        </td>
+                        <th scope="row" class="text-center align-middle">{{index+1}}</th>
+                        <td v-for="(value, key) in item" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'" class="text-center align-middle">
+                            <template v-if="key != 'imagen'">
+                                {{value}}
+                            </template>
+                            <template v-else>
+                                <img :src="(controlador!=1)?((value==null)?'images/0.jpg':`images/${value}`):((value==null)?'images/0.jpg':value)" alt="" width="60">
+                            </template>
                         </td>
                     </tr>
                 </tbody>
@@ -109,7 +109,6 @@ export default {
                 this.emitirEventoArray(this.arrayVentas);
             }else{
                 this.arrayVentas.push(obj)
-                console.log(this.arrayVentas)
                 this.emitirEventoArray(this.arrayVentas);
             }
             localStorage.setItem('ventas', JSON.stringify(this.arrayVentas))

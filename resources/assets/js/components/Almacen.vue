@@ -9,7 +9,7 @@ export default {
             titulo: 'Almacenes',
             tituloModal: 'almacén',
             ruta: '/almacen',
-            cabeceras: ['#', 'Codigo', 'Descripcion', 'Dirección', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Codigo', 'Descripcion', 'Dirección'],
             variables: [
                 {
                     for: 'codigo',

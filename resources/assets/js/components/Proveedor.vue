@@ -9,7 +9,7 @@ export default {
             titulo: 'Proveedores',
             tituloModal: 'proveedor',
             ruta: '/proveedor',
-            cabeceras: ['#', 'Código', 'Tipo de documento', 'Num documento', 'Nombre',   'Correo', 'Telef contacto', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Código', 'Tipo de documento', 'Num documento', 'Nombre',   'Correo', 'Telef contacto'],
             variables: [
                 {
                     for: 'codigo',

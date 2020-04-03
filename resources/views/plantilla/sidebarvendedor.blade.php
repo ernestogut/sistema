@@ -12,21 +12,37 @@
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-basket"></i> Ventas</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=5" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Ventas</a>
+                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Facturación</a>
                         </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Financiero</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=17" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Cierre de caja</a>
+                        </li>
+                        <li  @click="menu=18" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Movimiento de caja</a>
+                        </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Socios de negocio</a>
+                    <ul class="nav-dropdown-items">
                         <li  @click="menu=6" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-notebook"></i> Clientes</a>
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item nav-dropdown">
+                <!-- <li class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pie-chart"></i> Reportes</a>
                     <ul class="nav-dropdown-items">
                         <li   @click="menu=10" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-chart"></i> Reporte Ventas</a>
                         </li>
                     </ul>
-                </li>
+                </li>-->
             </ul>
         </nav>
         <button class="sidebar-minimizer brand-minimizer" type="button"></button>

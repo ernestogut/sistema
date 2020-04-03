@@ -9,6 +9,7 @@
                         </div>
                         <div>
                             <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" @click="probarAlert()">probar</button>
                         </div>   
                     </div>
                 </div>
@@ -248,10 +249,10 @@ export default {
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['#', 'Codigo', 'Producto', 'Precio', 'Cantidad', 'Acciones'],
-            cabecerasCliente: ['#', 'Codigo', 'Razón social', 'Dirección', 'Numero de documento', 'Acciones'],
+            cabeceras: ['Acciones', '#', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
+            cabecerasCliente: ['Acciones', '#', 'Codigo', 'Razón social', 'Dirección', 'Numero de documento'],
             iconos: 'icon-plus',
-            cabecerasFactura: ['#', 'ID', 'Razón social', 'Serie', 'Folio', 'Fecha', 'Total', 'Acciones'],
+            cabecerasFactura: ['Acciones', '#', 'ID', 'Razón social', 'Serie', 'Folio', 'Fecha', 'Total'],
             usuarioLogueado: {},
             comprobanteEscogido: '',
             tipoDocumento: null,
@@ -261,6 +262,7 @@ export default {
                 {
                     id_serie: null,
                     id_tipo_comprobante: null,
+                    id_almacen: null,
                     cod_cliente: '',
                     ruc_cliente: '',
                     dir_cliente: '',
@@ -280,15 +282,18 @@ export default {
         }
     },
     mounted(){
-        this.listarTComprobantes();
-        this.listarFacturas()
         this.listarUsuarios();
-        this.controlador = 4
-        $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
-        $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-        $(this.$refs.tablaClientes).on("hidden.bs.modal", this.limpiarTablaClientes)
     },
     methods:{
+        probarAlert(){
+                // Use sweetalret2
+                Vue.swal({
+                    title: 'Good job!',
+                    text: 'You clicked the button!',
+                    icon: 'success'
+                });
+            
+        },
         capturarComprobante(item){
             this.objetoComprobante = item
         },
@@ -378,6 +383,33 @@ export default {
             var urlItem = '/user/logeado';
             axios.get(urlItem).then(response=>{
                 this.objetoFactura.id_user = response.data.id
+                this.objetoFactura.id_almacen = response.data.id_almacen
+                this.almacen_id = response.data.id_almacen;
+                axios.get(`/cierre_caja/${this.almacen_id}/verificarEstadoCaja`).then((response)=>{
+                    //this.arrayCajas = response.data;
+                    var contador = 0;
+                    for(var i = 0; i < response.data.length; i++){
+                        if(response.data[i].estado == 'abierto' && response.data[i].fecha == this.$moment().format("YYYY-MM-DD")){
+                            contador += 1
+                            //break;
+                        }
+                    }
+                    if(contador > 0){
+                        this.listarTComprobantes();
+                        this.listarFacturas()
+                        
+                        this.controlador = 4
+                        $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
+                        $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
+                        $(this.$refs.tablaClientes).on("hidden.bs.modal", this.limpiarTablaClientes)
+                    }else{
+                        Vue.swal({
+                            title: 'No hay alguna caja abierta',
+                            text: '¡Debes abrir caja primero!',
+                            icon: 'error'
+                        });
+                    }
+                })
             })
             var urlItem = '/user';
             axios.get(urlItem).then(response=>{
@@ -396,7 +428,11 @@ export default {
                     this.arraySeries = response.data;
                     this.objetoFactura.id_serie = response.data[0].id;
                 }else{
-                    alert('Debes registrar series')
+                    Vue.swal({
+                        title: 'Debes registrar series',
+                        text: '¡No hay series registradas para este tipo de comprobante!',
+                        icon: 'error'
+                    });
                 }
                 
             })
@@ -436,7 +472,11 @@ export default {
         abrirModalVenta(){
             
             if(this.comprobanteEscogido == 0){
-                alert('Debes elegir algun comprobante') 
+                Vue.swal({
+                    title: 'Debes elegir un tipo de comprobante',
+                    text: '¡No tienes nigún tipo de comprobante seleccionado!',
+                    icon: 'error'
+                }); 
             }else{
                 this.colocarFolio()
                 this.seleccionarAlmacen();
@@ -480,34 +520,26 @@ export default {
         },
         insertarCabecera(){
             var me = this;
-            let formDatos = new FormData();
-            formDatos.append('id_serie', this.objetoFactura.id_serie);
-            formDatos.append('id_tipo_comprobante', Number(this.comprobanteEscogido));
-            formDatos.append('cod_cliente', this.objetoFactura.cod_cliente);
-            formDatos.append('ruc_cliente', this.objetoFactura.ruc_cliente);
-            formDatos.append('dir_cliente', this.objetoFactura.dir_cliente);
-            formDatos.append('razon', this.objetoFactura.razon);
-            formDatos.append('id_user', Number(this.objetoFactura.id_user));
-            formDatos.append('fecha', this.objetoFactura.fecha);
-            formDatos.append('tipo_venta', this.objetoFactura.tipo_venta);
-            formDatos.append('serie', this.objetoFactura.serie);
-            formDatos.append('folio', this.objetoFactura.folio);
-            formDatos.append('sub_total', this.objetoFactura.sub_total);
-            formDatos.append('desc_global', this.objetoFactura.desc_global);
-            formDatos.append('igv_total', this.objetoFactura.igv_total);
-            formDatos.append('total', this.objetoFactura.total);
-
-            axios.post('/c_fact', formDatos).then((response)=>{
+            axios.post('/c_fact', this.objetoFactura).then((response)=>{
                 this.id_cabecera = response.data
                 axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
                 })
                 $('#modalVenta').modal('hide');
-                alert('Guardado correctamente');
+                Vue.swal(
+                    'Venta concretada!',
+                    'La venta se proceso correctamente!',
+                    'success'
+                );
                 $('#myTable').DataTable().destroy();
                 this.listarTipodeComprobante();
             })
             .catch(error=>{
-                alert('Hubo un error al guardar')
+                Vue.swal({
+                        title: 'Venta no concretada!',
+                        text: 'Hubo un error al procesar la venta!',
+                        icon: 'error'
+                    }   
+                );
             })
         },
         obtenerFecha(){
@@ -522,6 +554,7 @@ export default {
                 var suma = 0
                 for(var i = 0; i < this.ventas.length; i++){
                     lista.push(this.ventas[i].total)
+                    this.ventas[i].almacen = this.almacen_id;
                 }
                 suma = lista.reduce((a, b) => a + b, 0)
                 this.objetoFactura.sub_total = suma
@@ -532,6 +565,7 @@ export default {
         },
         comprobanteEscogido(){
             this.listarSeries()
+            this.objetoFactura.id_tipo_comprobante = this.comprobanteEscogido;
             $( function () {
                 $('#myTable').DataTable().destroy();
             } );

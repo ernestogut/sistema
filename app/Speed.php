@@ -10,7 +10,7 @@ class Speed extends Model
     
 	protected $connection = 'speed';
 
-	protected $table = 'wp_posts';
+	protected $table = 'productos_tienda';
 	
 	/*protected $connection = 'speed2';
 
