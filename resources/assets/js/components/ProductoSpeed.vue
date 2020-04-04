@@ -1,6 +1,5 @@
 <template>
 <main class="main">
-    
     <div class="card-body" >
         <spinner v-if="loading"></spinner>
             <table v-else-if="initiated" class="table table-striped table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
@@ -17,7 +16,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(producto, index) of $root.arrayProductos" :key="producto.key" :class="(producto.stock < 5)?'table-danger':''">
+                    <tr v-for="(producto, index) of arrayProductos" :key="producto.key" :class="(producto.stock < 5)?'table-danger':''">
                         <td class="text-center align-middle">
                             <div>
                                 <span class="btn btn-primary btn-sm boton" @click="abrirModalCantidades(producto)" ><i class="icon-pencil"></i></span>
@@ -117,7 +116,6 @@ export default {
             loading: false,
             initiated: false,
             arrayAlmacenFijo: [],
-            arrayProductos: [],
             arrayAlmacen: [],
             objetoProdAlmacen: {
                 id_producto: null,
@@ -129,18 +127,19 @@ export default {
             modoEditable: false 
         }
     },
+    computed:{
+        arrayProductos(){
+            return this.$store.getters.arrayProductos;
+        }
+    },
     methods:{
-        listarItem(){
+        async listarItem(){
             this.loading = true
-            var urlItem = 'speed';
-            axios.get(urlItem).then(response=>{
-                this.arrayProductos = response.data;
-                this.$root.arrayProductos = response.data;
-                console.log(this.$root.arrayProductos)
+            await this.$store.dispatch('cargarProductos').then(()=>{
                 this.loading = false;
                 this.initiated = true;
                 this.tablaProductos();
-            })
+            });
         },
         listarAlmacenes(){
             var urlItem = 'almacen';
@@ -219,6 +218,7 @@ export default {
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             axios.post('/inventario', formDatos).then((response)=>{
                 this.loading = false;
+                this.initiated = true;
                 $('#modalModificarCantidad').modal('hide');
                 //alert('quedo')
             }).catch((error)=>{
@@ -235,6 +235,7 @@ export default {
             formDatos.append("_method", "put");
             axios.post(`/inventario/${idAlmacen}`, formDatos).then((response)=>{
                 this.loading = false;
+                this.initiated = true;
                 $('#modalModificarCantidad').modal('hide');
                 //alert('quedo')
             }).catch((error)=>{

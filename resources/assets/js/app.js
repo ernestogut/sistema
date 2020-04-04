@@ -13,7 +13,11 @@ window.Vue = require('vue');
 
 import moment from 'moment'
 import VueSweetalert2 from 'vue-sweetalert2';
+import Vuex from 'vuex';
+import StoreData from './store';
 
+
+Vue.use(Vuex);
 Vue.use(VueSweetalert2);
 Object.defineProperty(Vue.prototype, '$moment', {value: moment})
 /**
@@ -44,6 +48,7 @@ Vue.component('producto', require('./components/Producto.vue').default);
 Vue.component('componente-prueba', require('./components/ComponentePrueba.vue').default);
 Vue.component('facturacion', require('./components/Facturacion.vue').default);
 Vue.component('datatable', require('./components/DataTable.vue').default);
+Vue.component('datatable-productos', require('./components/DataTableProductos.vue').default);
 Vue.component('comprobante', require('./components/Comprobante.vue').default);
 Vue.component('tipo-comprobante', require('./components/TipoComprobante.vue').default);
 Vue.component('ingreso-almacen', require('./components/IngresoAlmacen.vue').default);
@@ -58,16 +63,30 @@ Vue.component('movimiento-caja', require('./components/MovimientoCaja.vue').defa
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-
+const store = new Vuex.Store(StoreData);
 
 var app = new Vue({
     el: '#app',
+    store,
+    mounted(){
+        this.cargarUsuarioLog();
+        //this.$store.dispatch('cargarProductos')
+    },
     data :{
-        menu : 0,
+        menu : 20,
         arrayProductos: [],
         notifications: []
     },
-    created(){
+    methods:{
+        async cargarUsuarioLog(){
+            await this.$store.dispatch('cargarUsuarioLogeado')
+            await this.$store.dispatch('cargarUsuarios').then(()=>{
+                this.menu = 0;
+                //this.$store.dispatch('cargarProductos')
+            })
+        },
+    }
+    //created(){
         // let me = this;
         // axios.post('notification/get').then(function(response){
         //     //console.log(response.data);
@@ -81,6 +100,6 @@ var app = new Vue({
         // Echo.private('App.User.' + userId).notification((notification) => {
         //     me.notifications.unshift(notification);
         // });
-    }
+    //}
 });
 

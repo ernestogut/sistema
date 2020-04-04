@@ -20,7 +20,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Almacen</label>
-                                    <select v-model="objetoAperturaCaja.id_almacen" class="form-control">
+                                    <select v-model="almacen" class="form-control">
                                         <option disabled value="">Escoje un almacén</option>
                                         <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                     </select>
@@ -42,8 +42,45 @@
 <script>
 export default {
     mounted(){
-        this.listarUsuarios();
-        
+        axios.get(`/cierre_caja/${this.usuarioLogeado.id_almacen}/verificarEstadoCaja`).then((response)=>{
+            this.contador = 0
+            this.contadorVendedores = 0
+            for(var i = 0; i < response.data.length; i++){
+                if(response.data[i].estado == 'abierto' && response.data[i].fecha == this.$moment().format("YYYY-MM-DD")){
+                    this.contador += 1
+                    if(this.usuarioLogeado.id == response.data[i].id_usuario){
+                        this.contadorVendedores += 1
+                    }
+                }
+            }
+            if(this.contador > 0){
+                if(this.contadorVendedores > 0 && this.usuarioLogeado.id_almacen != 0){
+                    $('#aperturaCajaModal').modal('hide');
+                    if(this.usuarioLogeado.idrole == 1){
+                        this.$root.menu = 1;
+                    }else if(this.usuarioLogeado.idrole == 2){
+                        this.$root.menu = 5;
+                    }
+                }else{
+                    Vue.swal({
+                        icon: 'error',
+                        title: 'Existe una caja abierta',
+                        text: 'Comunicate con el administrador para solucionarlo!',
+                    })
+                }
+            }else{
+                if(this.usuarioLogeado.id_almacen == 0 || this.contador < 1){
+                    this.listarAlmacen();
+                    this.obtenerFecha();
+                    this.abrirModalApertura();
+                }
+            }
+        })
+    },
+    computed:{
+        usuarioLogeado(){
+            return this.$store.getters.arrayUsuarioLogeado;
+        },
     },
     data(){
         return{
@@ -58,7 +95,7 @@ export default {
                 saldo_final: 0,
                 estado: 'abierto'
             },
-            usuarioLogeado: {},
+            almacen: '',
             arrayAlmacen: [],
             contador: '',
             contadorVendedores: ''
@@ -81,62 +118,24 @@ export default {
         obtenerFecha(){
             this.objetoAperturaCaja.fecha = this.$moment().format("YYYY-MM-DD")
         },
-        listarUsuarios(){
-            var urlItem = '/user/logeado';
-            axios.get(urlItem).then(response=>{
-                this.objetoAperturaCaja.id_usuario = response.data.id
-                this.usuarioLogeado = response.data;
-                axios.get(`/cierre_caja/${this.usuarioLogeado.id_almacen}/verificarEstadoCaja`).then((response)=>{
-                    this.contador = 0
-                    this.contadorVendedores = 0
-                    console.log(response.data)
-                    for(var i = 0; i < response.data.length; i++){
-                        if(response.data[i].estado == 'abierto' && response.data[i].fecha == this.$moment().format("YYYY-MM-DD")){
-                            this.contador += 1
-                            if(this.usuarioLogeado.id == response.data[i].id_usuario){
-                                this.contadorVendedores += 1
-                            }
-                        }
-                    }
-                    if(this.contador > 0){
-                        if(this.contadorVendedores > 0 && this.usuarioLogeado.id_almacen != 0){
-                            $('#aperturaCajaModal').modal('hide');
-                            if(this.usuarioLogeado.idrole == 1){
-                                this.$root.menu = 1;
-                            }else if(this.usuarioLogeado.idrole == 2){
-                                this.$root.menu = 5;
-                            }
-                        }else{
-                            Vue.swal({
-                                icon: 'error',
-                                title: 'Existe una caja abierta',
-                                text: 'Comunicate con el administrador para solucionarlo!',
-                            })
-                        }
-                    }else{
-                        if(this.usuarioLogeado.id_almacen == 0 || this.contador < 1){
-                            this.listarAlmacen();
-                            this.obtenerFecha();
-                            this.abrirModalApertura();
-                        }
-                    }
-                })
-                //
-            })
-        },
         listarAlmacen(){
             let me= this;
             var url='/almacen';
             axios.get(url).then(function (response){
+                me.almacen = response.data[0].id
                 me.objetoAperturaCaja.id_almacen = response.data[0].id
                 me.arrayAlmacen = response.data;
             })
         },
         usuario(){
+            this.objetoAperturaCaja.id_usuario = this.usuarioLogeado.id
+            this.objetoAperturaCaja.saldo_final = this.objetoAperturaCaja.saldo_inicial;
             //this.usuarioLogeado.id_almacen = this.objetoAperturaCaja.id_almacen
             let formDatos = new FormData();
             formDatos.append('id_almacen', this.objetoAperturaCaja.id_almacen)
             formDatos.append("_method", "put");
+            var usuario = this.usuarioLogeado;
+            usuario.id_almacen = this.objetoAperturaCaja.id_almacen
             $('#aperturaCajaModal').modal('hide');
             if(this.usuarioLogeado.id_almacen != 0 && this.contador > 0){
                 Vue.swal({
@@ -151,13 +150,21 @@ export default {
             }else{
                 axios.post('/cierre_caja', this.objetoAperturaCaja).then((response)=>{
                     axios.post(`/user/actualizar/${this.usuarioLogeado.id}`, formDatos).then((response)=>{
-
+                        this.$store.dispatch('actualizarUsuarioLogeado', usuario);
                     })
                 })
                 this.$root.menu = 1;
             }
         }
 
+    },
+    watch:{
+        almacen(){
+            this.objetoAperturaCaja.id_almacen = this.almacen;
+            axios.get(`/cierre_caja/${this.almacen}/montoDiaAnterior`).then(response=>{
+               this.objetoAperturaCaja.saldo_inicial = response.data[0].saldo_final
+            })
+        }
     }
 }
 </script>

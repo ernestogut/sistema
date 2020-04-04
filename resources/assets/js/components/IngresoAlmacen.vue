@@ -32,7 +32,7 @@
                                     <label>Almacen</label>
                                     <select v-model="objetoIngreso.id_almacen" class="form-control">
                                         <option disabled value="">Escoje un almacén</option>
-                                        <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
+                                        <option v-for="almacen in arrayAlmacenFijo" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
@@ -108,7 +108,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable  :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="controlador" :factura="false" :idTabla="'myTableProductos'" v-else-if="initiated"></datatable>
+                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
                                 </div>
                             </div>
                         </div>
@@ -135,6 +135,37 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Cantidades</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <spinner v-if="loading"></spinner>
+                                <div class="card-body" v-else-if="initiated">
+                                    <ul class="list-group">
+                                        <li class="list-group-item cursor-pointer" v-for="almacen in arrayAlmacen" :key="almacen.id">
+                                
+                                            <span v-if="almacen.editable">{{almacen.id}}. Existen {{almacen.cantidad}} unidad(es) en el almacen de {{almacen.descripcion}}</span>
+                                            <span v-else>
+                                                {{almacen.id}}. No existen unidades en el almacen de {{almacen.descripcion}}
+                                            </span>
+                                            
+                                                
+                                            <!--<div>
+                                                <span class="badge badge-primary badge-pill" id="eliminar" @click="eliminarTiempo(item, index)" v-show="!modoWcaRecibido || item.tiempoReal < 3000" >x</span>
+                                            </div>-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </main>
 </template>
 <script>
@@ -147,17 +178,15 @@ export default {
             arrayClientes: [],
             arrayItems: [],
             arrayFacturas: [],
-            arrayUsuarios: [],
             arrayComprobantes: [],
             arraySeries: [],
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['Acciones', '#', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
+            cabeceras: ['Acciones', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
             cabecerasCliente: ['Acciones', '#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto'],
             iconos: 'icon-plus',
             cabecerasFactura: ['Acciones', '#', 'Num documento', 'Almacén', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
-            usuarioLogueado: {},
             comprobanteEscogido: '',
             tipoDocumento: null,
             //datos de la factura
@@ -172,17 +201,27 @@ export default {
                 },
             controlador: 0, // 1 - productos, 2 - clientes, 4 -> facturas
             objetoDetalleFact: {},
-            id_cabecera_ingreso: null
+            id_cabecera_ingreso: null,
+            enAlmacen: false,
+            arrayAlmacenFijo: [],
+        }
+    },
+    computed:{
+        usuarioLogeado(){
+            return this.$store.getters.arrayUsuarioLogeado;
+        },
+        arrayUsuarios(){
+            return this.$store.getters.arrayUsuarios;
         }
     },
     mounted(){
         //this.listarTComprobantes();
         this.listarIngresos()
-        this.listarUsuarios();
+        this.objetoIngreso.id_usuario = this.usuarioLogeado.id;
         this.controlador = 4
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
-        //$(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-        //$(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
+        $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
+        $(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
     },
     methods:{
         capturarComprobante(item){
@@ -201,29 +240,32 @@ export default {
         },
         limpiarTablaProductos(){
             $('#myTableProductos').DataTable().destroy();
-            this.listarTipodeComprobante()
+            //this.listarTipodeComprobante()
+            this.listarIngresos()
         },
         limpiarTablaProveedores(){
             $('#myTableProveedores').DataTable().destroy();
-            this.listarTipodeComprobante()
+            //this.listarTipodeComprobante()
+            this.listarIngresos()
         },
         recibirVenta(venta){
             this.ventas = venta
+        },
+        recibirCantidadesAlmacen(almacen){
+            this.arrayAlmacen = almacen
         },
         miTabla(){
             $( function () {
                 $('#myTable').DataTable();
             } );
         },
-        listarItem(){
+        async listarItem(){
             this.loading = true
-            var urlItem = '/speed';
-            axios.get(urlItem).then(response=>{
-                this.arrayItems = response.data;
+            await this.$store.dispatch('cargarProductos').then(()=>{
                 this.loading = false;
                 this.initiated = true;
                 this.tablaProductos();
-            })
+            });
         },
         listarClientes(){
             this.loading = true
@@ -254,17 +296,6 @@ export default {
                 this.miTabla();
             })
         },
-        listarUsuarios(){
-            var urlItem = '/user/logeado';
-            axios.get(urlItem).then(response=>{
-                this.objetoIngreso.id_usuario = response.data.id
-                
-            })
-            var urlItem = '/user';
-            axios.get(urlItem).then(response=>{
-                this.arrayUsuarios = response.data;
-            })
-        },
         listarTComprobantes(){
             var urlItem = '/tipo_comprobante/obtenerComprobantes';
             axios.get(urlItem).then(response=>{
@@ -282,24 +313,6 @@ export default {
                 
             })
         },
-        colocarFolio(){
-            var combo = document.getElementById("selectSeries");
-            var selected = combo.options[combo.selectedIndex].text;
-            this.objetoFactura.serie = selected;
-        },
-        /*eliminarItem(item, index){
-            if(confirm(`Está seguro de eliminar el item ${item.codigo}?`)){
-                axios.delete(`/producto/${item.id}`)
-                    .then(()=>{
-                        this.arrayItems.splice(index,1)
-                        
-                    })
-                    $( function () {
-                        $('table.display').DataTable().destroy();
-                    } );
-                    this.listarItem();
-            }
-        },*/
         tablaClientes(){
             $( function () {
                 $('#myTableClientes').DataTable({
@@ -315,17 +328,9 @@ export default {
             } );
         },
         abrirModalVenta(){
-            
-            /*if(this.comprobanteEscogido == 0){
-                alert('Debes elegir algun comprobante') 
-            }else{*/
-                //this.colocarFolio()
-                this.listarUsuarios();
                 this.seleccionarAlmacen();
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
-            //}
-            
         },
         abrirModalClientes(){
             this.listarClientes()
@@ -342,7 +347,7 @@ export default {
             var url='/almacen';
             axios.get(url).then(function (response){
                 me.objetoIngreso.id_almacen = response.data[0].id
-                me.arrayAlmacen = response.data;
+                me.arrayAlmacenFijo = response.data;
             })
         },
         eliminarProductoTabla(index){

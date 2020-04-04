@@ -66,6 +66,11 @@ class CierreCajaController extends Controller
         $cierre_caja = CierreCaja::select('id_usuario', 'fecha', 'estado')->where('id_almacen', '=', $codigo)->orderBy('id', 'desc')->take(2)->get();
         return $cierre_caja;
     }
+    public function montoDiaAnterior($almacen)
+    {
+        $monto_anterior = CierreCaja::select('saldo_final')->where('id_almacen', '=', $almacen)->orderBy('id', 'desc')->take(1)->get();
+        return $monto_anterior;
+    }
 
     /**
      * Show the form for editing the specified resource.

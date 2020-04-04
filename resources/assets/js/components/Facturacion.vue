@@ -9,20 +9,19 @@
                         </div>
                         <div>
                             <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo</button>
-                            <button type="button" class="btn btn-primary" data-toggle="modal" @click="probarAlert()">probar</button>
                         </div>   
                     </div>
                 </div>
             </div>
-            
-            <div class="d-flex flex-wrap justify-content-around align-items-center">
+            <spinner v-if="loading"></spinner>
+            <div v-else-if="initiated" class="d-flex flex-wrap justify-content-around align-items-center">
                 <div v-for="comprobante in arrayComprobantes" :key="comprobante.id">
                     <input type="radio" v-model="comprobanteEscogido" v-bind:value="comprobante.id" @change="capturarComprobante(comprobante)">
                     <label >{{comprobante.nombre}}</label>
                 </div>
             </div>
-            <spinner v-if="loading"></spinner>
-            <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="controlador" :funcionBoton="verFactura" :factura="true" :idTabla="'myTable'" v-else-if="initiated">
+            <!--<spinner v-if="loading"></spinner>-->
+            <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="controlador" :funcionBoton="verFactura" :factura="true" :idTabla="'myTable'" v-if="initiated">
             </datatable>
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
@@ -133,7 +132,7 @@
                                         <td class="text-center align-middle">
                                             <select v-model="venta.almacen">
                                                 <option disabled value="">Escoje un almacén</option>
-                                                <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
+                                                <option v-for="almacen in arrayAlmacenFijo" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                             </select>
                                         </td>
                                         <td class="text-center align-middle"><input v-model="venta.total" disabled></td>
@@ -174,7 +173,7 @@
                 </div>
             </div>
             </div>
-                <div class="modal fade" tabindex="-1" role="dialog" id="modalProducto" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaProductos">
+                <div class="modal fade" tabindex="-1" role="dialog" id="modalProducto" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaProductos" style="overflow-y: scroll;">
                     <div class="modal-dialog modal-xl">
                         <div class="card-body">
                             <div class="modal-content" >
@@ -186,7 +185,31 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable  :arrayItems="arrayItems" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="1" :factura="false" :idTabla="'myTableProductos'" v-else-if="initiated"></datatable>
+                                    <!--<div class="card-body" v-else-if="initiated">
+                                        <table  class="table table-striped table-bordered dt-responsive nowrap"  id="myTableProductos" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-center align-middle" v-for="cabecera of cabeceras" :key="cabecera.id">{{cabecera}}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(producto) of $root.arrayProductos" :key="producto.key">
+                                                    <td class="text-center align-middle">
+                                                        <div>
+                                                            <span class="btn btn-primary btn-sm boton" @click="agregarProducto(producto)"><i class="icon-plus" ></i></span>
+                                                            <span class="btn btn-success btn-sm boton" @click="abrirModalCantidades(producto)"><i class="icon-eye"></i></span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center align-middle">{{producto.codigo}}</td>
+                                                    <td class="text-center align-middle">{{producto.producto}}</td>
+                                                    <td class="text-center align-middle">{{producto.precio}}</td>
+                                                    <td class="text-center align-middle">{{producto.stock}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>-->
+                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                   <!-- <datatable  :arrayItems="$root.arrayProductos" :cabeceras="cabeceras" :icono="iconos" @emitirEvProductos="recibirVenta" :listaVentasPadre="ventas" :controlador="1" :factura="false" :idTabla="''" v-else-if="initiated"></datatable>-->
                                 </div>
                             </div>
                         </div>
@@ -231,6 +254,37 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Cantidades</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <spinner v-if="loading"></spinner>
+                                <div class="card-body" v-else-if="initiated">
+                                    <ul class="list-group">
+                                        <li class="list-group-item cursor-pointer" v-for="almacen in arrayAlmacen" :key="almacen.id">
+                                
+                                            <span v-if="almacen.editable">{{almacen.id}}. Existen {{almacen.cantidad}} unidad(es) en el almacen de {{almacen.descripcion}}</span>
+                                            <span v-else>
+                                                {{almacen.id}}. No existen unidades en el almacen de {{almacen.descripcion}}
+                                            </span>
+                                            
+                                                
+                                            <!--<div>
+                                                <span class="badge badge-primary badge-pill" id="eliminar" @click="eliminarTiempo(item, index)" v-show="!modoWcaRecibido || item.tiempoReal < 3000" >x</span>
+                                            </div>-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </main>
 </template>
 <script>
@@ -243,18 +297,17 @@ export default {
             arrayClientes: [],
             arrayItems: [],
             arrayFacturas: [],
-            arrayUsuarios: [],
             arrayComprobantes: [],
             arraySeries: [],
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['Acciones', '#', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
+            cabeceras: ['Acciones', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
             cabecerasCliente: ['Acciones', '#', 'Codigo', 'Razón social', 'Dirección', 'Numero de documento'],
             iconos: 'icon-plus',
-            cabecerasFactura: ['Acciones', '#', 'ID', 'Razón social', 'Serie', 'Folio', 'Fecha', 'Total'],
+            cabecerasFactura: ['Acciones', 'Num doc', 'Vendedor', 'Serie', 'Folio', 'Fecha', 'Total'],
             usuarioLogueado: {},
-            comprobanteEscogido: '',
+            comprobanteEscogido: 0,
             tipoDocumento: null,
             //datos de la factura
             almacen_id: '',
@@ -278,22 +331,51 @@ export default {
                     total: 0
                 },
             controlador: 0, // 1 - productos, 2 - clientes, 4 -> facturas
-            objetoDetalleFact: {}
+            objetoDetalleFact: {},
+            enAlmacen: false,
+            arrayAlmacenFijo: [],
+        }
+    },
+    computed:{
+        usuarioLogeado(){
+            return this.$store.getters.arrayUsuarioLogeado;
+        },
+        arrayUsuarios(){
+            return this.$store.getters.arrayUsuarios;
+        },
+        arrayProductos(){
+            return this.$store.getters.arrayProductos;
         }
     },
     mounted(){
-        this.listarUsuarios();
+        this.objetoFactura.id_user = this.usuarioLogeado.id
+        this.objetoFactura.id_almacen = this.usuarioLogeado.id_almacen
+        this.almacen_id = this.usuarioLogeado.id_almacen;
+        axios.get(`/cierre_caja/${this.almacen_id}/verificarEstadoCaja`).then((response)=>{
+            //this.arrayCajas = response.data;
+            var contador = 0;
+            for(var i = 0; i < response.data.length; i++){
+                if(response.data[i].estado == 'abierto' && response.data[i].fecha == this.$moment().format("YYYY-MM-DD")){
+                     contador += 1
+                    //break;
+                }
+            }
+            if(contador > 0){
+                this.listarTComprobantes();
+                this.controlador = 4
+                $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
+                $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
+                $(this.$refs.tablaClientes).on("hidden.bs.modal", this.limpiarTablaClientes)
+            }else{
+                Vue.swal({
+                    title: 'No hay alguna caja abierta',
+                    text: '¡Debes abrir caja primero!',
+                    icon: 'error'
+                });
+            }
+        })
     },
     methods:{
-        probarAlert(){
-                // Use sweetalret2
-                Vue.swal({
-                    title: 'Good job!',
-                    text: 'You clicked the button!',
-                    icon: 'success'
-                });
-            
-        },
         capturarComprobante(item){
             this.objetoComprobante = item
         },
@@ -301,7 +383,6 @@ export default {
             this.ventas = []
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
             this.controlador = 4
-            this.objetoFactura.id_tipo_comprobante =  null
             this.objetoFactura.cod_cliente =  ''
             this.objetoFactura.ruc_cliente =  ''
             this.objetoFactura.dir_cliente =  ''
@@ -335,20 +416,26 @@ export default {
         recibirVenta(venta){
             this.ventas = venta
         },
+        recibirCantidadesAlmacen(almacen){
+            this.arrayAlmacen = almacen
+        },
         miTabla(){
             $( function () {
                 $('#myTable').DataTable();
             } );
         },
-        listarItem(){
-            this.loading = true
-            var urlItem = '/speed';
-            axios.get(urlItem).then(response=>{
-                this.arrayItems = response.data;
-                this.loading = false;
-                this.initiated = true;
+        async listarItem(){
+            if(this.arrayProductos.length == 0){
+                this.loading = true
+                await this.$store.dispatch('cargarProductos').then(()=>{
+                    this.loading = false;
+                    this.initiated = true;
+                    this.tablaProductos();
+                });
+            }else{
                 this.tablaProductos();
-            })
+            }
+            
         },
         listarClientes(){
             this.loading = true
@@ -371,62 +458,30 @@ export default {
             })
         },
         listarTipodeComprobante(){
-            this.loading = true
-            axios.get(`/c_fact/${this.comprobanteEscogido}`).then(response=>{
+            //this.loading = true
+            axios.get(`/c_fact/${this.comprobanteEscogido}/${this.almacen_id}/mostrarPorAlmacen`).then(response=>{
                 this.arrayFacturas = response.data;
                 this.loading = false;
                 this.initiated = true;
                 this.miTabla();
             })
         },
-        listarUsuarios(){
-            var urlItem = '/user/logeado';
-            axios.get(urlItem).then(response=>{
-                this.objetoFactura.id_user = response.data.id
-                this.objetoFactura.id_almacen = response.data.id_almacen
-                this.almacen_id = response.data.id_almacen;
-                axios.get(`/cierre_caja/${this.almacen_id}/verificarEstadoCaja`).then((response)=>{
-                    //this.arrayCajas = response.data;
-                    var contador = 0;
-                    for(var i = 0; i < response.data.length; i++){
-                        if(response.data[i].estado == 'abierto' && response.data[i].fecha == this.$moment().format("YYYY-MM-DD")){
-                            contador += 1
-                            //break;
-                        }
-                    }
-                    if(contador > 0){
-                        this.listarTComprobantes();
-                        this.listarFacturas()
-                        
-                        this.controlador = 4
-                        $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
-                        $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-                        $(this.$refs.tablaClientes).on("hidden.bs.modal", this.limpiarTablaClientes)
-                    }else{
-                        Vue.swal({
-                            title: 'No hay alguna caja abierta',
-                            text: '¡Debes abrir caja primero!',
-                            icon: 'error'
-                        });
-                    }
-                })
-            })
-            var urlItem = '/user';
-            axios.get(urlItem).then(response=>{
-                this.arrayUsuarios = response.data;
-            })
-        },
         listarTComprobantes(){
             var urlItem = '/tipo_comprobante/obtenerComprobantes';
+            this.loading = true;
             axios.get(urlItem).then(response=>{
                 this.arrayComprobantes = response.data;
+                this.listarTipodeComprobante()
             })
         },
         listarSeries(){
+            this.loading = true
             axios.get(`/serie_comprobante/${this.comprobanteEscogido}/listarSeries`).then(response=>{
                 if(response.data.length > 0){
                     this.arraySeries = response.data;
                     this.objetoFactura.id_serie = response.data[0].id;
+                    this.loading = false;
+                    this.initiated = true;
                 }else{
                     Vue.swal({
                         title: 'Debes registrar series',
@@ -491,15 +546,15 @@ export default {
             $('#modalClientes').modal('show');
         },
         abrirModalAgregarProducto(){
-            this.listarItem()
-            this.controlador = 1
+            this.listarItem();
             $('#modalProducto').modal('show');
+            this.controlador = 1
         },
         seleccionarAlmacen(){
             let me= this;
             var url='/almacen';
             axios.get(url).then(function (response){
-                me.arrayAlmacen = response.data;
+                me.arrayAlmacenFijo = response.data;
             })
         },
         eliminarProductoTabla(index){
@@ -522,9 +577,18 @@ export default {
             var me = this;
             axios.post('/c_fact', this.objetoFactura).then((response)=>{
                 this.id_cabecera = response.data
+                var productos = this.arrayProductos
                 axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
+                    for(var k = 0; k < this.ventas.length; k++){
+                        for(var l = 0; l < productos.length; l++){
+                            if(this.ventas[k].codigo == productos[l].codigo){
+                                productos[l].stock = productos[l].stock - this.ventas[k].cantidad
+                            }
+                        }
+                    }
+                    this.$store.dispatch('actualizarProductos', productos)
+                    $('#modalVenta').modal('hide');
                 })
-                $('#modalVenta').modal('hide');
                 Vue.swal(
                     'Venta concretada!',
                     'La venta se proceso correctamente!',
@@ -545,7 +609,6 @@ export default {
         obtenerFecha(){
             this.objetoFactura.fecha = this.$moment().format("YYYY-MM-DD")
         }
-        
     },
     watch:{
         ventas:{

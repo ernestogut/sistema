@@ -62,56 +62,12 @@ export default {
     },
     data(){
         return{
-            arrayVentas: [],
             iconoHabilitarDeshabilitar: 0
         }
     },
     methods:{
-        emitirEventoArray(ventas){
-            this.$emit('emitirEvProductos', ventas)
-        },
         emitirID_tipoComprobante(id){
             this.$emit('emitirEvId', id)
-        },
-        agregarProducto(item){
-            var obj = {}
-            var controlador = false
-            
-            for(const i in item){
-                if(i == 'codigo'){
-                    obj.codigo = item[i]
-                }
-                if(i == 'producto'){
-                    obj.producto = item[i]
-                }
-                if(i == 'precio'){
-                    obj.precio = item[i]
-                }
-                obj.almacen = 1;
-                obj.cantidad = 1
-                obj.descuento = 1
-                obj.total = obj.cantidad*obj.precio
-            }
-            
-
-            for(var j = 0; j < this.arrayVentas.length; j++){
-                if(item.codigo == this.arrayVentas[j].codigo){
-                    this.arrayVentas[j].cantidad = parseInt(this.arrayVentas[j].cantidad)
-                    this.arrayVentas[j].cantidad += 1
-                    this.arrayVentas[j].total = this.arrayVentas[j].cantidad*this.arrayVentas[j].precio
-                    controlador = true
-                    break;
-                }else{
-                    controlador = false
-                }
-            }
-            if(controlador){
-                this.emitirEventoArray(this.arrayVentas);
-            }else{
-                this.arrayVentas.push(obj)
-                this.emitirEventoArray(this.arrayVentas);
-            }
-            localStorage.setItem('ventas', JSON.stringify(this.arrayVentas))
         },
         cerrarModalProductos(){
             $('#modalProducto').modal('hide');
