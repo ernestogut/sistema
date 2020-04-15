@@ -2,15 +2,15 @@
   <div>
         <!-- Modal -->
         <div class="modal fade" id="aperturaCajaModal" tabindex="-1" role="dialog" >
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Apertura de caja</h5>
-                <button type="button" class="close" @click="cerrarModalApertura">
-                <span >&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Apertura de caja</h5>
+                    <button type="button" class="close" @click="cerrarModalApertura">
+                    <span >&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
                     <form action="" @submit.prevent="usuario()">
                         <div class="card-body">
                             <div class="form-row">
@@ -28,14 +28,13 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <!--<button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>-->
                             <button type="submit" class="btn btn-primary">Guardar</button>
                         </div>
                     </form>
-            </div>
+                </div>
             </div>
         </div>
-        </div>
+    </div>
   </div>
 </template>
 
@@ -45,6 +44,7 @@ export default {
         axios.get(`/cierre_caja/${this.usuarioLogeado.id_almacen}/verificarEstadoCaja`).then((response)=>{
             this.contador = 0
             this.contadorVendedores = 0
+            this.caja = response.data
             for(var i = 0; i < response.data.length; i++){
                 if(response.data[i].estado == 'abierto' && response.data[i].fecha == this.$moment().format("YYYY-MM-DD")){
                     this.contador += 1
@@ -81,6 +81,9 @@ export default {
         usuarioLogeado(){
             return this.$store.getters.arrayUsuarioLogeado;
         },
+        arrayUsuarios(){
+            return this.$store.getters.arrayUsuarios;
+        }
     },
     data(){
         return{
@@ -98,7 +101,8 @@ export default {
             almacen: '',
             arrayAlmacen: [],
             contador: '',
-            contadorVendedores: ''
+            contadorVendedores: '',
+            caja: null
         }
     },
     methods:{
@@ -130,18 +134,23 @@ export default {
         usuario(){
             this.objetoAperturaCaja.id_usuario = this.usuarioLogeado.id
             this.objetoAperturaCaja.saldo_final = this.objetoAperturaCaja.saldo_inicial;
-            //this.usuarioLogeado.id_almacen = this.objetoAperturaCaja.id_almacen
             let formDatos = new FormData();
             formDatos.append('id_almacen', this.objetoAperturaCaja.id_almacen)
             formDatos.append("_method", "put");
             var usuario = this.usuarioLogeado;
             usuario.id_almacen = this.objetoAperturaCaja.id_almacen
             $('#aperturaCajaModal').modal('hide');
-            if(this.usuarioLogeado.id_almacen != 0 && this.contador > 0){
+            var cajasIniciadas = false
+            for(var i = 0; i < this.arrayUsuarios.length; i++){
+                if(this.arrayUsuarios[i].id_almacen == this.objetoAperturaCaja.id_almacen){
+                    cajasIniciadas = true
+                }
+            }
+            if(cajasIniciadas){
                 Vue.swal({
                     icon: 'error',
                     title: 'Caja existente',
-                    text: 'Existe una caja existente para este usuario!',
+                    text: 'Existe una caja existente para esta tienda!',
                     onClose: ()=>{
                         this.objetoAperturaCaja.saldo_inicial = null
                         this.abrirModalApertura();
@@ -153,10 +162,13 @@ export default {
                         this.$store.dispatch('actualizarUsuarioLogeado', usuario);
                     })
                 })
-                this.$root.menu = 1;
+                if(this.usuarioLogeado.idrole == 1){
+                    this.$root.menu = 1;
+                }else if(this.usuarioLogeado.idrole == 2){
+                    this.$root.menu = 5;
+                }
             }
         }
-
     },
     watch:{
         almacen(){

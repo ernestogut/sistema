@@ -1,8 +1,8 @@
 <div class="sidebar">
         <nav class="sidebar-nav">
-            <ul class="nav">
+            <ul class="nav" >
                 <li @click="menu=1" class="nav-item">
-                    <a class="nav-link active" href="#"><i class="icon-speedometer"></i> Escritorio</a>
+                    <a class="nav-link active" href="#" style="background: #24273F;"><i class="icon-speedometer"></i> Escritorio</a>
                 </li>
                 <li class="nav-title">
                     Mantenimiento
@@ -12,6 +12,9 @@
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=5" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Factura</a>
+                        </li>
+                        <li  @click="menu=19" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Pedidos web</a>
                         </li>
                     </ul>
                 </li>

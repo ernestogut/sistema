@@ -14,6 +14,9 @@
                         <li  @click="menu=5" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Facturación</a>
                         </li>
+                        <li  @click="menu=19" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Pedidos web</a>
+                        </li>
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">

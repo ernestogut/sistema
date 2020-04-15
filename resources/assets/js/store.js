@@ -2,24 +2,33 @@ export default {
     state: {
         arrayUsuarioLogeado: [],
         arrayUsuarios: [],
-        arrayProductos: []
+        arrayProductos: [],
+        arrayPedidos: [],
+        arrayVentas: [],
+        arrayAlmacen: []
 
     },
     mutations:{
         SET_USUARIO_LOGEADO (state, arrayUsuarioLogeado) {
-            state.arrayUsuarioLogeado = arrayUsuarioLogeado
+            state.arrayUsuarioLogeado = arrayUsuarioLogeado;
         },
         SET_USUARIOS (state, arrayUsuarios) {
-            state.arrayUsuarios = arrayUsuarios
+            state.arrayUsuarios = arrayUsuarios;
         },
         SET_PRODUCTOS (state, arrayProductos) {
-            state.arrayProductos = arrayProductos
+            state.arrayProductos = arrayProductos;
         },
+        SET_PEDIDOS (state, arrayPedidos) {
+            state.arrayPedidos = arrayPedidos;
+        },
+        SET_VENTAS (state, arrayVentas){
+            state.arrayVentas = arrayVentas;
+        },
+        SET_ALMACENES (state, arrayAlmacen){
+            state.arrayAlmacen = arrayAlmacen;
+        }
     },
     getters:{
-        welcome(state){
-            return state.welcomeMessage;
-        },
         arrayUsuarioLogeado(state){
             return state.arrayUsuarioLogeado;
         },
@@ -29,8 +38,14 @@ export default {
         arrayProductos(state){
             return state.arrayProductos;
         },
-        arrayUsuarioLogeado(state){
-            return state.arrayUsuarioLogeado;
+        arrayPedidos(state){
+            return state.arrayPedidos;
+        },
+        arrayAlmacen(state){
+            return state.arrayAlmacen;
+        },
+        arrayVentas(state){
+            return state.arrayVentas;
         }
     },
     actions:{
@@ -39,6 +54,19 @@ export default {
                     let arrayUsuarioLogeado = response.data
                     commit('SET_USUARIO_LOGEADO', arrayUsuarioLogeado)
                 })
+        },
+        cargarAlmacen({commit}){
+            return axios.get('/almacen').then(response =>{
+                    let arrayAlmacen = response.data
+                    commit('SET_ALMACENES', arrayAlmacen)
+                })
+        },
+        cargarVentas({commit}){
+            return axios.get('/reporte_venta').then((response)=>{
+                let arrayVentas = response.data
+                commit('SET_VENTAS', arrayVentas)
+                
+            })
         },
         cargarUsuarios({commit}){
             return axios.get('/user').then(response =>{
@@ -52,8 +80,17 @@ export default {
                     commit('SET_PRODUCTOS', arrayProductos)
                 })
         },
+        cargarPedidos({commit}){
+            return axios.get('/orden_tienda').then(response =>{
+                    let arrayPedidos = response.data
+                    commit('SET_PEDIDOS', arrayPedidos)
+                });
+        },
         actualizarProductos({ commit }, arrayProductos) {
             commit("SET_PRODUCTOS", arrayProductos);
+        },
+        actualizarVentas({ commit }, arrayVentas) {
+            commit("SET_VENTAS", arrayVentas);
         },
         actualizarUsuarioLogeado({ commit }, arrayUsuarioLogeado) {
             commit("SET_USUARIO_LOGEADO", arrayUsuarioLogeado);

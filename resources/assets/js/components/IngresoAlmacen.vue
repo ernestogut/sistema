@@ -14,7 +14,7 @@
                 </div>
             </div>
             <spinner v-if="loading"></spinner>
-            <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="controlador" :funcionBoton="verFactura" :factura="true" :idTabla="'myTable'" v-else-if="initiated">
+            <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :idTabla="'myTable'" v-else-if="initiated">
             </datatable>
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
@@ -78,7 +78,7 @@
                                         <td class="text-center align-middle">{{venta.codigo}}</td>
                                         <td class="text-center align-middle">{{venta.producto}}</td>
                                         <td class="text-center align-middle" >   
-                                            <input type="number" class="form-control input-sm" v-model="venta.cantidad">
+                                            <input  type="number" class="form-control input-sm" v-model="venta.cantidad">
                                         </td>
                                         <td class="text-center align-middle">
                                             <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
@@ -108,7 +108,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
                                 </div>
                             </div>
                         </div>
@@ -166,6 +166,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade bd-example-modal-lg show" id="modalImagen" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <spinner v-if="loadingImagen"></spinner>
+                            <div class="modal-body d-flex flex-wrap justify-content-center align-items-center" id="dynamic-content" v-for="productoImagen in objetoProductoImagen" :key="productoImagen.key" v-else-if="initiatedImagen">
+                                <img :src="productoImagen.imagen" style="width: 18rem;" class="img-fluid" alt=""/>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
     </main>
 </template>
 <script>
@@ -175,6 +185,8 @@ export default {
         return{
             initiated: false,
             loading: false,
+            initiatedImagen: false,
+            loadingImagen: false,
             arrayClientes: [],
             arrayItems: [],
             arrayFacturas: [],
@@ -183,10 +195,10 @@ export default {
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['Acciones', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
+            objetoProductoImagen: {},
             cabecerasCliente: ['Acciones', '#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto'],
             iconos: 'icon-plus',
-            cabecerasFactura: ['Acciones', '#', 'Num documento', 'Almacén', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
+            cabecerasFactura: ['Acciones', 'Num documento', 'Almacén', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
             comprobanteEscogido: '',
             tipoDocumento: null,
             //datos de la factura
@@ -203,7 +215,6 @@ export default {
             objetoDetalleFact: {},
             id_cabecera_ingreso: null,
             enAlmacen: false,
-            arrayAlmacenFijo: [],
         }
     },
     computed:{
@@ -212,6 +223,9 @@ export default {
         },
         arrayUsuarios(){
             return this.$store.getters.arrayUsuarios;
+        },
+        arrayAlmacenFijo(){
+            return this.$store.getters.arrayAlmacen;
         }
     },
     mounted(){
@@ -224,6 +238,17 @@ export default {
         $(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
     },
     methods:{
+        abrirModalImagen(producto){
+            //var imagenProducto = {}
+            this.loadingImagen = true
+            $('#modalImagen').modal('show');
+            axios.get(`speed/${producto.codigo}`).then(response=>{
+                this.objetoProductoImagen = response.data
+                this.loadingImagen = false
+                this.initiatedImagen = true;
+                //this.$emit('emitirImagen', imagenProducto);
+            })
+        },
         capturarComprobante(item){
             this.objetoComprobante = item
         },
@@ -328,7 +353,7 @@ export default {
             } );
         },
         abrirModalVenta(){
-                this.seleccionarAlmacen();
+                this.objetoIngreso.id_almacen = this.arrayAlmacenFijo[0].id
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
         },
@@ -342,16 +367,9 @@ export default {
             this.controlador = 1
             $('#modalProducto').modal('show');
         },
-        seleccionarAlmacen(){
-            let me= this;
-            var url='/almacen';
-            axios.get(url).then(function (response){
-                me.objetoIngreso.id_almacen = response.data[0].id
-                me.arrayAlmacenFijo = response.data;
-            })
-        },
         eliminarProductoTabla(index){
             this.ventas.splice(index,1)
+            document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         buscarCliente(codigo){

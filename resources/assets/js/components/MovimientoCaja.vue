@@ -78,7 +78,6 @@
                                         <option value="ingreso">Ingreso</option>
                                         <option value="egreso">Egreso</option>
                                     </select>
-                                    {{objetoMovimiento.tipo_movimiento}}
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Fecha de emisión</label>
@@ -109,7 +108,10 @@
 export default {
     mounted(){
         //this.listarMovimientosCaja()
-        this.listarUsuarios();
+        this.objetoMovimiento.id_usuario = this.usuarioLogeado.id
+        this.objetoMovimiento.id_almacen = this.usuarioLogeado.id_almacen;
+        this.listarMovimientosCaja()
+        //this.listarUsuarios();
     },
     data(){
         return{
@@ -124,9 +126,16 @@ export default {
                 monto: null,
                 tipo_movimiento: null,
             },
-            arrayUsuarios: [],
             arrayAlmacen: []
         }
+    },
+    computed:{
+        usuarioLogeado(){
+            return this.$store.getters.arrayUsuarioLogeado;
+        },
+        arrayUsuarios(){
+            return this.$store.getters.arrayUsuarios;
+        },
     },
     methods:{
         listarMovimientosCaja(){
@@ -138,7 +147,7 @@ export default {
                 this.miTabla();
             })
         },
-        listarUsuarios(){
+        /*listarUsuarios(){
             var urlItem = '/user/logeado';
             axios.get(urlItem).then(response=>{
                 this.objetoMovimiento.id_usuario = response.data.id
@@ -149,7 +158,7 @@ export default {
             axios.get(urlItem).then(response=>{
                 this.arrayUsuarios = response.data;
             })
-        },
+        },*/
         seleccionarAlmacen(){
             let me= this;
             var url='/almacen';

@@ -26,6 +26,7 @@ class CreateCFactsTable extends Migration
             $table->unsignedBigInteger('id_user');
             $table->string('fecha');
             $table->string('tipo_venta');
+            $table->string('tipo_pago');
             $table->string('serie');
             $table->string('folio');
             $table->float('sub_total', 11, 2);

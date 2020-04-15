@@ -1,8 +1,8 @@
 <template>
 <main class="main">
     <div class="card-body" >
-        <spinner v-if="loading"></spinner>
-            <table v-else-if="initiated" class="table table-striped table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
+        <!--<spinner v-if="loading"></spinner>-->
+            <table  class="table table-hover table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
                 <thead>
                     <tr>
                         <th scope="col" class="text-center align-middle" >Acciones</th>
@@ -109,13 +109,12 @@
 export default {
     mounted(){
         this.listarItem();
-        this.listarAlmacenes()
+        this.$store.dispatch('cargarAlmacen')
     },
     data(){
         return{
             loading: false,
             initiated: false,
-            arrayAlmacenFijo: [],
             arrayAlmacen: [],
             objetoProdAlmacen: {
                 id_producto: null,
@@ -124,12 +123,15 @@ export default {
             },
             idAlmacen: '',
             enAlmacen: false,
-            modoEditable: false 
+            modoEditable: false,
         }
     },
     computed:{
         arrayProductos(){
             return this.$store.getters.arrayProductos;
+        },
+        arrayAlmacenFijo(){
+            return this.$store.getters.arrayAlmacen;
         }
     },
     methods:{
@@ -140,12 +142,6 @@ export default {
                 this.initiated = true;
                 this.tablaProductos();
             });
-        },
-        listarAlmacenes(){
-            var urlItem = 'almacen';
-            axios.get(urlItem).then(response=>{
-                this.arrayAlmacenFijo = response.data;
-            })
         },
         tablaProductos(){
             $( function () {

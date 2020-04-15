@@ -20,7 +20,7 @@ class UserController extends Controller
         //verifica si la peticion se la esta haciendo por ajax y si no es asi se lo redirige a /
         if(!$request->ajax()) return redirect('/');
         //listar todos los registros de la tabla categoria
-        $usuarios = User::select('id', 'usuario')->get();
+        $usuarios = User::select('id', 'usuario', 'id_almacen')->get();
         return $usuarios;
 
     }
@@ -69,6 +69,18 @@ class UserController extends Controller
     {
         $usuario = auth()->user();
         return $usuario;
+    }
+    public function obtenerAlmacen($id, $id_almacen)
+    {
+        $almancen = array();
+        
+        if($id_almacen != 0){
+            $almacen = User::select('almacens.descripcion as almacen')->join('almacens', 'users.id_almacen', '=', 'almacens.id')->where('users.id', '=', $id)->get();
+        }else{
+            $sd = (object) array('almacen' => 'No definido');
+            $almacen[0] = $sd;
+        }
+        return $almacen;
     }
 
     /**

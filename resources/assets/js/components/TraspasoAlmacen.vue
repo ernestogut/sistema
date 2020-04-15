@@ -14,7 +14,7 @@
                 </div>
             </div>
             <spinner v-if="loading"></spinner>
-            <datatable  :arrayItems="arrayTraslados" :cabeceras="cabecerasTraslado" :funcionBoton="verFactura"  :controlador="controlador"  :factura="true" :idTabla="'myTable'" v-else-if="initiated">
+            <datatable  :arrayItems="arrayTraslados" :cabeceras="cabecerasTraslado" :funcionBoton="verFactura"  :controlador="4"  :factura="true" :idTabla="'myTable'" v-else-if="initiated">
             </datatable>
             <!---->
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
@@ -36,11 +36,6 @@
                                             <option v-for="almacen in arrayAlmacenFijo" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                         </select>
                                     </div>
-                                    
-                                    
-                                    <!--<div class="col-md-3">
-                                        
-                                    </div>-->
                                     <div class="form-group col-md-6">
                                         <label>Almacen destino</label>
                                         <select v-model="objetoIngreso.id_almacen_destino" class="form-control">
@@ -121,7 +116,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
                                 </div>
                             </div>
                         </div>
@@ -165,11 +160,6 @@
                                             <span v-else>
                                                 {{almacen.id}}. No existen unidades en el almacen de {{almacen.descripcion}}
                                             </span>
-                                            
-                                                
-                                            <!--<div>
-                                                <span class="badge badge-primary badge-pill" id="eliminar" @click="eliminarTiempo(item, index)" v-show="!modoWcaRecibido || item.tiempoReal < 3000" >x</span>
-                                            </div>-->
                                         </li>
                                     </ul>
                                 </div>
@@ -177,6 +167,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade bd-example-modal-lg show" id="modalImagen" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <spinner v-if="loadingImagen"></spinner>
+                            <div class="modal-body d-flex flex-wrap justify-content-center align-items-center" id="dynamic-content" v-for="productoImagen in objetoProductoImagen" :key="productoImagen.key" v-else-if="initiatedImagen">
+                                <img :src="productoImagen.imagen" style="width: 18rem;" class="img-fluid" alt=""/>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
     </main>
 </template>
 <script>
@@ -186,6 +186,8 @@ export default {
         return{
             initiated: false,
             loading: false,
+            initiatedImagen: false,
+            loadingImagen: false,
             arrayClientes: [],
             arrayItems: [],
             arrayTraslados: [],
@@ -194,10 +196,10 @@ export default {
             arrayAlmacen: [],
             ventas: [],
             objetoComprobante: {},
-            cabeceras: ['Acciones', '#', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
+            objetoProductoImagen: {},
             cabecerasCliente: ['Acciones', '#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto'],
             iconos: 'icon-plus',
-            cabecerasTraslado: ['Acciones', '#', 'Num documento', 'Almacén origen', 'Almacén destino', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
+            cabecerasTraslado: ['Acciones', 'Num documento', 'Almacén origen', 'Almacén destino', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
             comprobanteEscogido: '',
             tipoDocumento: null,
             //datos de la factura
@@ -219,7 +221,6 @@ export default {
             },
             id_cabecera_traslado: null,
             enAlmacen: false,
-            arrayAlmacenFijo: [],
         }
     },
     computed:{
@@ -228,6 +229,9 @@ export default {
         },
         arrayUsuarios(){
             return this.$store.getters.arrayUsuarios;
+        },
+        arrayAlmacenFijo(){
+            return this.$store.getters.arrayAlmacen;
         }
     },
     mounted(){
@@ -239,6 +243,17 @@ export default {
         $(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
     },
     methods:{
+        abrirModalImagen(producto){
+            //var imagenProducto = {}
+            this.loadingImagen = true
+            $('#modalImagen').modal('show');
+            axios.get(`speed/${producto.codigo}`).then(response=>{
+                this.objetoProductoImagen = response.data
+                this.loadingImagen = false
+                this.initiatedImagen = true;
+                //this.$emit('emitirImagen', imagenProducto);
+            })
+        },
         limpiarTabla(){
             this.ventas = []
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
@@ -296,7 +311,6 @@ export default {
             } );
         },
         abrirModalVenta(){
-                this.seleccionarAlmacen();
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
         },
@@ -306,16 +320,9 @@ export default {
             this.controlador = 1
             $('#modalProducto').modal('show');
         },
-        seleccionarAlmacen(){
-            let me= this;
-            var url='/almacen';
-            axios.get(url).then(function (response){
-                me.objetoIngreso.id_almacen = response.data[0].id
-                me.arrayAlmacenFijo = response.data;
-            })
-        },
         eliminarProductoTabla(index){
             this.ventas.splice(index,1)
+            document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         verFactura(item){

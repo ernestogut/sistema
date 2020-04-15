@@ -21,7 +21,7 @@
                                 <span class="btn btn-danger btn-sm boton" v-if="controlador==6" @click="funcionConjuntoTrash(item)"><i :class="(item.estado==0)?'icon-heart':'icon-trash'"  ></i></span>
                             </div>
                         </td>
-                        <th scope="row" class="text-center align-middle">{{index+1}}</th>
+                        <th scope="row" class="text-center align-middle" v-if="controlador != 4">{{index+1}}</th>
                         <td v-for="(value, key) in item" v-if="key !== 'id' && key !== 'created_at' && key != 'updated_at'" class="text-center align-middle">
                             <template v-if="key != 'imagen'">
                                 {{value}}
@@ -37,14 +37,6 @@
 </template>
 <script>
 export default {
-    created(){
-        let datosLS = JSON.parse(localStorage.getItem('ventas'));
-        if(datosLS === null){
-            this.arrayVentas = []
-        }else{
-            this.arrayVentas = datosLS
-        }
-    },
     props:{
         funcionBoton: Function,
         funcionBotonTrash: Function,
@@ -54,7 +46,6 @@ export default {
         listarSeries: Function,
         arrayItems: Array,
         cabeceras: Array,
-        listaVentasPadre: Array,
         icono: String,
         idTabla: String,
         controlador: Number,
@@ -98,11 +89,6 @@ export default {
             this.funcionBotonTrash(item)
         }
     },
-    watch:{
-        listaVentasPadre(){
-            this.arrayVentas.length = this.listaVentasPadre.length
-        }
-    }
 }
 </script>
 

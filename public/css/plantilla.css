@@ -7777,7 +7777,7 @@ base-chart.chart {
       flex-direction: column;
   padding: 0;
   color: #fff;
-  background: #29363d; }
+  background: #24273F; }
   .sidebar .sidebar-close {
     position: absolute;
     right: 0;
@@ -7880,10 +7880,10 @@ base-chart.chart {
       color: #fff;
       background: #33444c; }
       .sidebar .nav-link.active i, .sidebar .navbar .active.dropdown-toggle i, .navbar .sidebar .active.dropdown-toggle i {
-        color: #20a8d8; }
+        color: #EE364F; }
     .sidebar .nav-link:hover, .sidebar .navbar .dropdown-toggle:hover, .navbar .sidebar .dropdown-toggle:hover {
       color: #fff;
-      background: #20a8d8; }
+      background: #EE364F; }
       .sidebar .nav-link:hover i, .sidebar .navbar .dropdown-toggle:hover i, .navbar .sidebar .dropdown-toggle:hover i {
         color: #fff; }
       .sidebar .nav-link:hover.nav-dropdown-toggle::before, .sidebar .navbar .dropdown-toggle:hover.nav-dropdown-toggle::before, .navbar .sidebar .dropdown-toggle:hover.nav-dropdown-toggle::before {
@@ -7945,7 +7945,7 @@ base-chart.chart {
         .sidebar .nav-link.nav-link-light:hover i, .sidebar .navbar .nav-link-light.dropdown-toggle:hover i, .navbar .sidebar .nav-link-light.dropdown-toggle:hover i {
           color: #fff; }
     .sidebar .nav-link.nav-link-dark, .sidebar .navbar .nav-link-dark.dropdown-toggle, .navbar .sidebar .nav-link-dark.dropdown-toggle {
-      background: #29363d; }
+      background: #24273F; }
       .sidebar .nav-link.nav-link-dark i, .sidebar .navbar .nav-link-dark.dropdown-toggle i, .navbar .sidebar .nav-link-dark.dropdown-toggle i {
         color: rgba(255, 255, 255, 0.7); }
       .sidebar .nav-link.nav-link-dark:hover, .sidebar .navbar .nav-link-dark.dropdown-toggle:hover, .navbar .sidebar .nav-link-dark.dropdown-toggle:hover {
@@ -8002,12 +8002,12 @@ base-chart.chart {
     -ms-flex: 0 0 auto;
         flex: 0 0 auto;
     padding: 0.75rem 1rem;
-    background: rgba(0, 0, 0, 0.2); }
+    background: #1E2137; }
   .sidebar .sidebar-minimizer {
     position: relative;
     -ms-flex: 0 0 50px;
         flex: 0 0 50px;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #1B1C30;
     border: 0; }
     .sidebar .sidebar-minimizer::before {
       position: absolute;
@@ -8078,7 +8078,7 @@ base-chart.chart {
         width: 250px;
         overflow: visible; }
         .sidebar-minimized .sidebar .nav-item:hover > .nav-link, .sidebar-minimized .sidebar .navbar .nav-item:hover > .dropdown-toggle, .navbar .sidebar-minimized .sidebar .nav-item:hover > .dropdown-toggle {
-          background: #20a8d8; }
+          background: #EE364F; }
           .sidebar-minimized .sidebar .nav-item:hover > .nav-link i, .sidebar-minimized .sidebar .navbar .nav-item:hover > .dropdown-toggle i, .navbar .sidebar-minimized .sidebar .nav-item:hover > .dropdown-toggle i {
             color: #fff; }
     .sidebar-minimized .sidebar .nav-link, .sidebar-minimized .sidebar .navbar .dropdown-toggle, .navbar .sidebar-minimized .sidebar .dropdown-toggle {
@@ -8098,7 +8098,7 @@ base-chart.chart {
         display: none; }
       .sidebar-minimized .sidebar .nav-link:hover, .sidebar-minimized .sidebar .navbar .dropdown-toggle:hover, .navbar .sidebar-minimized .sidebar .dropdown-toggle:hover {
         width: 250px;
-        background: #20a8d8; }
+        background: #EE364F; }
         .sidebar-minimized .sidebar .nav-link:hover .badge, .sidebar-minimized .sidebar .navbar .dropdown-toggle:hover .badge, .navbar .sidebar-minimized .sidebar .dropdown-toggle:hover .badge {
           display: inline; }
       .sidebar-minimized .sidebar .nav-link.nav-dropdown-toggle::before, .sidebar-minimized .sidebar .navbar .nav-dropdown-toggle.dropdown-toggle::before, .navbar .sidebar-minimized .sidebar .nav-dropdown-toggle.dropdown-toggle::before {
@@ -8110,9 +8110,9 @@ base-chart.chart {
     .sidebar-minimized .sidebar .nav > .nav-dropdown > .nav-dropdown-items {
       display: none;
       max-height: 1000px;
-      background: #29363d; }
+      background: #1E2137; }
     .sidebar-minimized .sidebar .nav > .nav-dropdown:hover {
-      background: #20a8d8; }
+      background: #1B1C30; }
       .sidebar-minimized .sidebar .nav > .nav-dropdown:hover > .nav-dropdown-items {
         position: absolute;
         left: 50px;
@@ -8452,7 +8452,7 @@ base-chart.chart {
   left: 2px !important; }
 
 .switch-primary > .switch-input:checked ~ .switch-label {
-  background: #20a8d8 !important;
+  background: #EE364F !important;
   border-color: #1985ac; }
 
 .switch-primary > .switch-input:checked ~ .switch-handle {
@@ -8460,22 +8460,22 @@ base-chart.chart {
 
 .switch-primary-outline > .switch-input:checked ~ .switch-label {
   background: #fff !important;
-  border-color: #20a8d8; }
+  border-color: #EE364F; }
   .switch-primary-outline > .switch-input:checked ~ .switch-label::after {
-    color: #20a8d8; }
+    color: #EE364F; }
 
 .switch-primary-outline > .switch-input:checked ~ .switch-handle {
-  border-color: #20a8d8; }
+  border-color: #EE364F; }
 
 .switch-primary-outline-alt > .switch-input:checked ~ .switch-label {
   background: #fff !important;
-  border-color: #20a8d8; }
+  border-color: #EE364F; }
   .switch-primary-outline-alt > .switch-input:checked ~ .switch-label::after {
-    color: #20a8d8; }
+    color: #EE364F; }
 
 .switch-primary-outline-alt > .switch-input:checked ~ .switch-handle {
-  background: #20a8d8 !important;
-  border-color: #20a8d8; }
+  background: #EE364F !important;
+  border-color: #EE364F; }
 
 .switch-secondary > .switch-input:checked ~ .switch-label {
   background: #a4b7c1 !important;
@@ -8634,7 +8634,7 @@ base-chart.chart {
   border-color: #f0f3f5; }
 
 .switch-dark > .switch-input:checked ~ .switch-label {
-  background: #29363d !important;
+  background: #24273F !important;
   border-color: #151b1f; }
 
 .switch-dark > .switch-input:checked ~ .switch-handle {
@@ -8642,7 +8642,7 @@ base-chart.chart {
 
 .switch-dark-outline > .switch-input:checked ~ .switch-label {
   background: #fff !important;
-  border-color: #29363d; }
+  border-color: #24273F; }
   .switch-dark-outline > .switch-input:checked ~ .switch-label::after {
     color: #29363d; }
 
@@ -9284,7 +9284,9 @@ hr.transparent {
 
 .back-inventario{
 
-    background-image: url('../img/back3.jpg');
+
+    background: #1B1C30;
+    /*background-image: url('../img/back3.jpg');*/
 
 }
 

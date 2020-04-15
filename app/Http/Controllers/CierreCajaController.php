@@ -96,6 +96,11 @@ class CierreCajaController extends Controller
         $cierre_caja->estado = $request->estado;
         $cierre_caja->save();
     }
+    public function consultarCajaSeleccionada($id)
+    {
+        $cierre_caja = CierreCaja::find($id);
+        return $cierre_caja;
+    }
     public function update(Request $request, CierreCaja $cierreCaja)
     {
         //

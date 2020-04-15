@@ -11,9 +11,6 @@
             <!--<template >
                 <categoria></categoria>
             </template>-->
-            <template v-if="menu==2">
-                <articulo></articulo>
-            </template>
             <template v-if="menu==3">
                 <ingreso-almacen></ingreso-almacen>
             </template>
@@ -22,6 +19,9 @@
             </template>
             <template v-if="menu==5">
                 <facturacion></facturacion>
+            </template>
+            <template v-if="menu==19">
+                <pedido-speed></pedido-speed>
             </template>
             <template v-if="menu==6">
                 <cliente></cliente>
@@ -69,6 +69,9 @@
             <template v-if="menu==5">
                 <facturacion></facturacion>
             </template>
+            <template v-if="menu==19">
+                <pedido-speed></pedido-speed>
+            </template>
             <template v-if="menu==6">
                 <cliente></cliente>
             </template>
@@ -82,15 +85,6 @@
                 <movimiento-caja></movimiento-caja>
             </template>
         @elseif(Auth::user()->idrole == 3)
-            <template v-if="menu==1">
-                <categoria></categoria>
-            </template>
-            <template v-if="menu==2">
-                <articulo></articulo>
-            </template>
-            <template v-if="menu==3">
-                <ingreso></ingreso>
-            </template>
             <template v-if="menu==4">
                 <proveedor></proveedor>
             </template>

@@ -1,17 +1,18 @@
 <template>
     <div class="card-body">
-        <table  class="table table-striped table-bordered dt-responsive nowrap"  id="myTableProductos" style="width:100%">
+        <table  class="table table-hover table-bordered dt-responsive nowrap"  id="myTableProductos" style="width:100%">
             <thead>
                 <tr>
                     <th scope="col" class="text-center align-middle" v-for="cabecera of cabeceras" :key="cabecera.id">{{cabecera}}</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(producto) of arrayProductos" :key="producto.key">
+                <tr v-for="(producto) of arrayProductos" :key="producto.key" :id="`producto${producto.codigo}`">
                     <td class="text-center align-middle">
                         <div>
-                            <span class="btn btn-primary btn-sm boton" @click="agregarProducto(producto)"><i class="icon-plus" ></i></span>
+                            <span :class="['btn', 'btn-primary', 'btn-sm', 'boton']" id="botonAgregar" @click="agregarProducto(producto)"><i class="icon-plus" ></i></span>
                             <span class="btn btn-success btn-sm boton" @click="abrirModalCantidades(producto)"><i class="icon-eye"></i></span>
+                            <span class="btn btn-success btn-sm boton" @click="abrirModalImagen(producto)"><i class="icon-picture"></i></span>
                         </div>
                     </td>
                     <td class="text-center align-middle">{{producto.codigo}}</td>
@@ -34,15 +35,32 @@ export default {
             this.ventas = datosLS
         }
     },
+    mounted(){
+        window.onbeforeunload = function (e) {
+            var e = e || window.event;
+
+            // For IE and Firefox
+            if (e) {
+                this.ventas = []
+                localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+            }
+
+            // For Safari
+            this.ventas = []
+            localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+        };
+    },
     props:{
-        arrayAlmacenFijo: Array
+        arrayAlmacenFijo: Array,
+        abrirModalImagen: Function
     },
     data(){
         return{
             cabeceras: ['Acciones', 'Codigo', 'Producto', 'Precio', 'Cantidad'],
             enAlmacen: false,
             arrayAlmacen: [],
-            ventas: []
+            ventas: [],
+            color: 'btn-primary'
         }
     },
     computed:{
@@ -52,6 +70,12 @@ export default {
     },
     methods:{
         agregarProducto(item){
+            document.getElementById(`producto${item.codigo}`).className = 'selected'
+            /*var estilos = document.querySelector(`.codigo${item.codigo}`).style
+            estilos.background = 'black'
+            estilos.borderColor = 'black'
+            estilos.color = 'white'*/
+            //this.estiloCeldaSeleccionada = 'table-success'
             var obj = {}
             var controlador = false
             
@@ -124,10 +148,15 @@ export default {
                 me.$emit('emitirEvArrayAlm', me.arrayAlmacen);
             })
         },
-    }
+    },
 }
 </script>
 
 <style>
+
+.btn{
+    cursor: pointer;
+}
+
 
 </style>

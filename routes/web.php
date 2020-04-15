@@ -166,6 +166,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/user', 'UserController@index');
         Route::post('/user/registrar','UserController@store' );
         Route::put('/user/actualizar/{id}','UserController@update' );
+        Route::get('/user/obtenerAlmacen/{id}/{id_almacen}','UserController@obtenerAlmacen' );
         Route::put('/user/desactivar','UserController@desactivar' );
         Route::put('/user/activar','UserController@activar' );
         Route::get('/user/logeado', 'UserController@usuarioLogeado'); 
@@ -202,6 +203,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('almacen/{codigo}/cantidadesAlmacen', 'AlmacenController@cantidadesAlmacen');
 Route::get('cierre_caja/{codigo}/verificarEstadoCaja', 'CierreCajaController@verificarEstadoCaja');
+Route::get('cierre_caja/{codigo}/consultarCajaSeleccionada', 'CierreCajaController@consultarCajaSeleccionada');
+Route::get('c_fact/{tipo_venta}/{fecha}/{almacen}/mostrarVentasTipoPago', 'CFactController@mostrarVentasTipoPago');
 Route::get('cierre_caja/{almacen}/montoDiaAnterior', 'CierreCajaController@montoDiaAnterior');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
 Route::get('c_fact/{tipo_comprobante}/{id_alm}/mostrarPorAlmacen', 'CFactController@mostrarPorAlmacen');
@@ -229,6 +232,8 @@ Route::resource('cabecera_traslado', 'CabeceraTrasladoController');
 Route::resource('detalle_traslado', 'DetalleTrasladoController');
 Route::resource('cierre_caja', 'CierreCajaController');
 Route::resource('movimiento_caja', 'MovimientoCajaController');
+Route::resource('orden_tienda', 'PedidosSpeedController');
+Route::resource('reporte_venta', 'ReporteVentaController');
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 

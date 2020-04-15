@@ -26,7 +26,7 @@
 
 <body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
     <div id="app" >
-            <header class="app-header navbar d-flex flex-wrap justify-content-between align-items-center" style="background: #1D262B; border-color: #1D262B;">
+            <header class="app-header navbar d-flex flex-wrap justify-content-between align-items-center" style="background: #1E2137; border-color: #1E2137;">
                 <div>
                     <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
                       <span class="navbar-toggler-icon"></span>
@@ -39,7 +39,7 @@
                 <div>
                     <ul class="nav navbar-nav ml-auto">
                         {{-- <notification :notifications="notifications"></notification> --}}
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown" style="background: #1E2137;">
                             <div class="dropdown-menu dropdown-menu-right">
                                 <!--<div class="dropdown-header text-center">
                                     <strong>Cuenta</strong>
@@ -53,7 +53,7 @@
                                 </form>
                             </div>
                             <a class="nav-link dropdown-toggle nav-link mr-4    " data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <span class="d-md-down-none text-white">{{Auth::user()->usuario}} </span>
+                                <span class="d-md-down-none text-white">{{Auth::user()->nombre}} {{Auth::user()->apellido  }}</span>
                             </a>
                         </li>
                     </ul>

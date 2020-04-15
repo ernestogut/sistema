@@ -14,6 +14,8 @@ class UsersTableSeeder extends Seeder
     {
         DB::table('users')->insert([
             'usuario' => 'julio',
+            'nombre' => 'Julio',
+            'apellido' => 'Baraybar',
             'password' => bcrypt('123456'),
             'idrole' => '1',
             'condicion' => '1'
@@ -21,6 +23,8 @@ class UsersTableSeeder extends Seeder
         ]);
         DB::table('users')->insert([
             'usuario' => 'marcos',
+            'nombre' => 'Marcos',
+            'apellido' => 'Bullen',
             'password' => bcrypt('1234'),
             'idrole' => '1',
             'condicion' => '1'
@@ -28,6 +32,8 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
         	'id' => '3',
             'usuario' => 'ernestog',
+            'nombre' => 'Ernesto',
+            'apellido' => 'Gutierrez',
             'password' => bcrypt('cubosderubik14'),
             'idrole' => '1',
             'condicion' => '1'
