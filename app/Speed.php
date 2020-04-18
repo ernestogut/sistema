@@ -10,9 +10,10 @@ class Speed extends Model
     
 	protected $connection = 'speed';
 
-	protected $table = 'wp_posts';
+	protected $table = 'productos_tienda';
 	protected $casts = [
-        'stock' => 'integer',
+		'stock' => 'integer',
+		
     ];
 	
 	/*protected $connection = 'speed2';

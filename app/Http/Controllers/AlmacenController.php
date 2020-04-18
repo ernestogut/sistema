@@ -22,6 +22,10 @@ class AlmacenController extends Controller
             return $almacen;
         }   
     }
+    public static function indexLaravel(){
+            $almacen = Almacen::All();
+            return $almacen;
+    }
     public function cantidadesAlmacen(Request $request, $codigo)
     {
         if(!$request->ajax()){

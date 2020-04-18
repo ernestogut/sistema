@@ -20,6 +20,16 @@ class UserController extends Controller
         //verifica si la peticion se la esta haciendo por ajax y si no es asi se lo redirige a /
         if(!$request->ajax()) return redirect('/');
         //listar todos los registros de la tabla categoria
+        $usuarios = User::select('users.id', 'users.usuario', 'users.nombre', 'users.apellido', 'roles.nombre as rol')->join('roles', 'users.idrole', 'roles.id')->get();
+        return $usuarios;
+
+    }
+
+    public function obtenerUsuarios(Request $request)
+    {
+        //verifica si la peticion se la esta haciendo por ajax y si no es asi se lo redirige a /
+        if(!$request->ajax()) return redirect('/');
+        //listar todos los registros de la tabla categoria
         $usuarios = User::select('id', 'usuario', 'id_almacen')->get();
         return $usuarios;
 
@@ -34,43 +44,21 @@ class UserController extends Controller
     public function store(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
-
-        try{
-            DB::beginTransaction();
-            $persona = new Persona();
-            $persona->nombre = $request->nombre;
-            $persona->tipo_documento = $request->tipo_documento;
-            $persona->num_documento = $request->num_documento;
-            $persona->direccion = $request->direccion;
-            $persona->telefono = $request->telefono;
-            $persona->email = $request->email;
-
-
-            $persona->save();
             $user = new User();
             $user->usuario= $request->usuario;
+            $user->nombre= $request->nombre;
+            $user->apellido= $request->apellido;
             $user->password = bcrypt($request->password);
             $user->condicion = '1';
             $user->idrole = $request->idrole;
-
-            $user->id = $persona->id;
             $user->save();
-
-            DB::commit();
-
-        } catch(Exception $e){
-            DB::rollBack();
-        }
-
-
-
     }
     public function usuarioLogeado()
     {
         $usuario = auth()->user();
         return $usuario;
     }
-    public function obtenerAlmacen($id, $id_almacen)
+    public static function obtenerAlmacen($id, $id_almacen)
     {
         $almancen = array();
         
@@ -126,5 +114,10 @@ class UserController extends Controller
         $user = User::findOrFail($request->id);
         $user->condicion = '1';
         $user->save();
+    }
+    public function destroy($id)
+    {
+        $usuario = User::find($id);
+        $usuario->delete();
     }
 }

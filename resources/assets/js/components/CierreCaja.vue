@@ -198,11 +198,13 @@ export default {
                 }).then((result) => {
                 if (result.value) {
                     axios.get(`cierre_caja/${item.id}/consultarCajaSeleccionada`).then(respuesta=>{
-                        if(this.usuarioLogeado.id == respuesta.data.id_usuario){
+                        if(this.usuarioLogeado.id == respuesta.data.id_usuario || this.usuarioLogeado.idrole == 1){
                             axios.post(`cierre_caja/${item.id}/cerrarCaja`, formDatos).then(async (response)=>{
-                                axios.post(`/user/actualizar/${this.usuarioLogeado.id}`, formDatosUsuario).then((response)=>{
+                                if(this.usuarioLogeado.idrole != 1){
+                                    axios.post(`/user/actualizar/${this.usuarioLogeado.id}`, formDatosUsuario).then((response)=>{
 
-                                })
+                                    })
+                                }
                                 Vue.swal({
                                     title: 'Cierre de caja exitoso!',
                                     text: 'El cierre de caja ha sido procesado con éxito!',

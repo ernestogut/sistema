@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Sistema de compras y ventas en Laravel">
-    <meta name="author" content="jotaefe006@gmail.com">
+    <meta name="description" content="Sistema de facturacion Laravue">
+    <meta name="author" content="ernestogutttt@gmail.com">
     <meta name="keyword" content="Sistema de compras y ventas">
-    <link rel="shortcut icon" href="img/favicon.png">
+    <link rel="shortcut icon" href="img/logo-scp.png">
     <title>Sistema Ventas - Compras</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="userId" content="{{  Auth::check() ? Auth::user()->id : ''}}">
@@ -53,7 +53,11 @@
                                 </form>
                             </div>
                             <a class="nav-link dropdown-toggle nav-link mr-4    " data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                <span class="d-md-down-none text-white">{{Auth::user()->nombre}} {{Auth::user()->apellido  }}</span>
+                                @if (Auth::user()->idrole != 1)
+                                    <span class="d-md-down-none text-white">{{Auth::user()->nombre}} {{Auth::user()->apellido}} en {{App\Http\Controllers\UserController::obtenerAlmacen(Auth::user()->id, Auth::user()->id_almacen)[0]->almacen  }}</span>
+                                @else
+                                    <span class="d-md-down-none text-white">Admin {{Auth::user()->nombre}} {{Auth::user()->apellido  }}</span>
+                                @endif
                             </a>
                         </li>
                     </ul>

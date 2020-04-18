@@ -4,7 +4,7 @@
                 <div class="card-header">
                     <div class="d-flex flex-wrap justify-content-between align-items-center">
                         <div>
-                            <h4>Facturación de {{almacen}}</h4>
+                            <h4>Facturación</h4>
                         </div>
                         <div>
                             <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo</button>
@@ -111,17 +111,17 @@
                                                 <td class="text-center align-middle">{{venta.codigo}}</td>
                                                 <td class="text-center align-middle">{{venta.producto}}</td>
                                                 <td class="text-center align-middle" >   
-                                                    <input class="form-control" type="number" v-model="venta.precio" @input="generarTotal(venta)">
+                                                    <input class="form-control" type="number" id="monto1" v-model="venta.precio" @input="generarTotal(venta)">
                                                 </td>
-                                                <td class="text-center align-middle"><input class="form-control" type="number" v-model="venta.cantidad" @input="generarTotal(venta)"></td>
-                                                <td class="text-center align-middle"><input class="form-control" type="number" v-model="venta.descuento" @input="generarTotal(venta)"></td>
+                                                <td class="text-center align-middle"><input class="form-control" type="number" step="any" v-model="venta.cantidad" @input="generarTotal(venta)"></td>
+                                                <td class="text-center align-middle"><input class="form-control" type="number" id="monto2" step="any" v-model="venta.descuento" @input="generarTotal(venta)"></td>
                                                 <td class="text-center align-middle">
                                                     <select v-model="venta.almacen" class="form-control">
                                                         <option disabled value="">Escoje un almacén</option>
                                                         <option v-for="almacen in arrayAlmacenFijo" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                                     </select>
                                                 </td>
-                                                <td class="text-center align-middle"><input class="form-control" v-model="venta.total" disabled></td>
+                                                <td class="text-center align-middle"><input class="form-control" v-model="venta.total" step="any" id="monto3" disabled></td>
                                                 <td class="text-center align-middle">
                                                     <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(venta, index)"><i class="icon-trash"></i></span>
                                                 </td>
@@ -133,7 +133,7 @@
                                         <div class="w-100"></div>
                                         <div class="col-6"></div>
                                         <div class="col-2 col-form-label">Subtotal</div>
-                                        <div class="col"><input type="text" class="form-control" readonly="" v-model="objetoFactura.sub_total"></div>
+                                        <div class="col"><input type="text" class="form-control" readonly="" id="monto4" v-model="objetoFactura.sub_total"></div>
                                         <div class="w-100"></div>
                                         <div class="col-6"></div>
                                         <div class="col-2 col-form-label">Desc.Global</div>
@@ -183,7 +183,7 @@
                                                     </label>
                                                 </div>
                                                 <label v-if="objetoFactura.tipo_pago == 'tarjeta'">Comisión</label>
-                                                <input type="number" class="form-control" step="any" v-if="objetoFactura.tipo_pago == 'tarjeta'" v-model="comision">
+                                                <input type="number" class="form-control" step="any" id="monto5" v-if="objetoFactura.tipo_pago == 'tarjeta'" v-model="comision">
                                             </div>
                                         </div>
                                     </div>
@@ -346,7 +346,6 @@ export default {
             comision: 0.04,
             controlador: 0, // 1 - productos, 2 - clientes, 4 -> facturas
             objetoDetalleFact: {},
-            almacen: ''
         }
     },
     computed:{
@@ -367,9 +366,6 @@ export default {
         this.objetoFactura.id_user = this.usuarioLogeado.id
         this.objetoFactura.id_almacen = this.usuarioLogeado.id_almacen
         this.almacen_id = this.usuarioLogeado.id_almacen;
-        axios.get(`/user/obtenerAlmacen/${this.usuarioLogeado.id}/${this.usuarioLogeado.id_almacen}`).then(response=>{
-            this.almacen = response.data[0].almacen
-        })
         axios.get(`/cierre_caja/${this.almacen_id}/verificarEstadoCaja`).then((response)=>{
             var contador = 0;
             for(var i = 0; i < response.data.length; i++){
@@ -416,6 +412,14 @@ export default {
                 this.objetoFactura.total = suma
                 
             }
+        },
+        redondearDecimal(id){
+            $(id).on('blur change input', function() {
+                $(this).val(function(i, input) {
+                    input = input.replace(/\D/g, '');
+                    return (input / 100).toFixed(2);
+                });
+            }).trigger('blur');
         },
         capturarComprobante(item){
             this.objetoComprobante = item
@@ -557,6 +561,10 @@ export default {
             }else{
                 this.colocarFolio()
                 this.obtenerFecha()
+                this.redondearDecimal("#monto1")
+                this.redondearDecimal("#monto2")
+                this.redondearDecimal("#monto3")
+                this.redondearDecimal("#monto4")
                 $('#modalVenta').modal('show');
             }
         },

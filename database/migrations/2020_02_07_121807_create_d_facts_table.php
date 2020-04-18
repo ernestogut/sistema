@@ -19,11 +19,11 @@ class CreateDFactsTable extends Migration
             $table->foreign('id_fact')->references('id')->on('c_facts');
             $table->string('codigo_producto');
             $table->string('descripcion_producto');
-            $table->float('precio_producto', 11, 2);
+            $table->decimal('precio_producto', 11, 2);
             $table->integer('cantidad_producto');
-            $table->float('descuento_producto', 11, 2);
+            $table->decimal('descuento_producto', 11, 2);
             $table->string('almacen_producto')->nullable();
-            $table->float('total_producto', 11, 2);
+            $table->decimal('total_producto', 11, 2);
             $table->timestamps();
         });
     }

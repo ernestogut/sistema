@@ -47,7 +47,7 @@
                 </table>
             </div>
             <!---->
-            <div class="modal fade bd-example-modal-lg1" id="modalMovimiento" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
+            <div class="modal fade bd-example-modal-lg1" id="modalMovimiento" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="modalMovimiento" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Monto</label>
-                                    <input type="number" step="any" class="form-control" v-model="objetoMovimiento.monto">
+                                    <input type="number" step="any" class="form-control" id="monto" v-model="objetoMovimiento.monto">
                                 </div>
                             </div>
                         <div class="modal-footer">
@@ -111,6 +111,7 @@ export default {
         this.objetoMovimiento.id_usuario = this.usuarioLogeado.id
         this.objetoMovimiento.id_almacen = this.usuarioLogeado.id_almacen;
         this.listarMovimientosCaja()
+        $(this.$refs.modalMovimiento).on("hidden.bs.modal", this.limpiarModalMovimiento)
         //this.listarUsuarios();
     },
     data(){
@@ -123,7 +124,7 @@ export default {
                 id_almacen: null,
                 fecha: null,
                 observacion: null,
-                monto: null,
+                monto: 0.00,
                 tipo_movimiento: null,
             },
             arrayAlmacen: []
@@ -138,6 +139,14 @@ export default {
         },
     },
     methods:{
+        limpiarModalMovimiento(){
+            this.objetoMovimiento.id_usuario = this.usuarioLogeado.id
+            this.objetoMovimiento.id_almacen = this.usuarioLogeado.id_almacen;
+            this.objetoMovimiento.fecha =  null
+            this.objetoMovimiento.observacion =  null
+            this.objetoMovimiento.monto = 0.00
+            this.objetoMovimiento.tipo_movimiento =  null
+        },
         listarMovimientosCaja(){
             this.loading = true
             axios.get(`/movimiento_caja/${this.objetoMovimiento.id_almacen}`).then(response=>{
@@ -170,6 +179,12 @@ export default {
                 //this.listarUsuarios();
                 this.seleccionarAlmacen();
                 this.obtenerFecha()
+                $("#monto").on('blur change input', function() {
+                    $(this).val(function(i, input) {
+                        input = input.replace(/\D/g, '');
+                        return (input / 100).toFixed(2);
+                    });
+                }).trigger('blur');
                 $('#modalMovimiento').modal('show');
         },
         obtenerFecha(){

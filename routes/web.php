@@ -25,8 +25,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     //notificaciones
     Route::post('/notification/get', 'NotificationController@get');
-
-    Route::get('/main', function () { return view('contenido/contenido'); })->name('main');
+    Route::get('/apertura', function () { return view('apertura/apertura'); })->name('contenido');
+    Route::get('/main', ['middleware' => 'apertura', function () { return view('contenido/contenido'); }])->name('main');
 
     Route::group(['middleware' => ['Almacenero']], function () {
         /**
@@ -163,13 +163,16 @@ Route::group(['middleware' => ['auth']], function () {
         /**
          * rutas roles
          */
-        Route::get('/user', 'UserController@index');
-        Route::post('/user/registrar','UserController@store' );
-        Route::put('/user/actualizar/{id}','UserController@update' );
+        //Route::get('/user', 'UserController@index');
+        Route::get('/user/obtenerUsuarios', 'UserController@obtenerUsuarios');
+        //Route::get('/user/{id}', 'UserController@show');
+        //Route::post('/user/registrar','UserController@store' );
+        //Route::put('/user/actualizar/{id}','UserController@update' );
         Route::get('/user/obtenerAlmacen/{id}/{id_almacen}','UserController@obtenerAlmacen' );
-        Route::put('/user/desactivar','UserController@desactivar' );
-        Route::put('/user/activar','UserController@activar' );
+        //Route::put('/user/desactivar','UserController@desactivar' );
+        //Route::put('/user/activar','UserController@activar' );
         Route::get('/user/logeado', 'UserController@usuarioLogeado'); 
+        Route::resource('/user', 'UserController');
 
 
         /**

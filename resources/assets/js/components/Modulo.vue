@@ -37,6 +37,12 @@
                                                     <option v-for="documento in arrayDocumentos" :key="documento.id" :value="documento.id">{{documento.tipo_doc}}</option>
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-6" v-if="tituloModal == 'usuario'">
+                                                <label >Rol de usuario</label>
+                                                <select class="form-control" v-model="rolElegido">
+                                                    <option v-for="rol in arrayRoles" :key="rol.id" :value="rol.id">{{rol.nombre}}</option>
+                                                </select>
+                                            </div>
                                             <div class="form-group col-md-6" v-for="(variable) of variables" :key="variable.key">
                                                 <label :for="variable.for">{{variable.titulo}}</label>
                                                 <input :type="variable.type" class="form-control" :id="variable.id" :name="variable.name" aria-describedby="emailHelp"
@@ -116,12 +122,14 @@ export default {
             arrayAlmacen: [],
             arrayComprobantes: [],
             arrayDocumentos: [],
+            arrayRoles: [],
             almacen_id: '',
             iconos: 'icon-pencil',
             loading: false,
             initiated: false,
             comprobanteElegido: '',
-            tipoDocumentoElegido: 1
+            tipoDocumentoElegido: 1,
+            rolElegido: 1
         }
     },
     computed:{
@@ -148,10 +156,10 @@ export default {
             this.$emit('emitirEvId', this.id_comprobante)
         },
         modalEditar(item){
-            /*if(this.tituloModal == 'producto'){
-                this.seleccionarAlmacen()
-            }else */if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante' || this.tituloModal== 'proveedor'){
+            if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante' || this.tituloModal== 'proveedor'){
                 this.listarDocumentos()
+            }else if(this.tituloModal == 'usuario'){
+                this.listarRoles()
             }
             axios.get(`${this.ruta}/${item.id}`).then((response)=>{
                 var arrayValoresRecientes = Object.values(response.data)
@@ -189,6 +197,8 @@ export default {
                 //this.seleccionarAlmacen()
             }else if(this.tituloModal == 'cliente' || this.tituloModal == 'tipo de comprobante' || this.tituloModal == 'proveedor'){
                 this.listarDocumentos()
+            }else if(this.tituloModal == 'usuario'){
+                this.listarRoles()
             }
             //
             this.modoEditable = false;
@@ -231,6 +241,12 @@ export default {
                 this.arrayDocumentos = response.data;
             })
         },
+        listarRoles(){
+            var urlItem = '/role';
+            axios.get(urlItem).then(response=>{
+                this.arrayRoles = response.data;
+            })
+        },
         agregarItem(){
             /*if(this.variables[0].var.trim() === '' || this.variables[1].var.trim() === '' || this.variables[2].var.trim() === ''){
                 alert('Debes completar todos los campos')
@@ -250,6 +266,8 @@ export default {
                 formDatos.append('id_tipo_doc', this.tipoDocumentoElegido)
             }else if(this.tituloModal == 'tipo de combrobante'){
                 formDatos.append('id_tipo_comprobante', this.id_comprobante)
+            }else if(this.tituloModal == 'usuario'){
+                formDatos.append('idrole', this.rolElegido)
             }
             //
             for(var j = 0;  j < this.variables.length; j++){

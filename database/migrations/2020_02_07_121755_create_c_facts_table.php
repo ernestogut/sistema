@@ -29,10 +29,10 @@ class CreateCFactsTable extends Migration
             $table->string('tipo_pago');
             $table->string('serie');
             $table->string('folio');
-            $table->float('sub_total', 11, 2);
-            $table->float('desc_global', 11, 2);
-            $table->float('igv_total', 11, 2);
-            $table->float('total', 11, 2);
+            $table->decimal('sub_total', 11, 2);
+            $table->decimal('desc_global', 11, 2);
+            $table->decimal('igv_total', 11, 2);
+            $table->decimal('total', 11, 2);
             $table->timestamps();
         });
     }

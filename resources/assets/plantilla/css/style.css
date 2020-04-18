@@ -9283,4 +9283,8 @@ hr.transparent {
     /*background-image: url('../img/back3.jpg');*/
 
 }
-
+.boton-oscuro{
+  color: white;
+  border-radius: 10px;
+  background: #FD3954;
+}

@@ -56,7 +56,7 @@ export default {
                 })
         },
         cargarAlmacen({commit}){
-            return axios.get('/almacen').then(response =>{
+            return axios.get('/almacen/').then(response =>{
                     let arrayAlmacen = response.data
                     commit('SET_ALMACENES', arrayAlmacen)
                 })
@@ -69,7 +69,7 @@ export default {
             })
         },
         cargarUsuarios({commit}){
-            return axios.get('/user').then(response =>{
+            return axios.get('/user/obtenerUsuarios').then(response =>{
                     let arrayUsuarios = response.data
                     commit('SET_USUARIOS', arrayUsuarios)
                 })

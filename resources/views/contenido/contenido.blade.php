@@ -2,9 +2,6 @@
     @section('contenido')
     @if(Auth::check())
         @if(Auth::user()->idrole == 1)
-            <template v-if="menu==0">
-                <apertura-caja></apertura-caja>
-            </template>
             <template v-if="menu==1">
                 <dashboard></dashboard>
             </template>
@@ -63,9 +60,6 @@
                 <movimiento-caja></movimiento-caja>
             </template>
         @elseif(Auth::user()->idrole == 2)
-            <template v-if="menu==0">
-                <apertura-caja></apertura-caja>
-            </template>
             <template v-if="menu==5">
                 <facturacion></facturacion>
             </template>

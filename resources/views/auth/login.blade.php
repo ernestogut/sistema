@@ -22,7 +22,7 @@
             </div>
             <div class="row">
               <div class="col-6">
-                <button type="submit" class="btn px-4 text-white" style="border-radius: 10px; background: #FD3954;">Acceder</button>
+                <button type="submit" class="btn boton-oscuro">Acceder</button>
               </div>
             </div>
           </div>

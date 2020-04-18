@@ -52,7 +52,6 @@ Vue.component('producto-speed', require('./components/ProductoSpeed.vue').defaul
 Vue.component('pedido-speed', require('./components/PedidoSpeed.vue').default);
 Vue.component('traspaso-almacen', require('./components/TraspasoAlmacen.vue').default);
 Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
-Vue.component('apertura-caja', require('./components/AperturaCaja.vue').default);
 Vue.component('movimiento-caja', require('./components/MovimientoCaja.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -84,7 +83,11 @@ var app = new Vue({
             await this.$store.dispatch('cargarUsuarioLogeado')
             await this.$store.dispatch('cargarAlmacen')
             await this.$store.dispatch('cargarUsuarios').then(()=>{
-                this.menu = 0;
+                if(this.usuarioLogeado.idrole == 1){
+                    this.menu = 1
+                }else if(this.usuarioLogeado.idrole ==2){
+                    this.menu = 5
+                }
                 //this.$store.dispatch('cargarProductos')
             })
 

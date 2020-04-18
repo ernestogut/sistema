@@ -20,11 +20,11 @@ class CreateCierreCajasTable extends Migration
             $table->unsignedBigInteger('id_almacen');
             $table->foreign('id_almacen')->references('id')->on('almacens');
             $table->date('fecha');
-            $table->float('saldo_inicial', 11, 2);
-            $table->float('ventas_diarias', 11, 2);
-            $table->float('ingresos', 11, 2);
-            $table->float('egresos', 11, 2);
-            $table->float('saldo_final', 11, 2);
+            $table->decimal('saldo_inicial', 11, 2);
+            $table->decimal('ventas_diarias', 11, 2);
+            $table->decimal('ingresos', 11, 2);
+            $table->decimal('egresos', 11, 2);
+            $table->decimal('saldo_final', 11, 2);
             $table->string('estado')->default('abierto');
             $table->timestamps();
         });

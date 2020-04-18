@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CierreCaja;
+use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -37,17 +38,41 @@ class CierreCajaController extends Controller
      */
     public function store(Request $request)
     {
-        $cierre_caja = new CierreCaja();
-        $cierre_caja->id_usuario = $request->id_usuario;
-        $cierre_caja->id_almacen = $request->id_almacen;
-        $cierre_caja->fecha = $request->fecha;
-        $cierre_caja->saldo_inicial = $request->saldo_inicial;
-        $cierre_caja->ventas_diarias = $request->ventas_diarias;
-        $cierre_caja->ingresos = $request->ingresos;
-        $cierre_caja->egresos = $request->egresos;
-        $cierre_caja->saldo_final = $request->saldo_final;
-        $cierre_caja->estado = $request->estado;
-        $cierre_caja->save();
+
+        $arrayUsuarios = User::select('id', 'usuario', 'id_almacen')->get();
+        $controlador = false;
+        foreach($arrayUsuarios as $objUsuario){
+            if($objUsuario->id_almacen == $request->id_almacen){
+                $controlador = true;
+            }
+        }
+        if($controlador){
+            dd('hay una caja activa');
+        }else{
+            $usuario = User::find(auth()->user()->id);
+            $usuario->id_almacen = $request->id_almacen;
+            $usuario->save();
+            $usuario = auth()->user();
+            $cierre_caja = new CierreCaja();
+            $cierre_caja->id_usuario = $usuario->id;
+            $cierre_caja->id_almacen = $request->id_almacen;
+            $cierre_caja->fecha = date("Y-m-d");
+            $cierre_caja->saldo_inicial = $request->saldo_inicial;
+            $cierre_caja->ventas_diarias = 0;
+            $cierre_caja->ingresos = 0;
+            $cierre_caja->egresos = 0;
+            $cierre_caja->saldo_final = $request->saldo_inicial;
+            $cierre_caja->estado = 'abierto';
+            $cierre_caja->save();
+            return redirect()->route('main');
+            dd('Puedes acceder');
+        }
+    /*
+        
+
+
+        
+        */
     }
 
     /**
