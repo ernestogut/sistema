@@ -34,7 +34,11 @@ class UserController extends Controller
         return $usuarios;
 
     }
-
+    public function show($id)
+    {
+        $usuarios = User::select('users.usuario', 'users.nombre', 'users.apellido', 'users.idrole')->where('users.id', '=', $id)->get();
+        return $usuarios;
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -82,7 +86,10 @@ class UserController extends Controller
     {
         if(!$request->ajax()) return redirect('/');
         $usuario = User::find($id);
-        $usuario->id_almacen = $request->id_almacen;
+        $usuario->usuario = $request->usuario;
+        $usuario->nombre= $request->nombre;
+        $usuario->apellido= $request->apellido;
+        $usuario->idrole = $request->idrole;
         $usuario->save();
     }
 

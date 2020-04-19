@@ -298,6 +298,8 @@ export default {
                 formDatos.append('id_tipo_doc', this.tipoDocumentoElegido)
             }else if(this.tituloModal == 'tipo de comprobante'){
                 formDatos.append('id_tipo_comprobante', this.comprobanteElegido)
+            }else if(this.tituloModal == 'usuario'){
+                formDatos.append('idrole', this.rolElegido)
             }
             for(var j = 0;  j < this.variables.length; j++){
                 this.variables[j].var = ''

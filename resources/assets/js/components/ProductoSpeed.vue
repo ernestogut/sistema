@@ -1,7 +1,14 @@
 <template>
 <main class="main">
-    <div class="card-body" >
-        <!--<spinner v-if="loading"></spinner>-->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex flex-row justify-content-between align-items-center">  
+                <h4>Productos de la web</h4>
+            </div>
+        </div>
+        <spinner v-if="loading"></spinner>
+        <div class="card-body" v-else-if="initiated">
+        
             <table  class="table table-hover table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
                 <thead>
                     <tr>
@@ -101,6 +108,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    
 </main>
   
 </template>
@@ -164,19 +173,12 @@ export default {
                         me.enAlmacen = true;
                         me.arrayAlmacen = response.data;
                     }else{
-                        for(var i = 0; i < me.arrayAlmacenFijo.length; i++){
-                            
-                            contador = 0
-                            
+                        for(var i = 0; i < me.arrayAlmacenFijo.length; i++){                           
+                            contador = 0                           
                             for(var j = 0; j < response.data.length; j++){
-                                //console.log(response.data[j])
-                                //console.log(me.arrayAlmacenFijo[i])
                                 if(response.data[j].id != me.arrayAlmacenFijo[i].id){
-                                    
                                     contador += 1
-                                    //console.log('contador' + '->' + contador)
                                     if(contador == response.data.length){
-                                      //  console.log('son iguales')
                                         me.arrayAlmacen = response.data;
                                         me.arrayAlmacen.push(me.arrayAlmacenFijo[i])
                                         me.arrayAlmacen[i].editable = false;
@@ -185,11 +187,7 @@ export default {
                             }
                         }
                     }
-                    
-                    //me.arrayAlmacen = response.data;
                 }
-                //me.loading = false;
-                //me.initiated = true;
             })
             this.objetoProdAlmacen.id_producto = producto.codigo;
         },
@@ -200,13 +198,11 @@ export default {
                 this.modoEditable = false;
             }
             this.idAlmacen = almacen.id_inventario;
-            //console.log(this.modoEditable)
             this.objetoProdAlmacen.cantidad = null;
             $('#modalModificarCantidad').modal('show');
             this.objetoProdAlmacen.id_almacen = almacen.id
         },
         insertarCantidad(){
-            //console.log(this.objetoProdAlmacen)
             this.loading = true
             let formDatos = new FormData()
             formDatos.append('id_producto', this.objetoProdAlmacen.id_producto)
@@ -222,7 +218,6 @@ export default {
             })
         },
         modificarCantidad(idAlmacen){
-            //console.log(this.objetoProdAlmacen)
             let formDatos = new FormData()
             this.loading = true
             formDatos.append('id_producto', this.objetoProdAlmacen.id_producto)

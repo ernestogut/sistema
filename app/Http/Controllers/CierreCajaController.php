@@ -118,7 +118,11 @@ class CierreCajaController extends Controller
     public function cerrarCaja(Request $request, $id)
     {
         $cierre_caja = CierreCaja::find($id);
+        //dd($request->id_almacen);
+        $user = User::find(auth()->user()->id);
+        $user->id_almacen = $request->id_almacen;
         $cierre_caja->estado = $request->estado;
+        $user->save();
         $cierre_caja->save();
     }
     public function consultarCajaSeleccionada($id)
