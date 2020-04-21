@@ -12,15 +12,15 @@
 */
 Route::group(['middleware' => ['guest']], function () {
 
-    Route::get('/', 'Auth\LoginController@showLoginForm');
-    Route::post('/', 'Auth\LoginController@login')->name('login');
+    Route::get('/', 'auth\LoginController@showLoginForm');
+    Route::post('/', 'auth\LoginController@login')->name('login');
 
 });
 
 
 Route::group(['middleware' => ['auth']], function () {
 
-    Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+    Route::post('/logout', 'auth\LoginController@logout')->name('logout');
 
     //notificaciones
     Route::post('/notification/get', 'NotificationController@get');
