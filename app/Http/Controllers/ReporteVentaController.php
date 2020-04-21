@@ -16,7 +16,11 @@ class ReporteVentaController extends Controller
      */
     public function index()
     {
-        $ventas = ReporteVenta::select(DB::raw('to_char(fecha, "YYYY") as year, to_char(fecha, "Month") as month, SUM(total) as subtotal, count(*) as orders'))->groupBy(DB::raw('to_char(fecha, "YYYY"), to_char(fecha, "Month")'))->orderBy(DB::raw('to_char(fecha, "MM")'))->where('id_almacen', '=', 2)->get();
+        //$ventas = ReporteVenta::select(DB::raw('to_char(fecha, "YYYY") as year, to_char(fecha, "Month") as month, SUM(total) as subtotal, count(*) as orders'))->groupBy(DB::raw('to_char(fecha, "YYYY"), to_char(fecha, "Month")'))->orderBy(DB::raw('to_char(fecha, "MM")'))->where('id_almacen', '=', 2)->get();
+        $ventas = ReporteVenta::selectRaw("date_part('year', fecha) as year,to_char((fecha)::date , 'Month') as month, SUM(total) as total, count(*) as ordenes")
+        ->groupBy('year','month')
+        ->orderByRaw('date_part(month, fecha)')
+        ->get();
         return $ventas;
     }
 
@@ -50,7 +54,11 @@ class ReporteVentaController extends Controller
     public function show($almacen)
     {
         //DB::statement("SET lc_time_names = 'es_ES'");
-        $ventas = ReporteVenta::select(DB::raw('to_char(fecha, "YYYY") as year, to_char(fecha, "Month") as month;, SUM(total) as total, count(*) as ordenes'))->groupBy(DB::raw('to_char(fecha, "YYYY"), to_char(fecha, "Month")'))->orderBy(DB::raw('to_char(fecha, "MM")'))->where('id_almacen', '=', $almacen)->get();
+        $ventas = ReporteVenta::selectRaw("date_part('year', fecha) as year,to_char((fecha)::date , 'Month') as month, SUM(total) as total, count(*) as ordenes")
+        ->groupBy('year','month')
+        ->orderByRaw('date_part(month, fecha)')
+        ->where('id_almacen', '=', $almacen)->get();
+        //$ventas = ReporteVenta::select(DB::raw('to_char(fecha, "YYYY") as year, to_char(fecha, "Month") as month;, SUM(total) as total, count(*) as ordenes'))->groupBy(DB::raw('to_char(fecha, "YYYY"), to_char(fecha, "Month")'))->orderBy(DB::raw('to_char(fecha, "MM")'))->where('id_almacen', '=', $almacen)->get();
         return $ventas;
     }
 
