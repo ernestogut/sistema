@@ -7,7 +7,7 @@
                             <h4>Facturación</h4>
                         </div>
                         <div>
-                            <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nueva venta</button>
                         </div>   
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                                         <div class="w-100"></div>
                                         <div class="col-6"></div>
                                         <div class="col-2 col-form-label">Total</div>
-                                        <div class="col"><input type="text" name="Totales" id="Totales" class="form-control" readonly="" v-model="objetoFactura.total"></div>
+                                        <div class="col"><input type="text" name="Totales" id="Totales" step="any" class="form-control" readonly="" v-model="objetoFactura.total"></div>
                                     </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -413,14 +413,6 @@ export default {
                 
             }
         },
-        redondearDecimal(id){
-            $(id).on('blur change input', function() {
-                $(this).val(function(i, input) {
-                    input = input.replace(/\D/g, '');
-                    return (input / 100).toFixed(2);
-                });
-            }).trigger('blur');
-        },
         capturarComprobante(item){
             this.objetoComprobante = item
         },
@@ -453,8 +445,8 @@ export default {
             }
             suma = lista.reduce((a, b) => a + b, 0)
             this.objetoFactura.total = suma
-                this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
-                this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
+            this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
+            this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
         },
         recibirVenta(venta){
             this.ventas = venta
@@ -517,7 +509,8 @@ export default {
         },
         listarSeries(){
             this.loading = true
-            axios.get(`/serie_comprobante/${this.comprobanteEscogido}/listarSeries`).then(response=>{
+            console.log(this.usuarioLogeado)
+            axios.get(`/serie_comprobante/${this.comprobanteEscogido}/${this.usuarioLogeado.id_almacen}/listarSeries`).then(response=>{
                 if(response.data.length > 0){
                     this.arraySeries = response.data;
                     this.objetoFactura.id_serie = response.data[0].id;
@@ -561,10 +554,6 @@ export default {
             }else{
                 this.colocarFolio()
                 this.obtenerFecha()
-                this.redondearDecimal("#monto1")
-                this.redondearDecimal("#monto2")
-                this.redondearDecimal("#monto3")
-                this.redondearDecimal("#monto4")
                 $('#modalVenta').modal('show');
             }
         },
@@ -581,7 +570,6 @@ export default {
         eliminarProductoTabla(venta, index){
             this.ventas.splice(index,1)
             document.getElementById(`producto${venta.codigo}`).className = ''
-            //document.getElementById(`producto${item.codigo}`).className = 'selected'
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         buscarCliente(codigo){
@@ -645,6 +633,7 @@ export default {
                 }
                 suma = lista.reduce((a, b) => a + b, 0)
                 this.objetoFactura.total = suma
+                console.log(typeof this.objetoFactura.total);
                 this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
                 this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
             },
@@ -658,7 +647,7 @@ export default {
                 this.ventas[i].almacen = this.almacen_id;
             }
             suma = lista.reduce((a, b) => a + b, 0)
-            this.objetoFactura.total = suma
+            this.objetoFactura.total = Number(suma.toFixed(2));
             var comisionT = this.objetoFactura.total * this.comision
             if(this.objetoFactura.tipo_pago == 'tarjeta'){
                 this.objetoFactura.total =  this.objetoFactura.total + comisionT

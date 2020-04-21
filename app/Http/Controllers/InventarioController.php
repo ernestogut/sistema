@@ -53,6 +53,7 @@ class InventarioController extends Controller
         //$suma_total = Inventario::sum('cantidad')->where('id_producto', '=', $prod_almacen->id_producto);
         //$suma_total = DB::connection("mysql")->statement("call generarStockGeneral(?)",$prod_almacen->id_producto);
         //dd($suma_total);
+        return $suma_total;
     }
 
     /**
@@ -98,6 +99,7 @@ class InventarioController extends Controller
         //$suma_total = Inventario::sum('cantidad')->where('id_producto', '=', $prod_almacen->id_producto);
         //$suma_total = DB::connection("mysql")->statement("call generarStockGeneral(?)",$prod_almacen->id_producto);
         //dd($suma_total);
+        return $suma_total;
     }
 
     /**

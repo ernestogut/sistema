@@ -2,25 +2,25 @@
 
     <div class="tamaño">
         <modulo :variables="variables" :ruta="ruta" :cabeceras="cabeceras" :titulo="titulo" :tituloModal="tituloModal" :factura="false" :controlador="5" :listarSeries="listarSeries" :idTabla="'myTable'" @emitirEvId="recibirId"></modulo>
-
-
         <div class="modal fade" tabindex="-1" role="dialog" id="modalSeries" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaSeries">
                 <div class="modal-dialog modal-xl">
-                    <div class="card-body">
-                        <div class="modal-content" >
-                            <div class="modal-header">
-                                Series
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                    <div class="modal-content" >
+                        <div class="modal-header">
+                            Series
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="card-header">
+                            <div class="d-flex flex-nowrap justify-content-end">
+                                <button type="button" class="btn btn-primary boton" data-toggle="modal" @click="nuevaSerieModal()">
+                                    Nueva serie
                                 </button>
                             </div>
-                            
+                        </div>
+                        <div class="card-body" >
                             <div class="table-responsive">
-                                <div class="d-flex flex-nowrap justify-content-end">
-                                    <button type="button" class="btn btn-primary boton" data-toggle="modal" @click="nuevaSerieModal()">
-                                        Nuevo
-                                    </button>
-                                </div>
+                                
                                 <datatable :arrayItems="arraySeries" :cabeceras="cabecerasSerie" :controlador="6"  :factura="true" :idTabla="'myTableSeries'" :funcionBotonTrash="condicionSerie"></datatable>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                     <div class="card-body">
                         <div class="modal-content" >
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Nueva serie</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -66,10 +66,18 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="estado">Estado</label>
+                                            <select v-model="objetoSerie.id_almacen" class="form-control">
+                                                <!--<option disabled value="">Escoje un almacén</option>-->
+                                                <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
+                                            </select>
+                                            <!--<input type="text" class="form-control" id="estado" placeholder="Another input" v-model="objetoSerie.estado">-->
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="estado">Estado</label>
                                             <select v-model="objetoSerie.estado" class="form-control">
                                                 <!--<option disabled value="">Escoje un almacén</option>-->
-                                                <option value="1">Habilitado</option>
-                                                <option value="0">Desabilitado</option>
+                                                <option value="habilitado">Habilitado</option>
+                                                <option value="deshabilitado">Desabilitado</option>
                                             </select>
                                             <!--<input type="text" class="form-control" id="estado" placeholder="Another input" v-model="objetoSerie.estado">-->
                                         </div>
@@ -133,6 +141,7 @@ export default {
             
             {
                 id_tipo_comprobante: null,
+                id_almacen: 1,
                 serie: '',
                 numero_inicial: 1,
                 numero_actual: null,
@@ -143,6 +152,11 @@ export default {
             //controladorTrash: 1 // 1 -> Deshabilitar, 2 -> Habilitar
         }
 
+    },
+    computed:{
+        arrayAlmacen(){
+            return this.$store.getters.arrayAlmacen;
+        }
     },
     methods:{
         recibirId(id){
@@ -182,7 +196,7 @@ export default {
         condicionSerie(item){
             let formDatos = new FormData();
             if(item.estado == 0){
-                formDatos.append('estado', 1)
+                formDatos.append('estado', 'habilitado')
                 formDatos.append("_method", "put");
                 axios.post(`serie_comprobante/${item.id}`, formDatos).then((response)=>{
                     Vue.swal({
@@ -202,7 +216,7 @@ export default {
                         });
                     })
             }else if(item.estado == 1){
-                formDatos.append('estado', 0)
+                formDatos.append('estado', 'deshabilitado')
                 formDatos.append("_method", "put");
                 axios.post(`serie_comprobante/${item.id}`, formDatos).then((response)=>{
                     Vue.swal({

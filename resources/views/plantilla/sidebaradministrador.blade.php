@@ -84,7 +84,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item nav-dropdown">
+                <!--<li class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pie-chart"></i> Reportes</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=9" class="nav-item">
@@ -94,7 +94,7 @@
                             <a class="nav-link" href="#"><i class="icon-chart"></i> Reporte Ventas</a>
                         </li>
                     </ul>
-                </li>
+                </li>-->
                 <li @click="menu=11" class="nav-item">
                     <a class="nav-link" href="#"><i class="icon-speedometer"></i> Mis Datos</a>
                 </li>

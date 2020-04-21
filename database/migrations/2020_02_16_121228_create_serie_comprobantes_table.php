@@ -17,12 +17,14 @@ class CreateSerieComprobantesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('id_tipo_comprobante');
             $table->foreign('id_tipo_comprobante')->references('id')->on('tipo_comprobantes');
+            $table->unsignedBigInteger('id_almacen');
+            $table->foreign('id_almacen')->references('id')->on('almacens');
             $table->string('serie');
             $table->bigInteger('numero_inicial');
             $table->bigInteger('numero_actual');
             $table->bigInteger('numero_final');
             $table->string('anio');
-            $table->integer('estado')->default(1);
+            $table->string('estado')->default('habilitado');
             $table->timestamps();
         });
     }

@@ -6,8 +6,8 @@
                 <h4>Productos de la web</h4>
             </div>
         </div>
-        <spinner v-if="loading"></spinner>
-        <div class="card-body" v-else-if="initiated">
+        <spinner v-if="loadingProductos"></spinner>
+        <div class="card-body" v-else-if="initiatedProductos">
         
             <table  class="table table-hover table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
                 <thead>
@@ -61,8 +61,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <spinner v-if="loading"></spinner>
-                        <div class="card-body" v-else-if="initiated">
+                        <spinner v-if="loadingCantidades"></spinner>
+                        <div class="card-body" v-else-if="initiatedCantidades">
                             <ul class="list-group">
                                 <li class="list-group-item cursor-pointer" v-for="almacen in arrayAlmacen" :key="almacen.id" @click="abrirModalModificarCantidad(almacen)">
                         
@@ -70,11 +70,6 @@
                                     <span v-else>
                                         {{almacen.id}}. No existen unidades en el almacen de {{almacen.descripcion}}
                                     </span>
-                                    
-                                        
-                                    <!--<div>
-                                        <span class="badge badge-primary badge-pill" id="eliminar" @click="eliminarTiempo(item, index)" v-show="!modoWcaRecibido || item.tiempoReal < 3000" >x</span>
-                                    </div>-->
                                 </li>
                             </ul>
                         </div>
@@ -124,6 +119,10 @@ export default {
         return{
             loading: false,
             initiated: false,
+            loadingProductos: false,
+            initiatedProductos: false,
+            loadingCantidades: false,
+            initiatedCantidades: false,
             arrayAlmacen: [],
             objetoProdAlmacen: {
                 id_producto: null,
@@ -145,10 +144,10 @@ export default {
     },
     methods:{
         async listarItem(){
-            this.loading = true
+            this.loadingProductos = true
             await this.$store.dispatch('cargarProductos').then(()=>{
-                this.loading = false;
-                this.initiated = true;
+                this.loadingProductos = false;
+                this.initiatedProductos = true;
                 this.tablaProductos();
             });
         },
@@ -160,7 +159,7 @@ export default {
             } );
         },
         abrirModalCantidades(producto){
-            //this.loading = true
+            this.loadingCantidades = true
             $('#modalCantidades').modal('show');
             let me= this;
             var contador = 0
@@ -188,6 +187,8 @@ export default {
                         }
                     }
                 }
+                me.loadingCantidades = false
+                me.initiatedCantidades = true
             })
             this.objetoProdAlmacen.id_producto = producto.codigo;
         },
@@ -209,12 +210,41 @@ export default {
             formDatos.append('id_almacen', this.objetoProdAlmacen.id_almacen)
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             axios.post('/inventario', formDatos).then((response)=>{
+                var productos = this.arrayProductos
                 this.loading = false;
                 this.initiated = true;
-                $('#modalModificarCantidad').modal('hide');
+                for(var j = 0; j < this.arrayAlmacen.length; j++){
+                    if(this.arrayAlmacen[j].id == this.objetoProdAlmacen.id_almacen){
+                        var almacen = this.arrayAlmacen[j].descripcion
+                        this.arrayAlmacen[j].cantidad = this.objetoProdAlmacen.cantidad
+                        this.arrayAlmacen[j].editable = true;
+                    }
+                }
+                for(var i = 0; i < productos.length; i++){
+                    if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
+                        var producto = productos[i].producto
+                        productos[i].stock = response.data
+                    }
+                }
+                this.$store.dispatch('actualizarProductos', productos)
+                Vue.swal({
+                    title: `Añadiste ${this.objetoProdAlmacen.cantidad} unidades`,
+                    text: `Añadiste ${this.objetoProdAlmacen.cantidad} unidades de ${producto} al almacen de ${almacen}`,
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    }).then((result) => {
+                    if (result.value) {
+                        $('#modalModificarCantidad').modal('hide');
+                    }
+                })
                 //alert('quedo')
             }).catch((error)=>{
-                alert('error')
+                Vue.swal({
+                    icon: 'error',
+                    title: 'No se pudieron añadir las unidades',
+                    text: 'Intentalo nuevamente más tarde',
+                })
             })
         },
         modificarCantidad(idAlmacen){
@@ -225,12 +255,40 @@ export default {
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             formDatos.append("_method", "put");
             axios.post(`/inventario/${idAlmacen}`, formDatos).then((response)=>{
+                var productos = this.arrayProductos
                 this.loading = false;
                 this.initiated = true;
-                $('#modalModificarCantidad').modal('hide');
+                for(var j = 0; j < this.arrayAlmacen.length; j++){
+                    if(this.arrayAlmacen[j].id == this.objetoProdAlmacen.id_almacen){
+                        var almacen = this.arrayAlmacen[j].descripcion
+                        this.arrayAlmacen[j].cantidad = this.objetoProdAlmacen.cantidad
+                    }
+                }
+                for(var i = 0; i < productos.length; i++){
+                    if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
+                        var producto = productos[i].producto
+                        productos[i].stock = response.data
+                    }
+                }
+                this.$store.dispatch('actualizarProductos', productos)
+                Vue.swal({
+                    title: `Modificación de stock exitoso!`,
+                    text: `Modificaste a ${this.objetoProdAlmacen.cantidad} unidad(es) el stock de ${producto} en el almacen de ${almacen}`,
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    }).then((result) => {
+                    if (result.value) {
+                        $('#modalModificarCantidad').modal('hide');
+                    }
+                })
                 //alert('quedo')
             }).catch((error)=>{
-                alert('error')
+                Vue.swal({
+                    icon: 'error',
+                    title: 'No se pudieron añadir las unidades',
+                    text: 'Intentalo nuevamente más tarde',
+                })
             })
         }
     }

@@ -8,7 +8,7 @@
                             <h4>Traslado de productos</h4>
                         </div>
                         <div>
-                            <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nuevo traslado</button>
                         </div>   
                     </div>
                 </div>

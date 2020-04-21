@@ -6,7 +6,7 @@
                         <h4>Mantenimiento de usuario</h4>
                             <!-- Abrir modal -->
                         <button type="button" class="btn btn-primary boton" data-toggle="modal" @click="abrirModalRegistrar()">
-                         Nuevo
+                         Nuevo usuario
                         </button>
                             <!-- Modal -->
                     </div>
@@ -20,43 +20,43 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
-                                    <form id="formA" action="" @submit.prevent="modoEditable?editarUsuario(id):agregarUsuario()" enctype="multipart/form-data">
-                                        <div class="form-row">
-                                            <div class="form-group col-md-6">
-                                                <label for="usuario">Usuario (login)</label>
-                                                <input type="text" class="form-control"
-                                                v-model="objetoUsuario.usuario" placeholder="Ingrese el nickname del usuario">
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                <label for="nombre">Nombre</label>
-                                                <input type="text" class="form-control"
-                                                v-model="objetoUsuario.nombre" placeholder="Ingrese el nombre del usuario">
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                <label for="apellido">Apellido</label>
-                                                <input type="text" class="form-control"
-                                                v-model="objetoUsuario.apellido" placeholder="Ingrese el apellido del usuario">
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                <label for="contrasena">Contraseña (login)</label>
-                                                <input type="password" class="form-control"
-                                                v-model="objetoUsuario.password" placeholder="Ingrese la contraseña del usuario">
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                <label >Rol de usuario</label>
-                                                <select class="form-control" v-model="objetoUsuario.idrole">
-                                                    <option v-for="rol in arrayRoles" :key="rol.id" :value="rol.id">{{rol.nombre}}</option>
-                                                </select>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
-                                                <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
-                                                <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
+                                <form id="formA" action="" @submit.prevent="modoEditable?editarUsuario(id):agregarUsuario()" enctype="multipart/form-data">
+                                    <div class="modal-body">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="usuario">Usuario (login)</label>
+                                                    <input type="text" class="form-control"
+                                                    v-model="objetoUsuario.usuario" placeholder="Ingrese el nickname del usuario">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="nombre">Nombre</label>
+                                                    <input type="text" class="form-control"
+                                                    v-model="objetoUsuario.nombre" placeholder="Ingrese el nombre del usuario">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="apellido">Apellido</label>
+                                                    <input type="text" class="form-control"
+                                                    v-model="objetoUsuario.apellido" placeholder="Ingrese el apellido del usuario">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="contrasena">Contraseña (login)</label>
+                                                    <input type="password" class="form-control"
+                                                    v-model="objetoUsuario.password" placeholder="Ingrese la contraseña del usuario">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label >Rol de usuario</label>
+                                                    <select class="form-control" v-model="objetoUsuario.idrole">
+                                                        <option v-for="rol in arrayRoles" :key="rol.id" :value="rol.id">{{rol.nombre}}</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
+                                            <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
+                                            <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
+                                        </div>
                                     </form>
-                                    </div>
                                 </div>
                             </div>
                         </div>

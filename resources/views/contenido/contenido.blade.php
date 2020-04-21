@@ -29,12 +29,6 @@
             <template v-if="menu==8">
                 <role></role>
             </template>
-            <template v-if="menu==9">
-                <consultaingreso></consultaingreso>
-            </template>
-            <template v-if="menu==10">
-                <consultaventa></consultaventa>
-            </template>
             <template v-if="menu==11">
                 <dato></dato>
             </template>
@@ -69,9 +63,6 @@
             <template v-if="menu==6">
                 <cliente></cliente>
             </template>
-            <template v-if="menu==10">
-                    <consultaventa></consultaventa>
-            </template>
             <template v-if="menu==17">
                 <cierre-caja></cierre-caja>
             </template>
@@ -81,9 +72,6 @@
         @elseif(Auth::user()->idrole == 3)
             <template v-if="menu==4">
                 <proveedor></proveedor>
-            </template>
-            <template v-if="menu==9">
-                <consultaIngreso></consultaIngreso>
             </template>
 
         @endIf

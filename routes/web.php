@@ -21,11 +21,10 @@ Route::group(['middleware' => ['guest']], function () {
 Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
-    Route::get('/dashboard', 'DashboardController');
 
     //notificaciones
     Route::post('/notification/get', 'NotificationController@get');
-    Route::get('/apertura', function () { return view('apertura/apertura'); })->name('contenido');
+    Route::get('/apertura', ['middleware' => 'main', function () { return view('apertura/apertura'); }])->name('contenido');
     Route::get('/main', ['middleware' => 'apertura', function () { return view('contenido/contenido'); }])->name('main');
 
     Route::group(['middleware' => ['Almacenero']], function () {
@@ -226,7 +225,7 @@ Route::resource('tipo_comprobante', 'TipoComprobanteController');
 Route::resource('comprobante', 'ComprobanteController');
 Route::resource('serie_comprobante', 'SerieComprobanteController');
 Route::resource('tipo_documento', 'TipoDocumentoController');
-Route::get('serie_comprobante/{id}/listarSeries', 'SerieComprobanteController@listarSeries')->name('serie_comprobante.listar');
+Route::get('serie_comprobante/{id}/{almacen}/listarSeries', 'SerieComprobanteController@listarSeries')->name('serie_comprobante.listar');
 Route::resource('speed', 'SpeedController');
 Route::resource('cabecera_ingreso', 'CabeceraIngresoController');
 Route::resource('detalle_ingreso', 'DetalleIngresoController');

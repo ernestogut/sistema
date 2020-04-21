@@ -6,7 +6,7 @@
                         <h4>{{titulo}}</h4>
                         <!-- Abrir modal -->
                         <button type="button" class="btn btn-primary boton" data-toggle="modal" @click="abrirModalRegistrar()">
-                        Nuevo
+                        Nuevo {{tituloModal}}
                         </button>
                         <!-- Modal -->
                     </div>
@@ -20,8 +20,8 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+                                <form id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
                                 <div class="modal-body">
-                                    <form id="formA" action="" @submit.prevent="modoEditable?editarItem(id):agregarItem()" enctype="multipart/form-data">
                                         <div class="form-row">
                                             <div class="form-group col-md-6" v-if="tituloModal == 'comprobante'">
                                                 <label >Tipo de comprobante</label>
@@ -33,7 +33,6 @@
                                             <div class="form-group col-md-6" v-if="tituloModal == 'cliente' || tituloModal == 'tipo de comprobante' || tituloModal == 'proveedor'">
                                                 <label >Tipo de documento</label>
                                                 <select class="form-control" v-model="tipoDocumentoElegido">
-                                                    <option value=""></option>
                                                     <option v-for="documento in arrayDocumentos" :key="documento.id" :value="documento.id">{{documento.tipo_doc}}</option>
                                                 </select>
                                             </div>
@@ -67,14 +66,14 @@
                                             </div>-->
                                             
                                             <!--Fin atributos productos-->
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
-                                                <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
-                                                <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
-                                            </div>
                                         </div>
-                                    </form>
-                                </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary boton" data-dismiss="modal">Cerrar</button>
+                                            <button v-show="!modoEditable" type="submit" class="btn btn-primary boton">Guardar</button>
+                                            <button v-show="modoEditable" type="submit" class="btn btn-primary boton">Actualizar</button>
+                                        </div>
+                                    </div>
+                                </form>
                                 </div>
                             </div>
                         </div>

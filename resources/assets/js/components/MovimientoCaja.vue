@@ -7,7 +7,7 @@
                         <h4>Movimiento de caja</h4>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalNuevoMovimiento()">Nuevo</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalNuevoMovimiento()">Nuevo movimiento de caja</button>
                     </div>   
                 </div>
             </div>
