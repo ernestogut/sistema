@@ -18,7 +18,7 @@ class LoginController extends Controller
      */
     public function showLoginForm(){
         $dato = Dato::get();
-        return view('Auth.login', ['dato'=>$dato]);
+        return view('auth.login', ['dato'=>$dato]);
     }
 
     public function login(Request $request){

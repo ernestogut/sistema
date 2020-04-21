@@ -20,7 +20,7 @@ Route::group(['middleware' => ['guest']], function () {
 
 Route::group(['middleware' => ['auth']], function () {
 
-    Route::post('/logout', 'auth\LoginController@logout')->name('logout');
+    Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
     //notificaciones
     Route::post('/notification/get', 'NotificationController@get');
