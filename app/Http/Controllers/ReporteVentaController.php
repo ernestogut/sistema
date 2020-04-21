@@ -49,7 +49,7 @@ class ReporteVentaController extends Controller
      */
     public function show($almacen)
     {
-        DB::statement("SET lc_time_names = 'es_ES'");
+        //DB::statement("SET lc_time_names = 'es_ES'");
         $ventas = ReporteVenta::select(DB::raw('YEAR(fecha) as year, MONTHNAME(fecha) month, SUM(total) as total, count(*) as ordenes'))->groupBy(DB::raw('YEAR(fecha), MONTHNAME(fecha)'))->orderBy(DB::raw('MONTH(fecha)'))->where('id_almacen', '=', $almacen)->get();
         return $ventas;
     }
