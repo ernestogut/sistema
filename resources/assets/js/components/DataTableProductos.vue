@@ -52,7 +52,8 @@ export default {
     },
     props:{
         arrayAlmacenFijo: Array,
-        abrirModalImagen: Function
+        abrirModalImagen: Function,
+        ingreso: Boolean
     },
     data(){
         return{
@@ -66,7 +67,7 @@ export default {
     computed:{
         arrayProductos(){
             return this.$store.getters.arrayProductos;
-        }
+        },
     },
     methods:{
         agregarProducto(item){
@@ -89,20 +90,40 @@ export default {
                 if(i == 'precio'){
                     obj.precio = item[i]
                 }
-                obj.almacen = 1;
-                obj.cantidad = 1
-                obj.descuento = 1
-                obj.total = obj.cantidad*obj.precio
+                if(this.ingreso){
+                    var objetoCantidad = {}
+                    var arrayCantidad = []
+                    var cantidadTotal = 0
+                    for(var j = 0; j < this.arrayAlmacenFijo.length; j++){
+                        objetoCantidad.id_almacen = this.arrayAlmacenFijo[j].id
+                        objetoCantidad.cantidad = 0
+                        objetoCantidad.nombre = this.arrayAlmacenFijo[j].descripcion
+                        arrayCantidad.push(objetoCantidad)
+                        objetoCantidad = {}
+                    }
+                    obj.cantidades = arrayCantidad;
+                    for(var k = 0; k < obj.cantidades.length; k++){
+                        cantidadTotal += obj.cantidades[k].cantidad  
+                    }
+                    obj.descuento = 1
+                    obj.total = cantidadTotal*obj.precio
+                }else{
+                    obj.almacen = 1;
+                    obj.cantidad = 1
+                    obj.descuento = 1
+                    obj.total = obj.cantidad*obj.precio
+                }
             }
             
-
             for(var j = 0; j < this.ventas.length; j++){
                 if(item.codigo == this.ventas[j].codigo){
-                    this.ventas[j].cantidad = parseInt(this.ventas[j].cantidad)
-                    this.ventas[j].cantidad += 1
-                    this.ventas[j].total = this.ventas[j].cantidad*this.ventas[j].precio
-                    controlador = true
-                    break;
+                    if(!this.ingreso){
+                        this.ventas[j].cantidad = parseInt(this.ventas[j].cantidad)
+                        this.ventas[j].cantidad += 1
+                        this.ventas[j].total = this.ventas[j].cantidad*this.ventas[j].precio
+                        controlador = true
+                        break;
+                    }
                 }else{
                     controlador = false
                 }

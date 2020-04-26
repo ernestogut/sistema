@@ -61,7 +61,9 @@
                                     @foreach(App\Http\Controllers\AlmacenController::indexLaravel() as $almacen)
                                         <option value='{{ $almacen->id }}'  >{{ $almacen->descripcion }}</option>
                                     @endforeach
+                                    
                                 </select>
+                                @if($errors->any()) {!! implode('', $errors->all('<div class="text-danger">:message</div>')) !!} @endif
                             </div>
                         </div>
                     </div>

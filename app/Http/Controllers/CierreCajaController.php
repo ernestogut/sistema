@@ -39,6 +39,8 @@ class CierreCajaController extends Controller
     public function store(Request $request)
     {
 
+        $mensaje = "Existe una caja abierta para esta tienda!";
+        $tipo = "danger";
         $arrayUsuarios = User::select('id', 'usuario', 'id_almacen')->get();
         $controlador = false;
         foreach($arrayUsuarios as $objUsuario){
@@ -47,7 +49,9 @@ class CierreCajaController extends Controller
             }
         }
         if($controlador){
-            dd('hay una caja activa');
+            $tipo = "danger";
+           return  back()->withErrors(['error' => 'Existe una caja abierta para esta tienda!']);
+            //return redirect()->back()->with('alert',);
         }else{
             $usuario = User::find(auth()->user()->id);
             $usuario->id_almacen = $request->id_almacen;
@@ -65,7 +69,6 @@ class CierreCajaController extends Controller
             $cierre_caja->estado = 'abierto';
             $cierre_caja->save();
             return redirect()->route('main');
-            dd('Puedes acceder');
         }
     /*
         

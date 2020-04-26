@@ -71,7 +71,6 @@ export default {
                 this.agregarProducto(item)
             }else if(this.controlador == 2){
                 this.funcionBoton(item.codigo)
-                $('#modalClientes').modal('hide');
             }else if(this.controlador == 3){
                 this.funcionBoton(item.id)
             }else if(this.controlador == 5){

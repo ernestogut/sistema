@@ -9,7 +9,7 @@ export default {
             titulo: 'Proveedores',
             tituloModal: 'proveedor',
             ruta: '/proveedor',
-            cabeceras: ['Acciones', '#', 'Código', 'Tipo de documento', 'Num documento', 'Nombre',   'Correo', 'Telef contacto'],
+            cabeceras: ['Acciones', '#', 'Código', 'Tipo de documento', 'Num documento', 'Razon',   'Correo', 'Telef contacto'],
             variables: [
                 {
                     for: 'codigo',
@@ -30,13 +30,13 @@ export default {
                     titulo: 'Numero de documento'
                 },
                 {
-                    for: 'nombre',
-                    type: 'nombre',
-                    name: 'nombre',
-                    id: 'nombre',
-                    placeholder: 'Ingrese el nombre',
+                    for: 'razon',
+                    type: 'razon',
+                    name: 'razon',
+                    id: 'razon',
+                    placeholder: 'Ingresa la razon social',
                     var: '',
-                    titulo: 'Nombre'
+                    titulo: 'Razon'
                 },
                 {
                     for: 'correo',
@@ -55,6 +55,15 @@ export default {
                     placeholder: 'Ingrese el teléfono de contacto',
                     var: '',
                     titulo: 'Teléfono de contacto'
+                },
+                {
+                    for: 'direccion',
+                    type: 'direccion',
+                    name: 'direccion',
+                    id: 'direccion',
+                    placeholder: 'Ingrese la direccion',
+                    var: '',
+                    titulo: 'Direccion'
                 }
             ],
         }

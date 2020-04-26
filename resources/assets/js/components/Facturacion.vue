@@ -25,7 +25,7 @@
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle">Ventas - Pedidos</h5>
+                                <h5 class="modal-title" id="exampleModalLongTitle">Nueva venta</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -35,44 +35,40 @@
                                 <div class="kt-portlet__body" data-scroll="true" data-height="200" data-scrollbar-shown="true">
                                     <div class="row justify-content-start">
                                         <div class="col-2 col-form-label">Cod.Cliente</div>
-                                            <div class="input-group col">
-                                                <div class="btn input-group-prepend btn_subbuscar" id="Btn_SubBuscar" idsubform="1">
-                                                    <span class="input-group-text buscador" @click="(objetoFactura.cod_cliente.length > 0)?buscarCliente(objetoFactura.cod_cliente):abrirModalClientes()"><i class="fa fa-search" aria-hidden="true" ></i ></span>
-                                                    <input type="text" class="form-control" name="SdnCode" v-model="objetoFactura.cod_cliente" placeholder="Escriba ó Busque...">
-                                                </div>
+                                        <div class="input-group col-4">
+                                            <span class="input-group-text buscador" @click="(objetoFactura.cod_cliente.length > 0)?buscarCliente(objetoFactura.cod_cliente):abrirModalClientes()"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                            <input type="text" class="form-control" name="SdnCode" v-model="objetoFactura.cod_cliente" placeholder="Buscar" style="width: 80%;">
                                         </div>
                                         <div class="col-2 col-form-label">Num.Doc</div>
-                                        <div class="col"><input type="text" name="Id" class="form-control" disabled="disabled"></div>
+                                        <div class="col-4"><input type="text" name="Id" class="form-control" disabled="disabled"></div>
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">{{objetoComprobante.tipo_doc}}</div>
                                             <div class="input-group col">
                                             <input type="text" name="RUC" class="form-control" :value="objetoFactura.ruc_cliente" disabled="disabled">
                                         </div>
                                         <div class="col-2 col-form-label">Dirección</div>
-                                        <div class="col"><input type="text" name="Direccion" class="form-control" :value="objetoFactura.dir_cliente" disabled="disabled"></div>
+                                        <div class="col-4"><input type="text" name="Direccion" class="form-control" :value="objetoFactura.dir_cliente" disabled="disabled"></div>
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">Razón Social</div>
-                                        <div class="col"><input type="text" name="SdnName" class="form-control" :value="objetoFactura.razon"></div>
+                                        <div class="col-4"><input type="text" name="SdnName" class="form-control" :value="objetoFactura.razon"></div>
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">Vendedor</div>
-                                        <div class="col-3">
+                                        <div class="col-4">
                                             <select required="required" class="form-control" v-model="objetoFactura.id_user">
                                                 <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
                                             </select>
                                         </div>
-                                        <div class="col-1"></div>
+                                     
                                         <div class="col-2 col-form-label">Fecha Emi</div>
-                                        <div class="col"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoFactura.fecha"></div>
-
+                                        <div class="col-4"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoFactura.fecha"></div>
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">Tipo Venta</div>
-                                        <div class="col-3">
+                                        <div class="col-4">
                                             <select name="PedTipo" class="form-control" v-model="objetoFactura.tipo_venta">
                                                 <option value="A">Artículo</option>
                                                 <option value="S">Servicio</option>
                                             </select>
                                         </div>
-                                        <div class="col-1"></div>
                                         <div class="col-2 col-form-label">Folio</div>
                                         <div class="col-2">
                                             <select id="selectSeries" required="required" class="form-control" v-model="objetoFactura.id_serie" @change="colocarFolio()">
@@ -82,8 +78,6 @@
                                         <div class="col-2"><input type="text" name="Folio" class="form-control"  placeholder="Folio" v-model="objetoFactura.folio"></div>
                                         <div class="w-100"></div>
                                     </div>
-                                    <input type="button" name="addRow" id="addRow" value="Agrega1" style="display: none">
-                                        <table id="D001" class="display pageResize D001" style="width:100%"></table>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 ml-auto">
@@ -238,17 +232,49 @@
                     <div class="card-body">
                         <div class="modal-content" >
                             <div class="modal-header">
-                                Detalle
+                                Detalle factura
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="card" style="width: 18rem;">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">ID: {{objetoDetalleFact.num_doc}}</li>
-                                    <li class="list-group-item">Serie: {{objetoDetalleFact.serie}}</li>
-                                    <li class="list-group-item">Folio: {{objetoDetalleFact.folio}}</li>
-                                </ul>
+                            <div class="moda-body">
+                                <div class="card">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-center align-middle">#</th>
+                                                    <th scope="col" class="text-center align-middle">Codigo</th>
+                                                    <th scope="col" class="text-center align-middle">Producto</th>
+                                                    <th scope="col" class="text-center align-middle">Almacen</th>
+                                                    <th scope="col" class="text-center align-middle">Cantidad</th>
+                                                    <th scope="col" class="text-center align-middle">Precio</th>
+                                                    <th scope="col" class="text-center align-middle">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody >
+                                                <tr v-for="(detalle, index) in arrayFacturaDetalle" :key="detalle.id">
+                                                    <th scope="row" class="text-center align-middle">{{index+1}}</th>
+                                                    <td class="text-center align-middle">{{detalle.codigo_producto}}</td>
+                                                    <td class="text-center align-middle">{{detalle.descripcion_producto}}</td>
+                                                    <td class="text-center align-middle">{{detalle.almacen}}</td>
+                                                    <td class="text-center align-middle">{{detalle.cantidad_producto}}</td>
+                                                    <td class="text-center align-middle">S/ {{detalle.precio_producto}}</td>
+                                                    <td class="text-center align-middle">S/ {{detalle.total_producto}}</td>
+                                                </tr>
+                                                <tr class="total">
+                                                    <th scope="row"></th>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="text-center align-middle">Total</td>
+                                                    <td class="text-center align-middle">S/ {{totalItem}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -303,6 +329,7 @@ export default {
             arrayClientes: [],
             arrayItems: [],
             arrayFacturas: [],
+            arrayFacturaDetalle: [],
             arrayComprobantes: [],
             arraySeries: [],
             ventas: [],
@@ -345,7 +372,6 @@ export default {
             pagarSinComision: 0,
             comision: 0.04,
             controlador: 0, // 1 - productos, 2 - clientes, 4 -> facturas
-            objetoDetalleFact: {},
         }
     },
     computed:{
@@ -361,6 +387,13 @@ export default {
         arrayAlmacenFijo(){
             return this.$store.getters.arrayAlmacen;
         },
+        totalItem: function(){
+            let sum = 0;
+            for(let i = 0; i < this.arrayFacturaDetalle.length; i++){
+                sum += parseFloat(this.arrayFacturaDetalle[i].total_producto);
+            }
+            return sum.toFixed(2);
+        }
     },
     mounted(){
         this.objetoFactura.id_user = this.usuarioLogeado.id
@@ -509,7 +542,6 @@ export default {
         },
         listarSeries(){
             this.loading = true
-            console.log(this.usuarioLogeado)
             axios.get(`/serie_comprobante/${this.comprobanteEscogido}/${this.usuarioLogeado.id_almacen}/listarSeries`).then(response=>{
                 if(response.data.length > 0){
                     this.arraySeries = response.data;
@@ -578,11 +610,14 @@ export default {
                 this.objetoFactura.ruc_cliente = response.data[0].num_documento
                 this.objetoFactura.dir_cliente = response.data[0].direccion
                 this.objetoFactura.razon = response.data[0].razon
+                $('#modalClientes').modal('hide');
             })
         },
         verFactura(item){
-            this.objetoDetalleFact = item
-            $('#modalInformacionFact').modal('show')
+            axios.get(`d_fact/${item.num_doc}`).then((response)=>{    
+                this.arrayFacturaDetalle = response.data;
+                $('#modalInformacionFact').modal('show')
+            })
         },
         insertarCabecera(){
             var me = this;
@@ -633,7 +668,6 @@ export default {
                 }
                 suma = lista.reduce((a, b) => a + b, 0)
                 this.objetoFactura.total = suma
-                console.log(typeof this.objetoFactura.total);
                 this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
                 this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
             },

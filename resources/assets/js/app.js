@@ -39,6 +39,7 @@ Vue.component('notification', require('./components/Notification.vue').default);
 Vue.component('dashboard', require('./components/Escritorio.vue').default);
 Vue.component('almacen', require('./components/Almacen.vue').default);
 Vue.component('modulo', require('./components/Modulo.vue').default);
+Vue.component('compra', require('./components/Compras.vue').default);
 Vue.component('producto', require('./components/Producto.vue').default);
 Vue.component('facturacion', require('./components/Facturacion.vue').default);
 Vue.component('datatable', require('./components/DataTable.vue').default);
@@ -67,7 +68,7 @@ var app = new Vue({
         //this.$store.dispatch('cargarProductos')
     },
     data :{
-        menu : 20,
+        menu : null,
         arrayProductos: [],
         notifications: []
     },

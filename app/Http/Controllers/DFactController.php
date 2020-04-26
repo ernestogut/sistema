@@ -105,7 +105,8 @@ class DFactController extends Controller
     public function show(Request $request, $id)
     {
         if(!$request->ajax()) return redirect('/');
-        $detalle = D_fact::find($id);
+        $detalle = D_fact::select('d_facts.id','d_facts.codigo_producto', 'd_facts.descripcion_producto', 'd_facts.precio_producto', 'd_facts.cantidad_producto', 'd_facts.descuento_producto', 'almacens.descripcion as almacen', 'd_facts.total_producto')->join('almacens', 'd_facts.almacen_producto', 'almacens.id')->where('d_facts.id_fact', '=', $id)->get();
+        //$detalle = D_fact::find($id);
         return $detalle;
     }
 

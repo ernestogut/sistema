@@ -14,13 +14,35 @@
                 </div>
             </div>
             <spinner v-if="loading"></spinner>
-            <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :idTabla="'myTable'" v-else-if="initiated">
-            </datatable>
+            <div class="card-body" v-else-if="initiated">
+                <table  class="table table-hover table-bordered dt-responsive nowrap"  id="myTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center align-middle" v-for="cabecera of cabecerasIngreso" :key="cabecera.id">{{cabecera}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(ingreso) of arrayIngresos" :key="ingreso.key">
+                            <td class="text-center align-middle">
+                                <div>
+                                    <span class="btn btn-primary btn-sm boton" @click="detalleIngreso(ingreso)"><i class="icon-eye"></i></span>
+                                    <span class="btn btn-danger btn-sm boton" ><i class="icon-trash"></i></span>
+                                </div>
+                            </td>
+                            <td class="text-center align-middle">{{ingreso.id}}</td>
+                            <td class="text-center align-middle">{{ingreso.responsable}}</td>
+                            <td class="text-center align-middle">{{ingreso.fecha_emision}}</td>
+                            <td class="text-center align-middle">{{ingreso.motivo}}</td>
+                            <td class="text-center align-middle">{{ingreso.observacion}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Ingreso</h5>
+                        <h5 class="modal-title" id="exampleModalLongTitle">Nuevo ingreso de productos</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
@@ -28,20 +50,13 @@
                     <div class="card-body">
                         <form  action="" @submit.prevent="insertarCabecera()">
                             <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label>Almacen</label>
-                                    <select v-model="objetoIngreso.id_almacen" class="form-control">
-                                        <option disabled value="">Escoje un almacén</option>
-                                        <option v-for="almacen in arrayAlmacenFijo" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label>Responsable</label>
                                     <select required="required" class="form-control" v-model="objetoIngreso.id_usuario">
                                         <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label>Fecha de emisión</label>
                                     <input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoIngreso.fecha_emision">
                                 </div>
@@ -68,7 +83,7 @@
                                         <th scope="col" class="text-center align-middle">#</th>
                                         <th scope="col" class="text-center align-middle">Codigo</th>
                                         <th scope="col" class="text-center align-middle">Producto</th>
-                                        <th scope="col" class="text-center align-middle">Cantidad</th>
+                                        <th scope="col" class="text-center align-middle" v-for="cabeceraAlm in arrayAlmacenFijo" :key="cabeceraAlm.id" >Cantidad {{cabeceraAlm.descripcion}}</th>
                                         <th scope="col" class="text-center align-middle">Acciones</th>
                                     </tr>
                                 </thead>
@@ -77,9 +92,7 @@
                                         <th scope="row" class="text-center align-middle">{{index+1}}</th>
                                         <td class="text-center align-middle">{{venta.codigo}}</td>
                                         <td class="text-center align-middle">{{venta.producto}}</td>
-                                        <td class="text-center align-middle" >   
-                                            <input  type="number" class="form-control input-sm" v-model="venta.cantidad">
-                                        </td>
+                                        <td class="text-center align-middle" v-for="cantidadAlm in venta.cantidades" :key="cantidadAlm.id"><input class="form-control" type="number" step="any"   v-model="cantidadAlm.cantidad"></td>
                                         <td class="text-center align-middle">
                                             <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
                                         </td>
@@ -108,28 +121,46 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" :ingreso="true" v-else-if="initiated"></datatable-productos>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" tabindex="-1" role="dialog" id="modalInformacionFact" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="modalInformacionFact">
+                <div class="modal fade" tabindex="-1" role="dialog" id="modalInformacionIngreso" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="modalInformacionFact">
                     <div class="modal-dialog modal-xl">
                         <div class="card-body">
                             <div class="modal-content" >
                                 <div class="modal-header">
-                                    Detalle
+                                    Detalle ingreso
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="card" style="width: 18rem;">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">ID: {{objetoDetalleFact.num_doc}}</li>
-                                        <li class="list-group-item">Serie: {{objetoDetalleFact.serie}}</li>
-                                        <li class="list-group-item">Folio: {{objetoDetalleFact.folio}}</li>
-                                    </ul>
+                                <div class="moda-body">
+                                    <div class="card">
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" class="text-center align-middle">#</th>
+                                                            <th scope="col" class="text-center align-middle">Codigo</th>
+                                                            <th scope="col" class="text-center align-middle">Producto</th>
+                                                            <th scope="col" class="text-center align-middle" v-for="alm in arrayAlmacenFijo" :key="alm.id">Cantidad {{alm.descripcion}}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody >
+                                                        <tr v-for="(detalle, index) in arrayIngresoDetalle" :key="detalle.id">
+                                                            <th scope="row" class="text-center align-middle">{{index+1}}</th>
+                                                            <td class="text-center align-middle">{{detalle.codigo_producto}}</td>
+                                                            <td class="text-center align-middle">{{detalle.descripcion_producto}}</td>
+                                                            <td class="text-center align-middle" v-for="cantidad in detalle.cantidades" :key="cantidad.id">{{cantidad.cantidad}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                    
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +220,8 @@ export default {
             loadingImagen: false,
             arrayClientes: [],
             arrayItems: [],
-            arrayFacturas: [],
+            arrayIngresos: [],
+            arrayIngresoDetalle: [],
             arrayComprobantes: [],
             arraySeries: [],
             arrayAlmacen: [],
@@ -198,7 +230,7 @@ export default {
             objetoProductoImagen: {},
             cabecerasCliente: ['Acciones', '#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto'],
             iconos: 'icon-plus',
-            cabecerasFactura: ['Acciones', 'Num documento', 'Almacén', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
+            cabecerasIngreso: ['Acciones', 'Num documento', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
             comprobanteEscogido: '',
             tipoDocumento: null,
             //datos de la factura
@@ -216,6 +248,7 @@ export default {
             id_cabecera_ingreso: null,
             enAlmacen: false,
         }
+        //ingreso colocado, terminar con facturacion detallada y demás botones
     },
     computed:{
         usuarioLogeado(){
@@ -226,6 +259,9 @@ export default {
         },
         arrayAlmacenFijo(){
             return this.$store.getters.arrayAlmacen;
+        },
+        arrayProductos(){
+            return this.$store.getters.arrayProductos;
         }
     },
     mounted(){
@@ -306,44 +342,11 @@ export default {
             var urlItem = '/cabecera_ingreso';
             this.loading = true
             axios.get(urlItem).then(response=>{
-                this.arrayFacturas = response.data;
+                this.arrayIngresos = response.data;
                 this.loading = false;
                 this.initiated = true;
                 this.miTabla();
             })
-        },
-        listarTipodeComprobante(){
-            this.loading = true
-            axios.get(`/c_fact/${this.comprobanteEscogido}`).then(response=>{
-                this.arrayFacturas = response.data;
-                this.loading = false;
-                this.initiated = true;
-                this.miTabla();
-            })
-        },
-        listarTComprobantes(){
-            var urlItem = '/tipo_comprobante/obtenerComprobantes';
-            axios.get(urlItem).then(response=>{
-                this.arrayComprobantes = response.data;
-            })
-        },
-        listarSeries(){
-            axios.get(`/serie_comprobante/${this.comprobanteEscogido}/listarSeries`).then(response=>{
-                if(response.data.length > 0){
-                    this.arraySeries = response.data;
-                    this.objetoFactura.id_serie = response.data[0].id;
-                }else{
-                    alert('Debes registrar series')
-                }
-                
-            })
-        },
-        tablaClientes(){
-            $( function () {
-                $('#myTableClientes').DataTable({
-                    searching: true
-                });
-            } );
         },
         tablaProductos(){
             $( function () {
@@ -352,15 +355,16 @@ export default {
                 });
             } );
         },
+        detalleIngreso(ingreso){
+            axios.get(`detalle_ingreso/${ingreso.id}`).then((response)=>{
+                this.arrayIngresoDetalle = response.data;
+                $('#modalInformacionIngreso').modal('show');
+            })
+        },
         abrirModalVenta(){
                 this.objetoIngreso.id_almacen = this.arrayAlmacenFijo[0].id
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
-        },
-        abrirModalClientes(){
-            this.listarClientes()
-            this.controlador = 2
-            $('#modalClientes').modal('show');
         },
         abrirModalAgregarProducto(){
             this.listarItem()
@@ -372,28 +376,26 @@ export default {
             document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
-        buscarCliente(codigo){
-            axios.get(`/cliente/${codigo}/buscarCliente`).then((response)=>{
-                this.objetoFactura.cod_cliente = response.data[0].codigo
-                this.objetoFactura.ruc_cliente = response.data[0].num_documento
-                this.objetoFactura.dir_cliente = response.data[0].direccion
-                this.objetoFactura.razon = response.data[0].razon
-            })
-        },
-        verFactura(item){
-            this.objetoDetalleFact = item
-            $('#modalInformacionFact').modal('show')
-        },
         insertarCabecera(){
             axios.post('/cabecera_ingreso', this.objetoIngreso).then((response)=>{
                 this.id_cabecera_ingreso = response.data
-                for(var i = 0; i < this.ventas.length; i++){
-                    this.ventas[i].almacen = this.objetoIngreso.id_almacen;
-                }
+                var productos = this.arrayProductos
                 //this.ventas.almacen = this.objetoIngreso.id_almacen;
                 axios.post('/detalle_ingreso', {'ventas': this.ventas, 'id_cabecera_ingreso': this.id_cabecera_ingreso}).then((response)=>{
+                    for(var k = 0; k < this.ventas.length; k++){
+                        for(var l = 0; l < productos.length; l++){
+                            if(this.ventas[k].codigo == productos[l].codigo){
+                                for(var m = 0; m < this.ventas[k].cantidades.length; m++){
+                                    productos[l].stock = productos[l].stock + parseInt(this.ventas[k].cantidades[m].cantidad);
+                                }
+                            }
+                        }
+                    }
+                    this.$store.dispatch('actualizarProductos', productos)
+                     $('#modalVenta').modal('hide');
                 })
-                $('#modalVenta').modal('hide');
+
+               
                 Vue.swal({
                     title: 'Ingreso exitoso!',
                     text: 'El ingreso ha sido realizado con éxito!',

@@ -53,6 +53,9 @@
             <template v-if="menu==18">
                 <movimiento-caja></movimiento-caja>
             </template>
+            <template v-if="menu==20">
+                <compra></compra>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <facturacion></facturacion>

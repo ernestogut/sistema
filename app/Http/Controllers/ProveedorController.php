@@ -18,12 +18,23 @@ class ProveedorController extends Controller
         if(!$request->ajax()){
             return redirect('/');
         }else{
-            $proveedor = Proveedor::select('proveedores.id', 'proveedores.codigo', 'proveedores.nombre', 'tipo_documentos.tipo_doc as tipo_documento', 'proveedores.num_documento','proveedores.correo', 'proveedores.telefono_contacto', 'proveedores.num_documento')->join('tipo_documentos','proveedores.id_tipo_doc', '=', 'tipo_documentos.id')->get();
+            $proveedor = Proveedor::select('proveedores.id', 'proveedores.codigo', 'proveedores.razon', 'tipo_documentos.tipo_doc as tipo_documento', 'proveedores.num_documento','proveedores.correo', 'proveedores.telefono_contacto', 'proveedores.num_documento')->join('tipo_documentos','proveedores.id_tipo_doc', '=', 'tipo_documentos.id')->get();
             /*$proveedor = proveedor::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
             return $proveedor;
         }
     }
-
+    public function listarProveedorModal(Request $request)
+    {
+      
+        if(!$request->ajax()){
+            return redirect('/');
+        }else{
+            $proveedor = Proveedor::select('codigo', 'razon', 'direccion', 'num_documento')->get();
+            /*$proveedor = proveedor::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
+            return $proveedor;
+        }
+    
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -42,23 +53,28 @@ class ProveedorController extends Controller
      */
     public function store(Request $request)
     {
-        $proveedor = new Proveedor();
-        #if($request->hasFile('imagen')){
-         #   $proveedor['imagen']=$request->file('imagen')->store('uploads', 'public');
-        #}
-        $proveedor->codigo = $request->codigo;
-        $proveedor->nombre = $request->nombre;
-        $proveedor->id_tipo_doc = $request->id_tipo_doc;
-        $proveedor->num_documento = $request->num_documento;
-        $proveedor->correo = $request->correo;
-        $proveedor->telefono_contacto = $request->telefono_contacto;
-        #$proveedor->imagen = $request->imagen;
-        $proveedor->save();
-        #$proveedor = request()->all();
-        #$proveedor = request()->except('_token');
-        #proveedor::insert($proveedor);
-        #return response()->json($proveedor);
-        return $proveedor;
+        if(!$request->ajax()){
+            return redirect('/');
+        }else{
+            $proveedor = new Proveedor();
+            #if($request->hasFile('imagen')){
+            #   $proveedor['imagen']=$request->file('imagen')->store('uploads', 'public');
+            #}
+            $proveedor->codigo = $request->codigo;
+            $proveedor->razon = $request->razon;
+            $proveedor->id_tipo_doc = $request->id_tipo_doc;
+            $proveedor->num_documento = $request->num_documento;
+            $proveedor->correo = $request->correo;
+            $proveedor->telefono_contacto = $request->telefono_contacto;
+            $proveedor->direccion = $request->direccion;
+            #$proveedor->imagen = $request->imagen;
+            $proveedor->save();
+            #$proveedor = request()->all();
+            #$proveedor = request()->except('_token');
+            #proveedor::insert($proveedor);
+            #return response()->json($proveedor);
+            return $proveedor;
+        }
     }
     public function buscarProveedor($codigo)
     {
@@ -102,11 +118,12 @@ class ProveedorController extends Controller
          #   $proveedor['imagen']=$request->file('imagen')->store('uploads', 'public');
         #}
         $proveedor->codigo = $request->codigo;
-        $proveedor->nombre = $request->nombre;
+        $proveedor->razon = $request->razon;
         $proveedor->id_tipo_doc = $request->id_tipo_doc;
         $proveedor->num_documento = $request->num_documento;
         $proveedor->correo = $request->correo;
         $proveedor->telefono_contacto = $request->telefono_contacto;
+        $proveedor->direccion = $request->direccion;
         #$proveedor->imagen = $request->imagen;
         $proveedor->save();
         #$proveedor = request()->all();

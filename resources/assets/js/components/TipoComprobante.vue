@@ -20,7 +20,6 @@
                         </div>
                         <div class="card-body" >
                             <div class="table-responsive">
-                                
                                 <datatable :arrayItems="arraySeries" :cabeceras="cabecerasSerie" :controlador="6"  :factura="true" :idTabla="'myTableSeries'" :funcionBotonTrash="condicionSerie"></datatable>
                             </div>
                         </div>
@@ -135,7 +134,7 @@ export default {
             tituloSerie: 'Tipo de combrobantes',
             tituloModalSerie: 'tipo de comprobante',
             rutaSerie: '/serie_comprobante',
-            cabecerasSerie: ['Acciones', '#', 'Serie',  'Numero inicial', 'Numero actual', 'Numero final', 'Año', 'Estado'],
+            cabecerasSerie: ['Acciones', '#', 'Serie', 'Almacén', 'Numero inicial', 'Numero actual', 'Numero final', 'Año', 'Estado'],
             arraySeries: [],
             objetoSerie: 
             
@@ -147,7 +146,7 @@ export default {
                 numero_actual: null,
                 numero_final: null,
                 anio: '',
-                estado: 1
+                estado: 'habilitado'
             },
             //controladorTrash: 1 // 1 -> Deshabilitar, 2 -> Habilitar
         }

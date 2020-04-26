@@ -41,24 +41,22 @@ class DetalleIngresoController extends Controller
 
         //dd($request->id_cabecera);
         $detalle = $request->ventas;
-        
+
+
         foreach ($detalle as $key => $value) {
             //# code...
             //var_dump($key);
             //var_dump($value);
-            DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo'],$value['cantidad'],$value['almacen']]);
-
+            foreach ($value['cantidades'] as $llave => $valor){
+                DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo'],$valor['cantidad'],$valor['id_almacen']]);
+            }
             $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo'])->sum('cantidad');
             DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo'],$suma_total]);   
-            /*DB::select("call disminuirInventario(?,?)",[$value['codigo'],$value['cantidad']]);*/
             $detalle_ingreso = new DetalleIngreso();
             $detalle_ingreso->id_cabecera_ingreso = $request->id_cabecera_ingreso;
             $detalle_ingreso->codigo_producto = $value['codigo'];
             $detalle_ingreso->descripcion_producto = $value['producto'];
-            //$detalle_ingreso->precio_producto = $value['precio'];
-            $detalle_ingreso->cantidad_producto = $value['cantidad'];
-            //$detalle_ingreso->descuento_producto = $value['descuento'];
-            //$detalle_ingreso->total_producto = $value['total'];
+            $detalle_ingreso->cantidades = json_encode($value['cantidades']);
             $detalle_ingreso->save();
         }
     }
@@ -69,9 +67,13 @@ class DetalleIngresoController extends Controller
      * @param  \App\DetalleIngreso  $detalleIngreso
      * @return \Illuminate\Http\Response
      */
-    public function show(DetalleIngreso $detalleIngreso)
+    public function show($id_cabecera_ingreso)
     {
-        //
+        $detalle_ingreso = DetalleIngreso::select('codigo_producto', 'descripcion_producto', 'cantidades')->where('id_cabecera_ingreso', '=', $id_cabecera_ingreso)->get();
+        foreach($detalle_ingreso as $valor){
+            $valor->cantidades = json_decode($valor->cantidades, true);
+        }
+        return($detalle_ingreso);
     }
 
     /**

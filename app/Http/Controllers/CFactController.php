@@ -69,13 +69,17 @@ class CFactController extends Controller
     }
     public function mostrarVentasTipoPago($tipo_venta, $fecha, $almacen){
         $facturas_id = C_fact::select('id')->where('tipo_pago', '=', $tipo_venta)->where('fecha','=', $fecha)->where('id_almacen', '=', $almacen)->get();
-        foreach($facturas_id as $fila) {
-            $ventas_filtradas = DB::table('d_facts')->select('descripcion_producto', 'precio_producto', 'cantidad_producto', 'total_producto')->where('id_fact', '=', $fila->id)->get();
-            foreach($ventas_filtradas as $fila_detalle) {
-                $myArray[] = $fila_detalle;
+        if(count($facturas_id) != 0){
+            foreach($facturas_id as $fila) {
+                $ventas_filtradas = DB::table('d_facts')->select('descripcion_producto', 'precio_producto', 'cantidad_producto', 'total_producto')->where('id_fact', '=', $fila->id)->get();
+                foreach($ventas_filtradas as $fila_detalle) {
+                    $myArray[] = $fila_detalle;
+                }
             }
+            return $myArray;
+        }else{
+            return response()->json(['error' => 'error'], 404);
         }
-        return $myArray;
     }
     /**
      * Show the form for editing the specified resource.

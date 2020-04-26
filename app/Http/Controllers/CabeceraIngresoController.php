@@ -17,7 +17,7 @@ class CabeceraIngresoController extends Controller
     public function index()
     {
 
-        $cabecera_ingreso = CabeceraIngreso::select('cabecera_ingresos.id as num_documento', 'almacens.descripcion as almacen', 'users.usuario as responsable','cabecera_ingresos.fecha_emision', 'cabecera_ingresos.motivo',  'cabecera_ingresos.observacion')->join('almacens','cabecera_ingresos.id_almacen', '=', 'almacens.id')->join('users','cabecera_ingresos.id_usuario', '=', 'users.id')->orderBy('cabecera_ingresos.id', 'desc')->get();
+        $cabecera_ingreso = CabeceraIngreso::select('cabecera_ingresos.id', 'users.usuario as responsable','cabecera_ingresos.fecha_emision', 'cabecera_ingresos.motivo', 'cabecera_ingresos.observacion')->join('users','cabecera_ingresos.id_usuario', '=', 'users.id')->orderBy('cabecera_ingresos.id', 'desc')->get();
 
 
         //$cabecera_ingreso = CabeceraIngreso::select('cabecera_ingresos.id as num_documento', 'almacens.')
@@ -43,7 +43,6 @@ class CabeceraIngresoController extends Controller
     public function store(Request $request)
     {
         $cabecera_ingreso = new CabeceraIngreso();
-        $cabecera_ingreso->id_almacen = $request->id_almacen;
         $cabecera_ingreso->id_usuario = $request->id_usuario;
         $cabecera_ingreso->fecha_emision = $request->fecha_emision;
         $cabecera_ingreso->motivo = $request->motivo;

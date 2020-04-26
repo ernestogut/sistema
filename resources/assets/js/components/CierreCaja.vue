@@ -65,11 +65,11 @@
                 <!--Body-->
                 <div class="modal-body mb-0 text-center">
                     <!--Pagos Efectivo-->
-                    <a type="button" class="btn btn-primary" style="border-radius: 10px" @click="tipoPagoElegido = 1, abrirModalLista()"><i class="fa fa-money" style="font-size:36px"></i></a>
+                    <a type="button" class="btn btn-primary" style="border-radius: 10px" @click="tipoPagoElegido = 'efectivo', abrirModalLista()"><i class="fa fa-money" style="font-size:36px"></i></a>
                     <!--Pagos Visa-->
-                    <a type="button" class="btn btn-success" style="border-radius: 10px" @click="tipoPagoElegido = 2, abrirModalLista()"><i class="fa fa-cc-visa" style="font-size:36px"></i></a>
+                    <a type="button" class="btn btn-success" style="border-radius: 10px" @click="tipoPagoElegido = 'tarjeta', abrirModalLista()"><i class="fa fa-cc-visa" style="font-size:36px"></i></a>
                     <!--Pagos Cheque-->
-                    <a type="button" class="btn btn-info" style="border-radius: 10px" @click="tipoPagoElegido = 3, abrirModalLista()"><i class="fa fa-list-alt" style="font-size:36px"></i></a>
+                    <a type="button" class="btn btn-info" style="border-radius: 10px" @click="tipoPagoElegido = 'cheque', abrirModalLista()"><i class="fa fa-list-alt" style="font-size:36px"></i></a>
                     
                 </div>
 
@@ -84,7 +84,7 @@
                 <div class="modal-content">
                 <!--Header-->
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">Your cart</h4>
+                    <h4 class="modal-title" id="myModalLabel">Ventas con {{tipoPagoElegido}}</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                     </button>
@@ -97,8 +97,8 @@
                         <tr>
                             <th class="text-center align-middle">#</th>
                             <th class="text-center align-middle">Producto</th>
-                            <th class="text-center align-middle">Precio</th>
                             <th class="text-center align-middle">Cantidad</th>
+                            <th class="text-center align-middle">Precio</th>
                             <th class="text-center align-middle">Total</th>
                         </tr>
                     </thead>
@@ -106,8 +106,8 @@
                         <tr v-for="(producto, index) in arrayProductosVenta" :key="producto.id">
                             <th scope="row" class="text-center align-middle">{{index+1}}</th>
                             <td class="text-center align-middle">{{producto.descripcion_producto}}</td>
-                            <td class="text-center align-middle">S/ {{producto.precio_producto}}</td>
                             <td class="text-center align-middle">{{producto.cantidad_producto}}</td>
+                            <td class="text-center align-middle">S/ {{producto.precio_producto}}</td>
                             <td class="text-center align-middle">S/ {{producto.total_producto}}</td>
                         </tr>
                         <tr class="total">
@@ -123,8 +123,7 @@
                 </div>
                 <!--Footer-->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
-                    <button class="btn btn-primary">Checkout</button>
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cerrar</button>
                 </div>
                 </div>
             </div>
@@ -144,7 +143,7 @@ export default {
             loading: false,
             arrayCierres: [],
             almacen: '',
-            tipoPagoElegido: 1, // 1 -> Efectivo, 2 -> VISA, 3 -> Cheque,
+            tipoPagoElegido: 'efectivo', // 1 -> Efectivo, 2 -> VISA, 3 -> Cheque,
             cajaSeleccionada: null,
             arrayProductosVenta: []
         }
@@ -233,21 +232,13 @@ export default {
             this.cajaSeleccionada = caja
         },
         abrirModalLista(){
-            var tipo_pago = ''
-            if(this.tipoPagoElegido == 1){
-                tipo_pago = 'efectivo'
-            }else if(this.tipoPagoElegido == 2){
-                tipo_pago = 'tarjeta'
-            }else if(this.tipoPagoElegido == 3){
-                tipo_pago = 'cheque'
-            }
-            axios.get(`/c_fact/${tipo_pago}/${this.cajaSeleccionada.fecha}/${this.cajaSeleccionada.id_almacen}/mostrarVentasTipoPago`).then(response=>{
+            axios.get(`/c_fact/${this.tipoPagoElegido}/${this.cajaSeleccionada.fecha}/${this.cajaSeleccionada.id_almacen}/mostrarVentasTipoPago`).then(response=>{
                 this.arrayProductosVenta = response.data
                 $('#modalCart').modal('show');
             }).catch(error=>{
                 Vue.swal({
-                    title: `No hay ventas con ${tipo_pago}!`,
-                    text: `Por el momento no se han registrado ventas con ${tipo_pago}`,
+                    title: `No hay ventas con ${this.tipoPagoElegido}!`,
+                    text: `Por el momento no se han registrado ventas con ${this.tipoPagoElegido}`,
                     icon: 'error'
                 })
             })

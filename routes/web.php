@@ -207,6 +207,7 @@ Route::get('almacen/{codigo}/cantidadesAlmacen', 'AlmacenController@cantidadesAl
 Route::get('cierre_caja/{codigo}/verificarEstadoCaja', 'CierreCajaController@verificarEstadoCaja');
 Route::get('cierre_caja/{codigo}/consultarCajaSeleccionada', 'CierreCajaController@consultarCajaSeleccionada');
 Route::get('c_fact/{tipo_venta}/{fecha}/{almacen}/mostrarVentasTipoPago', 'CFactController@mostrarVentasTipoPago');
+Route::get('proveedor/listarProveedorModal', 'ProveedorController@listarProveedorModal');
 Route::get('cierre_caja/{almacen}/montoDiaAnterior', 'CierreCajaController@montoDiaAnterior');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
 Route::get('c_fact/{tipo_comprobante}/{id_alm}/mostrarPorAlmacen', 'CFactController@mostrarPorAlmacen');
@@ -217,6 +218,7 @@ Route::resource('producto', 'ProductoController');
 Route::resource('proveedor', 'ProveedorController');
 Route::get('cliente/{documento}/listarClientesModal', 'ClienteController@listarClientesModal')->name('cliente.listar');
 Route::get('cliente/{id}/buscarCliente', 'ClienteController@buscarCliente')->name('cliente.buscar');
+Route::get('proveedor/{id}/buscarProveedor', 'ProveedorController@buscarProveedor')->name('proveedor.buscar');
 Route::get('tipo_comprobante/obtenerComprobantes', 'TipoComprobanteController@obtenerComprobantes')->name('tipo_comprobante.listar');
 Route::resource('cliente', 'ClienteController');
 Route::resource('c_fact', 'CFactController');
@@ -236,6 +238,8 @@ Route::resource('cierre_caja', 'CierreCajaController');
 Route::resource('movimiento_caja', 'MovimientoCajaController');
 Route::resource('orden_tienda', 'PedidosSpeedController');
 Route::resource('reporte_venta', 'ReporteVentaController');
+Route::resource('cabecera_compra', 'CabeceraCompraController');
+Route::resource('detalle_compra', 'DetalleCompraController');
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
 
 

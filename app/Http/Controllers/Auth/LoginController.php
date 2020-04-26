@@ -30,7 +30,7 @@ class LoginController extends Controller
             if($user[0]->id_almacen != 0){
                 return redirect()->route('main');
             }else{
-                return redirect()->route('contenido');  
+                return redirect()->route('contenido');
             }
         }
 

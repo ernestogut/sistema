@@ -58,7 +58,7 @@ class SerieComprobanteController extends Controller
      */
     public function show($id)
     {
-        $serie_comprobante = SerieComprobante::select('id', 'serie', 'numero_inicial', 'numero_actual', 'numero_final', 'anio', 'estado')->where('id_tipo_comprobante', '=', $id)->get();
+        $serie_comprobante = SerieComprobante::select('serie_comprobantes.id', 'serie_comprobantes.serie', 'almacens.descripcion as almacen', 'serie_comprobantes.numero_inicial', 'serie_comprobantes.numero_actual', 'serie_comprobantes.numero_final', 'serie_comprobantes.anio', 'serie_comprobantes.estado')->join('almacens', 'serie_comprobantes.id_almacen', 'almacens.id')->where('id_tipo_comprobante', '=', $id)->get();
         return $serie_comprobante;
     }
     public function listarSeries($id, $almacen)

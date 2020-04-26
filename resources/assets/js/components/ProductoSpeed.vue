@@ -27,7 +27,6 @@
                         <td class="text-center align-middle">
                             <div>
                                 <span class="btn btn-primary btn-sm boton" @click="abrirModalCantidades(producto)" ><i class="icon-pencil"></i></span>
-                                <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
                             </div>
                         </td>
                         <th scope="row" class="text-center align-middle">{{index+1}}</th>

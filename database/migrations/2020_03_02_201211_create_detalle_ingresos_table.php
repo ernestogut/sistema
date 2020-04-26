@@ -19,7 +19,7 @@ class CreateDetalleIngresosTable extends Migration
             $table->foreign('id_cabecera_ingreso')->references('id')->on('cabecera_ingresos');
             $table->string('codigo_producto');
             $table->string('descripcion_producto');
-            $table->integer('cantidad_producto');
+            $table->text('cantidades');
             $table->timestamps();
         });
     }
