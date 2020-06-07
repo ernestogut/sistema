@@ -71,7 +71,7 @@
                         <button type="submit" class="btn boton-oscuro" >Aperturar caja</button>
                         <button type="button" class="btn" style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Abrir gaveta</button>
                         @if(Auth::user()->idrole==1)
-                            <a href="{{route('main')}}" class="btn " style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Omitir apertura</a>
+                            <a href="{{route('principal')}}" class="btn " style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Omitir apertura</a>
                         @endif
                     </div>
             </form>

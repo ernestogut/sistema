@@ -68,7 +68,7 @@ class CierreCajaController extends Controller
             $cierre_caja->saldo_final = $request->saldo_inicial;
             $cierre_caja->estado = 'abierto';
             $cierre_caja->save();
-            return redirect()->route('main');
+            return redirect()->route('principal');
         }
     /*
         

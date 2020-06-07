@@ -25,7 +25,7 @@ Route::group(['middleware' => ['auth']], function () {
     //notificaciones
     Route::post('/notification/get', 'NotificationController@get');
     Route::get('/apertura', ['middleware' => 'main', function () { return view('apertura/apertura'); }])->name('contenido');
-    Route::get('/main', ['middleware' => 'apertura', function () { return view('contenido/contenido'); }])->name('main');
+    Route::get('/principal', ['middleware' => 'apertura', function () { return view('contenido/contenido'); }])->name('principal');
 
     Route::group(['middleware' => ['Almacenero']], function () {
         /**

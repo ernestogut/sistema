@@ -28,7 +28,7 @@ class LoginController extends Controller
         //$cierre_caja = CierreCaja::select('id_usuario', 'fecha', 'estado')->where('id_almacen', '=', $codigo)->orderBy('id', 'desc')->take(2)->get();
         if( Auth::attempt(['usuario' => $request->usuario, 'password' => $request->password, 'condicion'=>1])){
             if($user[0]->id_almacen != 0){
-                return redirect()->route('main');
+                return redirect()->route('principal');
             }else{
                 return redirect()->route('contenido');
             }

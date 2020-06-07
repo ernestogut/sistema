@@ -16,7 +16,7 @@ class MainMiddleware
     public function handle($request, Closure $next)
     {
         if($request->user()->id_almacen != 0){
-            return redirect()->route('main'); 
+            return redirect()->route('principal'); 
         }
         return $next($request);
     }
