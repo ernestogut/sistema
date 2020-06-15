@@ -19,8 +19,8 @@
                     <label >{{comprobante.nombre}}</label>
                 </div>
             </div>
-            <datatable  :arrayItems="arrayFacturas" :cabeceras="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :idTabla="'myTable'" v-if="initiated">
-            </datatable>
+            <vue-datatable  :items="arrayFacturas" :fields="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :eliminarItem="eliminarItem" v-if="initiated" >
+            </vue-datatable>
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
@@ -221,7 +221,7 @@
                             </div>
                             <div class="table-responsive">
                                 <spinner v-if="loading"></spinner>
-                                <datatable :arrayItems="arrayClientes" :cabeceras="cabecerasCliente" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="controlador" :funcionBoton="buscarCliente" :factura="false" :idTabla="'myTableClientes'"></datatable>
+                                <vue-datatable :items="arrayClientes" :fields="cabecerasCliente" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="controlador" :funcionBoton="buscarCliente" :factura="false" :idTabla="'myTableClientes'"></vue-datatable>
                             </div>
                         </div>
                     </div>
@@ -336,9 +336,24 @@ export default {
             arrayAlmacen: [],
             objetoComprobante: {},
             objetoProductoImagen: {},
-            cabecerasCliente: ['Acciones', '#', 'Codigo', 'Razón social', 'Dirección', 'Numero de documento'],
+            cabecerasCliente: [
+                { key: "index", label: "#", sortable: true, sortDirection: "desc" , class: "text-center"},
+                { key: "codigo", label: "Codigo", sortable: true,class: "text-center", class: "text-center"},
+                { key: "razon", label: "Razon social", sortable: true, class: "text-center"},
+                { key: "direccion", label: "Direccion", sortable: true, class: "text-center"},
+                { key: "num_documento", label: "N° documento", sortable: true, class: "text-center"},
+                { key: "actions", label: "acciones" , class: "text-center"}
+            ],
             iconos: 'icon-plus',
-            cabecerasFactura: ['Acciones', 'Num doc', 'Vendedor', 'Serie', 'Folio', 'Fecha', 'Total'],
+            cabecerasFactura: [
+                { key: "num_doc", label: "Num doc", sortable: true, sortDirection: "desc", class: "text-center" },
+                { key: "usuario", label: "Vendedor", sortable: true,class: "text-center", class: "text-center"},
+                { key: "serie", label: "Serie", sortable: true, class: "text-center"},
+                { key: "folio", label: "Folio", sortable: true, class: "text-center"},
+                { key: "fecha", label: "Fecha", sortable: true, class: "text-center"},
+                { key: "total", label: "Total", sortable: true, class: "text-center"},
+                { key: "actions", label: "acciones" , class: "text-center"}
+            ],
             usuarioLogueado: {},
             comprobanteEscogido: 0,
             tipoDocumento: null,
@@ -410,8 +425,6 @@ export default {
                 this.listarTComprobantes();
                 this.controlador = 4
                 $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
-                $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-                $(this.$refs.tablaClientes).on("hidden.bs.modal", this.limpiarTablaClientes)
             }else{
                 Vue.swal({
                     title: 'No hay alguna caja abierta',
@@ -461,14 +474,6 @@ export default {
             this.objetoFactura.tipo_venta =  'A'
             this.objetoFactura.folio = ''
         },
-        limpiarTablaProductos(){
-            $('#myTableProductos').DataTable().destroy();
-            this.listarTipodeComprobante()
-        },
-        limpiarTablaClientes(){
-            $('#myTableClientes').DataTable().destroy();
-            this.listarTipodeComprobante()
-        },
         generarTotal(item){
             item.total = item.precio * item.cantidad
             var lista = []
@@ -487,21 +492,13 @@ export default {
         recibirCantidadesAlmacen(almacen){
             this.arrayAlmacen = almacen
         },
-        miTabla(){
-            $( function () {
-                $('#myTable').DataTable();
-            } );
-        },
         async listarItem(){
             if(this.arrayProductos.length == 0){
                 this.loading = true
                 await this.$store.dispatch('cargarProductos').then(()=>{
                     this.loading = false;
                     this.initiated = true;
-                    this.tablaProductos();
                 });
-            }else{
-                this.tablaProductos();
             }
         },
         listarClientes(){
@@ -511,7 +508,6 @@ export default {
                 this.arrayClientes = response.data;
                 this.loading = false;
                 this.initiated = true;
-                this.tablaClientes();
             })
         },
         listarFacturas(){
@@ -521,7 +517,6 @@ export default {
                 this.arrayFacturas = response.data;
                 this.loading = false;
                 this.initiated = true;
-                this.miTabla();
             })
         },
         listarTipodeComprobante(){
@@ -529,7 +524,6 @@ export default {
                 this.arrayFacturas = response.data;
                 this.loading = false;
                 this.initiated = true;
-                this.miTabla();
             })
         },
         listarTComprobantes(){
@@ -562,20 +556,6 @@ export default {
             var selected = combo.options[combo.selectedIndex].text;
             this.objetoFactura.serie = selected;
         },
-        tablaClientes(){
-            $( function () {
-                $('#myTableClientes').DataTable({
-                    searching: true
-                });
-            } );
-        },
-        tablaProductos(){
-            $( function () {
-                $('#myTableProductos').DataTable({
-                    searching: true
-                });
-            } );
-        },
         abrirModalVenta(){
             if(this.comprobanteEscogido == 0){
                 Vue.swal({
@@ -601,7 +581,7 @@ export default {
         },
         eliminarProductoTabla(venta, index){
             this.ventas.splice(index,1)
-            document.getElementById(`producto${venta.codigo}`).className = ''
+            //document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         buscarCliente(codigo){
@@ -641,7 +621,6 @@ export default {
                     'La venta se proceso correctamente!',
                     'success'
                 );
-                $('#myTable').DataTable().destroy();
                 this.listarTipodeComprobante();
             })
             .catch(error=>{
@@ -652,6 +631,14 @@ export default {
                     }   
                 );
             })
+        },
+        eliminarItem(item, index){
+            if(confirm(`Está seguro de eliminar el item ${item.num_doc}?`)){
+                axios.delete(`/c_fact/${item.num_doc}`)
+                    .then(()=>{
+                        this.arrayFacturas.splice(index,1)          
+                    })
+            }
         },
         obtenerFecha(){
             this.objetoFactura.fecha = this.$moment().format("YYYY-MM-DD")
@@ -690,9 +677,6 @@ export default {
         comprobanteEscogido(){
             this.listarSeries()
             this.objetoFactura.id_tipo_comprobante = this.comprobanteEscogido;
-            $( function () {
-                $('#myTable').DataTable().destroy();
-            } );
             this.listarTipodeComprobante()
 
         }

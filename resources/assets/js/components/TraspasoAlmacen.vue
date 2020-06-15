@@ -13,9 +13,10 @@
                     </div>
                 </div>
             </div>
-            <spinner v-if="loading"></spinner>
-            <datatable  :arrayItems="arrayTraslados" :cabeceras="cabecerasTraslado" :funcionBoton="verFactura"  :controlador="4"  :factura="true" :idTabla="'myTable'" v-else-if="initiated">
-            </datatable>
+            <b-card>
+                <vue-datatable  :items="arrayTraslados" :fields="cabecerasTraslado" :funcionBoton="verFactura"  :controlador="4"  :factura="true" :cargando="loading">
+                </vue-datatable>
+            </b-card>
             <!---->
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
@@ -197,9 +198,17 @@ export default {
             ventas: [],
             objetoComprobante: {},
             objetoProductoImagen: {},
-            cabecerasCliente: ['Acciones', '#', 'Código', 'Nombre', 'Tipo de documento', 'Num documento', 'Correo', 'Telef contacto'],
             iconos: 'icon-plus',
-            cabecerasTraslado: ['Acciones', 'Num documento', 'Almacén origen', 'Almacén destino', 'Responsable', 'Fecha de emisión', 'Motivo', 'Observación'],
+            cabecerasTraslado: [
+                { key: "num_documento", label: "Num documento", sortable: true, sortDirection: "desc", class: "text-center" },
+                { key: "almacen_origen", label: "Almacén de origen", sortable: true, class: "text-center"},
+                { key: "almacen_destino", label: "Almacén de destino", sortable: true, class: "text-center"},
+                { key: "responsable", label: "Responsable", sortable: true, class: "text-center"},
+                { key: "fecha_emision", label: "Fecha de emisión", sortable: true, class: "text-center"},
+                { key: "motivo", label: "Motivo", sortable: true, class: "text-center"},
+                { key: "observacion", label: "Observación", sortable: true, class: "text-center"},
+                { key: "actions", label: "Acciones", class: "text-center"}
+            ],
             comprobanteEscogido: '',
             tipoDocumento: null,
             //datos de la factura
@@ -239,8 +248,6 @@ export default {
         this.objetoIngreso.id_usuario = this.usuarioLogeado.id
         this.controlador = 4
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
-        $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-        $(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
     },
     methods:{
         abrirModalImagen(producto){
@@ -265,14 +272,6 @@ export default {
             this.objetoIngreso.motivo = ''
             this.objetoIngreso.observacion = ''
             
-        },
-        limpiarTablaProductos(){
-            $('#myTableProductos').DataTable().destroy();
-            this.listarTraslados()()
-        },
-        limpiarTablaProveedores(){
-            $('#myTableProveedores').DataTable().destroy();
-            this.listarTraslados()()
         },
         recibirVenta(venta){
             this.ventas = venta
@@ -322,7 +321,7 @@ export default {
         },
         eliminarProductoTabla(index){
             this.ventas.splice(index,1)
-            document.getElementById(`producto${venta.codigo}`).className = ''
+            //document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         verFactura(item){

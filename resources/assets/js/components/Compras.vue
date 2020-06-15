@@ -12,29 +12,113 @@
                     </div>
                 </div>
             </div>
-            <spinner v-if="loading"></spinner>
-            <div class="card-body" v-else-if="initiated">
-                <table  class="table table-hover table-bordered dt-responsive nowrap"  id="myTableCompras" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="text-center align-middle" v-for="cabecera of cabecerasCompra" :key="cabecera.id">{{cabecera}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(compra) of arrayCompras" :key="compra.key">
-                            <td class="text-center align-middle">
-                                <div>
-                                    <span class="btn btn-primary btn-sm boton" @click="detalleCompra(compra)"><i class="icon-eye"></i></span>
-                                    <span class="btn btn-danger btn-sm boton" ><i class="icon-trash"></i></span>
-                                </div>
-                            </td>
-                            <td class="text-center align-middle">{{compra.id}}</td>
-                            <td class="text-center align-middle">{{compra.responsable}}</td>
-                            <td class="text-center align-middle">{{compra.fecha}}</td>
-                            <td class="text-center align-middle">{{compra.total}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card-body" >
+                <b-row>
+        <b-col lg="6" class="my-1">
+          <b-form-group
+            label="Ordenar"
+            label-cols-sm="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="sortBySelect"
+            class="mb-0"
+          >
+            <b-input-group size="sm">
+              <b-form-select v-model="sortBy" id="sortBySelect" :options="sortOptions" class="w-75">
+                <template v-slot:first>
+                  <option value>-- ninguno --</option>
+                </template>
+              </b-form-select>
+              <b-form-select v-model="sortDesc" size="sm" :disabled="!sortBy" class="w-25">
+                <option :value="false">Asc</option>
+                <option :value="true">Desc</option>
+              </b-form-select>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+        <b-col lg="6" class="my-1">
+          <b-form-group
+            label="Buscar"
+            label-cols-sm="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="filterInput"
+            class="mb-0"
+          >
+            <b-input-group size="sm">
+              <b-form-input
+                v-model="filter"
+                type="search"
+                id="filterInput"
+                placeholder="Busca algo"
+              ></b-form-input>
+              <b-input-group-append>
+                <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+
+        <b-col sm="5" md="6" class="my-1">
+          <b-form-group
+            label="Por pagina"
+            label-cols-sm="6"
+            label-cols-md="4"
+            label-cols-lg="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="perPageSelect"
+            class="mb-0"
+          >
+            <b-form-select v-model="perPage" id="perPageSelect" size="sm" :options="pageOptions"></b-form-select>
+                </b-form-group>
+                </b-col>
+
+                <b-col sm="7" md="6" class="my-1">
+                <b-pagination
+                    v-model="currentPage"
+                    :total-rows="totalRows"
+                    :per-page="perPage"
+                    align="fill"
+                    size="sm"
+                    class="my-0"
+                ></b-pagination>
+                </b-col>
+            </b-row>
+
+            <!-- Tabla principal -->
+            <b-table
+                show-empty
+                small
+                stacked="md"
+                :busy="loading"
+                :items="arrayCompras"
+                :fields="fields"
+                :current-page="currentPage"
+                :per-page="perPage"
+                :filter="filter"
+                :filterIncludedFields="filterOn"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+                @filtered="onFiltered"
+                :emptyText="'No hay elementos para mostrar'"
+                :emptyFilteredText="'No se han encontrado elementos para lo que buscas'"
+            >
+                <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
+
+                <template v-slot:cell(actions)="row">
+                <b-button size="sm"  @click="detalleCompra(row.item)" class="mr-1">
+                    <i class="icon-eye"></i>
+                </b-button>
+                </template>
+                <template v-slot:table-busy>
+                <div class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Cargando...</strong>
+                </div>
+                </template>
+            </b-table>
             </div>
             <div class="modal fade bd-example-modal-lg1" id="modalCompra" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
                 <div class="modal-dialog modal-xl">
@@ -168,7 +252,7 @@
                             </div>
                             <div class="table-responsive">
                                 <spinner v-if="loading"></spinner>
-                                <datatable :arrayItems="arrayProveedores" :cabeceras="cabecerasProveedor" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="controlador" :funcionBoton="buscarProveedor" :factura="false" :idTabla="'myTableProveedores'"></datatable>
+                                <vue-datatable :items="arrayProveedores" :fields="cabecerasProveedor" :icono="iconos" :controlador="controlador" :funcionBoton="buscarProveedor" :factura="false"></vue-datatable>
                             </div>
                         </div>
                     </div>
@@ -279,9 +363,22 @@ export default {
             arrayAlmacen: [],
             objetoComprobante: {},
             objetoProductoImagen: {},
-            cabecerasProveedor: ['Acciones', '#', 'Codigo', 'Razón social', 'Dirección', 'Numero de documento'],
+            cabecerasProveedor: [
+                { key: "index", label: "#", sortable: true, sortDirection: "desc", class: "text-center" },
+                { key: "codigo", label: "Codigo", sortable: true, class: "text-center"},
+                { key: "razon", label: "Razón social", sortable: true, class: "text-center"},
+                { key: "direccion", label: "Dirección", sortable: true, class: "text-center"},
+                { key: "num_documento", label: "Número de documento", sortable: true, class: "text-center"},
+                { key: "actions", label: "Acciones", class: "text-center"}
+            ],
             iconos: 'icon-plus',
-            cabecerasCompra: ['Acciones', 'Num doc', 'Responsable', 'Fecha', 'Total'],
+            fields: [
+                { key: "id", label: "Num documento", sortable: true, sortDirection: "desc", class: "text-center" },
+                { key: "responsable", label: "Responsable", sortable: true, class: "text-center"},
+                { key: "fecha", label: "Fecha", sortable: true, class: "text-center"},
+                { key: "total", label: "Total", sortable: true, class: "text-center"},
+                { key: "actions", label: "Acciones", class: "text-center"}
+            ],
             usuarioLogueado: {},
             comprobanteEscogido: 0,
             //datos de la compra
@@ -298,7 +395,16 @@ export default {
                     igv_total: 0,
                     total: 0
                 },
-            controlador: 0, // 1 - productos, 2 - proveedores, 4 -> compras
+            controlador: 0,
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 10,
+            pageOptions: [5, 10, 15],
+            sortBy: "",
+            sortDesc: false,
+            sortDirection: "asc",
+            filter: null,
+            filterOn: [], // 1 - productos, 2 - proveedores, 4 -> compras
         }
     },
     computed:{
@@ -320,15 +426,26 @@ export default {
                 sum += parseFloat(this.arrayComprasDetalle[i].total_producto);
             }
             return sum.toFixed(2);
+        },
+        sortOptions() {
+      // Create an options list from our fields
+        return this.fields
+            .filter(f => f.sortable)
+            .map(f => {
+            return { text: f.label, value: f.key };
+            });
         }
     },
     mounted(){
         this.listarCompras();
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
-        $(this.$refs.tablaProductos).on("hidden.bs.modal", this.limpiarTablaProductos)
-        $(this.$refs.tablaProveedores).on("hidden.bs.modal", this.limpiarTablaProveedores)
     },
     methods:{
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
+        },
         abrirModalImagen(producto){
             this.loadingImagen = true
             $('#modalImagen').modal('show');
@@ -347,14 +464,6 @@ export default {
             this.objetoCompra.dir_proveedor =  ''
             this.objetoCompra.razon =  ''
             this.objetoCompra.fecha =  ''
-        },
-        limpiarTablaProductos(){
-            $('#myTableProductos').DataTable().destroy();
-            this.listarCompras()
-        },
-        limpiarTablaProveedores(){
-            $('#myTableProveedores').DataTable().destroy();
-            this.listarCompras();
         },
         generarTotal(item){
             var cantidadTotal = 0
@@ -396,10 +505,7 @@ export default {
                 await this.$store.dispatch('cargarProductos').then(()=>{
                     this.loading = false;
                     this.initiated = true;
-                    this.tablaProductos();
                 });
-            }else{
-                this.tablaProductos();
             }
         },
         listarProveedores(){
@@ -417,6 +523,7 @@ export default {
             this.loading = true
             axios.get(urlItem).then(response=>{
                 this.arrayCompras = response.data;
+                this.totalRows = this.arrayCompras.length;
                 this.loading = false;
                 this.initiated = true;
                 this.miTabla();
@@ -425,13 +532,6 @@ export default {
         tablaProveedores(){
             $( function () {
                 $('#myTableProveedores').DataTable({
-                    searching: true
-                });
-            } );
-        },
-        tablaProductos(){
-            $( function () {
-                $('#myTableProductos').DataTable({
                     searching: true
                 });
             } );
@@ -452,7 +552,7 @@ export default {
         },
         eliminarProductoTabla(venta, index){
             this.ventas.splice(index,1)
-            document.getElementById(`producto${venta.codigo}`).className = ''
+            //document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         buscarProveedor(codigo){

@@ -17,11 +17,14 @@ Vue.use(VCharts)
 import VueSweetalert2 from 'vue-sweetalert2';
 import Vuex from 'vuex';
 import StoreData from './store';
-
-
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(Vuex);
 Vue.use(VueSweetalert2);
-
+import 'sweetalert2/dist/sweetalert2.min.css';
 Object.defineProperty(Vue.prototype, '$moment', {value: moment})
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -38,13 +41,11 @@ Vue.component('user', require('./components/User.vue').default);
 Vue.component('notification', require('./components/Notification.vue').default);
 Vue.component('dashboard', require('./components/Escritorio.vue').default);
 Vue.component('almacen', require('./components/Almacen.vue').default);
-Vue.component('modulo', require('./components/Modulo.vue').default);
 Vue.component('compra', require('./components/Compras.vue').default);
 Vue.component('producto', require('./components/Producto.vue').default);
 Vue.component('facturacion', require('./components/Facturacion.vue').default);
-Vue.component('datatable', require('./components/DataTable.vue').default);
-Vue.component('datatable-productos', require('./components/DataTableProductos.vue').default);
-Vue.component('comprobante', require('./components/Comprobante.vue').default);
+Vue.component('datatable-productos', require('./components/DatatableProductoComponent.vue').default);
+Vue.component('vue-datatable', require('./components/DatatableComponent.vue').default);
 Vue.component('tipo-comprobante', require('./components/TipoComprobante.vue').default);
 Vue.component('ingreso-almacen', require('./components/IngresoAlmacen.vue').default);
 Vue.component('producto-speed', require('./components/ProductoSpeed.vue').default);

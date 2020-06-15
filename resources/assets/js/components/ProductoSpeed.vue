@@ -1,56 +1,117 @@
 <template>
 <main class="main">
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex flex-row justify-content-between align-items-center">  
-                <h4>Productos de la web</h4>
-            </div>
-        </div>
-        <spinner v-if="loadingProductos"></spinner>
-        <div class="card-body" v-else-if="initiatedProductos">
-        
-            <table  class="table table-hover table-bordered dt-responsive nowrap"  id="idTablaProductos" style="width:100%">
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-center align-middle" >Acciones</th>
-                        <th scope="col" class="text-center align-middle" >#</th>
-                        <th scope="col" class="text-center align-middle" >Codigo</th>
-                        <th scope="col" class="text-center align-middle" >Producto</th>
-                        <th scope="col" class="text-center align-middle" >Precio</th>
-                        <th scope="col" class="text-center align-middle" >Cantidad</th>
-                        <!--<th scope="col" class="text-center align-middle" >Imagen</th>-->
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(producto, index) of arrayProductos" :key="producto.key" :class="(producto.stock < 5)?'table-danger':''">
-                        <td class="text-center align-middle">
-                            <div>
-                                <span class="btn btn-primary btn-sm boton" @click="abrirModalCantidades(producto)" ><i class="icon-pencil"></i></span>
-                            </div>
-                        </td>
-                        <th scope="row" class="text-center align-middle">{{index+1}}</th>
-                        <td class="text-center align-middle">
-                            {{producto.codigo}}
-                        </td >
-                        <td class="text-center align-middle">
-                            {{producto.producto}}
-                        </td>
-                        <td class="text-center align-middle">
-                            {{producto.precio}}
-                        </td>
-                        <td class="text-center align-middle">
-                            {{producto.stock}}
-                        </td>
-                        <!--<td class="text-center align-middle">
-                            <img :src="(producto.imagen==null)?'images/0.jpg':producto.imagen" alt="" width="60">
-                        </td>-->
-                        
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
+    <b-container>
+        <b-card header="Productos de la web">
+            <b-row>
+        <b-col lg="6" class="my-1">
+          <b-form-group
+            label="Ordenar"
+            label-cols-sm="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="sortBySelect"
+            class="mb-0"
+          >
+            <b-input-group size="sm">
+              <b-form-select v-model="sortBy" id="sortBySelect" :options="sortOptions" class="w-75">
+                <template v-slot:first>
+                  <option value>-- ninguno --</option>
+                </template>
+              </b-form-select>
+              <b-form-select v-model="sortDesc" size="sm" :disabled="!sortBy" class="w-25">
+                <option :value="false">Asc</option>
+                <option :value="true">Desc</option>
+              </b-form-select>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+        <b-col lg="6" class="my-1">
+          <b-form-group
+            label="Buscar"
+            label-cols-sm="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="filterInput"
+            class="mb-0"
+          >
+            <b-input-group size="sm">
+              <b-form-input
+                v-model="filter"
+                type="search"
+                id="filterInput"
+                placeholder="Busca algo"
+              ></b-form-input>
+              <b-input-group-append>
+                <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+
+        <b-col sm="5" md="6" class="my-1">
+          <b-form-group
+            label="Por pagina"
+            label-cols-sm="6"
+            label-cols-md="4"
+            label-cols-lg="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="perPageSelect"
+            class="mb-0"
+          >
+            <b-form-select v-model="perPage" id="perPageSelect" size="sm" :options="pageOptions"></b-form-select>
+          </b-form-group>
+        </b-col>
+
+        <b-col sm="7" md="6" class="my-1">
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="perPage"
+            align="fill"
+            size="sm"
+            class="my-0"
+          ></b-pagination>
+        </b-col>
+      </b-row>
+
+      <!-- Tabla principal -->
+      <b-table
+        show-empty
+        small
+        stacked="md"
+        :busy="cargando"
+        :items="arrayProductos"
+        :fields="fields"
+        :tbody-tr-class="rowClass"
+        :current-page="currentPage"
+        :per-page="perPage"
+        :filter="filter"
+        :filterIncludedFields="filterOn"
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :sort-direction="sortDirection"
+        @filtered="onFiltered"
+        :emptyText="'No hay elementos para mostrar'"
+        :emptyFilteredText="'No se han encontrado elementos para lo que buscas'"
+      >
+        <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
+
+        <template v-slot:cell(actions)="row">
+          <b-button size="sm" @click="abrirModalCantidades(row.item)" class="mr-1">
+            <i class="icon-pencil"></i>
+          </b-button>
+        </template>
+        <template v-slot:table-busy>
+          <div class="text-center text-danger my-2">
+            <b-spinner class="align-middle"></b-spinner>
+            <strong>Cargando...</strong>
+          </div>
+        </template>
+      </b-table>      
+        </b-card>
+      <!-- User Interface controls -->
+      <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -102,8 +163,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    
+    </b-container>
 </main>
   
 </template>
@@ -116,6 +176,44 @@ export default {
     },
     data(){
         return{
+            cargando: false,
+            fields: [
+                { key: "index", label: "#", sortable: true, sortDirection: "desc", class: "text-center" },
+                {
+                key: "codigo",
+                label: "Codigo",
+                sortable: true,
+                class: "text-center"
+                },
+                {
+                key: "producto",
+                label: "Producto",
+                sortable: true,
+                class: "text-center"
+                },
+                {
+                key: "precio",
+                label: "Precio",
+                sortable: true,
+                class: "text-center"
+                },
+                {
+                key: "stock",
+                label: "Cantidad",
+                sortable: true,
+                class: "text-center"
+                },
+                { key: "actions", label: "acciones", class: "text-center" }
+            ],
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 10,
+            pageOptions: [5, 10, 15],
+            sortBy: "",
+            sortDesc: false,
+            sortDirection: "asc",
+            filter: null,
+            filterOn: [],
             loading: false,
             initiated: false,
             loadingProductos: false,
@@ -134,6 +232,14 @@ export default {
         }
     },
     computed:{
+        sortOptions() {
+        // Create an options list from our fields
+        return this.fields
+            .filter(f => f.sortable)
+            .map(f => {
+            return { text: f.label, value: f.key };
+            });
+        },
         arrayProductos(){
             return this.$store.getters.arrayProductos;
         },
@@ -142,20 +248,21 @@ export default {
         }
     },
     methods:{
+        rowClass(item, type) {
+            if (!item || type !== 'row') return
+            if (item.stock < 5) return 'bg-danger'
+        },
         async listarItem(){
-            this.loadingProductos = true
+            this.cargando = true
             await this.$store.dispatch('cargarProductos').then(()=>{
-                this.loadingProductos = false;
-                this.initiatedProductos = true;
-                this.tablaProductos();
+                this.totalRows = this.arrayProductos.length
+                this.cargando = false;
             });
         },
-        tablaProductos(){
-            $( function () {
-                $('#idTablaProductos').DataTable({
-                    searching: true
-                });
-            } );
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
         },
         abrirModalCantidades(producto){
             this.loadingCantidades = true

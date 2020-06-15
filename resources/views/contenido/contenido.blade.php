@@ -41,9 +41,7 @@
             <template v-if="menu==14">
                 <traspaso-almacen></traspaso-almacen>
             </template>
-            <template v-if="menu==15">
-                <comprobante></comprobante>
-            </template>
+
             <template v-if="menu==16">
                 <tipo-comprobante></tipo-comprobante>
             </template>

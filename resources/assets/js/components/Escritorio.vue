@@ -1,12 +1,17 @@
 <template>
     <main class="main">
-        <div class="estadisticas">
-            <spinner v-if="loading"></spinner>
-            <div  v-for="estadistica in arrayEstadisticas" :key="estadistica.id" style="width: 50%;" v-else-if="initiated">
-                <h4 style="margin-top: 10px; text-align: center;">Ventas de {{estadistica.titulo}}</h4>
-                <ve-line :data="estadistica"  style="margin-top: 50px;"></ve-line>
+        <b-card>
+            <div class="estadisticas">
+                <spinner v-if="loading"></spinner>
+                
+                    <div  v-for="estadistica in arrayEstadisticas" :key="estadistica.id"   style="width: 50%;" v-else-if="initiated">
+                    
+                        <h4 style="margin-top: 10px; text-align: center;">Ventas de {{estadistica.titulo}}</h4>
+                            <ve-line :data="estadistica"  style="margin-top: 50px;"></ve-line>
+                    </div>  
+                
             </div>
-        </div>
+        </b-card>
     </main>
 </template>
 <script>

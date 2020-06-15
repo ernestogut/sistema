@@ -24,7 +24,7 @@ class CreateSerieComprobantesTable extends Migration
             $table->bigInteger('numero_actual');
             $table->bigInteger('numero_final');
             $table->string('anio');
-            $table->string('estado')->default('habilitado');
+            $table->integer('estado')->default(1);
             $table->timestamps();
         });
     }

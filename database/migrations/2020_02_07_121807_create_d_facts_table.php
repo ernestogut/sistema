@@ -16,7 +16,7 @@ class CreateDFactsTable extends Migration
         Schema::create('d_facts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('id_fact');
-            $table->foreign('id_fact')->references('id')->on('c_facts');
+            $table->foreign('id_fact')->references('id')->on('c_facts')->onDelete('cascade');
             $table->string('codigo_producto');
             $table->string('descripcion_producto');
             $table->decimal('precio_producto', 11, 2);

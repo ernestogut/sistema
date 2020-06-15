@@ -12,39 +12,116 @@
                 </div>
             </div>
             </div>
-            <spinner v-if="loading"></spinner>
-            <div class="card-body" v-else-if="initiated">
-                <table class="table table-striped table-bordered dt-responsive nowrap"  id="miTabla" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="text-center align-middle" >Acciones</th>
-                            <th scope="col" class="text-center align-middle" >N°</th>
-                            <th scope="col" class="text-center align-middle" >Responsable</th>
-                            <th scope="col" class="text-center align-middle" >Tienda</th>
-                            <th scope="col" class="text-center align-middle" >Tipo de movimiento</th>
-                            <th scope="col" class="text-center align-middle" >Monto</th>
-                            <th scope="col" class="text-center align-middle" >Observación</th>
-                            <th scope="col" class="text-center align-middle" >Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(movimiento, index) of arrayMovimientos" :key="movimiento.key">
-                            <td class="text-center align-middle">
-                                <div >
-                                    <span class="btn btn-primary btn-sm boton"  ><i class="icon-eye" ></i></span>
-                                    <span class="btn btn-danger btn-sm boton"><i class="icon-trash"></i></span>
-                                </div>
-                            </td>
-                            <th scope="row" class="text-center align-middle">{{index+1}}</th>
-                            <td class="text-center align-middle">{{movimiento.responsable}}</td>
-                            <td class="text-center align-middle">{{movimiento.tienda}}</td>
-                            <td class="text-center align-middle">{{movimiento.tipo_movimiento}}</td>
-                            <td class="text-center align-middle">{{movimiento.monto}}</td>
-                            <td class="text-center align-middle">{{movimiento.observacion}}</td>
-                            <td class="text-center align-middle">{{movimiento.fecha}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <b-row>
+        <b-col lg="6" class="my-1">
+          <b-form-group
+            label="Ordenar"
+            label-cols-sm="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="sortBySelect"
+            class="mb-0"
+          >
+            <b-input-group size="sm">
+              <b-form-select v-model="sortBy" id="sortBySelect" :options="sortOptions" class="w-75">
+                <template v-slot:first>
+                  <option value>-- ninguno --</option>
+                </template>
+              </b-form-select>
+              <b-form-select v-model="sortDesc" size="sm" :disabled="!sortBy" class="w-25">
+                <option :value="false">Asc</option>
+                <option :value="true">Desc</option>
+              </b-form-select>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+        <b-col lg="6" class="my-1">
+          <b-form-group
+            label="Buscar"
+            label-cols-sm="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="filterInput"
+            class="mb-0"
+          >
+            <b-input-group size="sm">
+              <b-form-input
+                v-model="filter"
+                type="search"
+                id="filterInput"
+                placeholder="Busca algo"
+              ></b-form-input>
+              <b-input-group-append>
+                <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+
+        <b-col sm="5" md="6" class="my-1">
+          <b-form-group
+            label="Por pagina"
+            label-cols-sm="6"
+            label-cols-md="4"
+            label-cols-lg="3"
+            label-align-sm="right"
+            label-size="sm"
+            label-for="perPageSelect"
+            class="mb-0"
+          >
+            <b-form-select v-model="perPage" id="perPageSelect" size="sm" :options="pageOptions"></b-form-select>
+                </b-form-group>
+                </b-col>
+
+                <b-col sm="7" md="6" class="my-1">
+                <b-pagination
+                    v-model="currentPage"
+                    :total-rows="totalRows"
+                    :per-page="perPage"
+                    align="fill"
+                    size="sm"
+                    class="my-0"
+                ></b-pagination>
+                </b-col>
+            </b-row>
+
+            <!-- Tabla principal -->
+            <b-table
+                show-empty
+                small
+                stacked="md"
+                :busy="loading"
+                :items="arrayMovimientos"
+                :fields="fields"
+                :current-page="currentPage"
+                :per-page="perPage"
+                :filter="filter"
+                :filterIncludedFields="filterOn"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+                @filtered="onFiltered"
+                :emptyText="'No hay elementos para mostrar'"
+                :emptyFilteredText="'No se han encontrado elementos para lo que buscas'"
+            >
+                <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
+
+                <template v-slot:cell(actions)="">
+                <b-button size="sm">
+                    <i class="icon-pencil"></i>
+                </b-button>
+                <b-button size="sm">
+                    <i class="icon-eye"></i>
+                </b-button>
+                </template>
+                <template v-slot:table-busy>
+                <div class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Cargando...</strong>
+                </div>
+                </template>
+            </b-table>
             </div>
             <!---->
             <div class="modal fade bd-example-modal-lg1" id="modalMovimiento" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="modalMovimiento" style="overflow-y: scroll;">
@@ -116,7 +193,6 @@ export default {
     },
     data(){
         return{
-            initiated: false,
             loading: false,
             arrayMovimientos: [],
             objetoMovimiento:{
@@ -127,7 +203,26 @@ export default {
                 monto: 0.00,
                 tipo_movimiento: null,
             },
-            arrayAlmacen: []
+            arrayAlmacen: [],
+            fields: [
+                { key: "index", label: "#", sortable: true, sortDirection: "desc" ,class: "text-center"},
+                { key: "responsable", label: "Responsable", sortable: true, class: "text-center"},
+                { key: "tienda", label: "Tienda", sortable: true, class: "text-center"},
+                { key: "tipo_movimiento", label: "Tipo de movimiento", sortable: true, class: "text-center"},
+                { key: "monto", label: "Monto", sortable: true, class: "text-center"},
+                { key: "observacion", label: "Observación", sortable: true, class: "text-center"},
+                { key: "fecha", label: "Fecha", sortable: true, class: "text-center"},
+                { key: "actions", label: "Acciones", class: "text-center"}
+            ],
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 10,
+            pageOptions: [5, 10, 15],
+            sortBy: "",
+            sortDesc: false,
+            sortDirection: "asc",
+            filter: null,
+            filterOn: []
         }
     },
     computed:{
@@ -137,6 +232,14 @@ export default {
         arrayUsuarios(){
             return this.$store.getters.arrayUsuarios;
         },
+        sortOptions() {
+      // Create an options list from our fields
+        return this.fields
+            .filter(f => f.sortable)
+            .map(f => {
+            return { text: f.label, value: f.key };
+            });
+        }
     },
     methods:{
         limpiarModalMovimiento(){
@@ -151,10 +254,14 @@ export default {
             this.loading = true
             axios.get(`/movimiento_caja/${this.objetoMovimiento.id_almacen}`).then(response=>{
                 this.arrayMovimientos = response.data;
+                this.totalRows = this.arrayMovimientos.length
                 this.loading = false;
-                this.initiated = true;
-                this.miTabla();
             })
+        },
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
         },
         /*listarUsuarios(){
             var urlItem = '/user/logeado';

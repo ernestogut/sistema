@@ -18,7 +18,7 @@ class ProveedorController extends Controller
         if(!$request->ajax()){
             return redirect('/');
         }else{
-            $proveedor = Proveedor::select('proveedores.id', 'proveedores.codigo', 'proveedores.razon', 'tipo_documentos.tipo_doc as tipo_documento', 'proveedores.num_documento','proveedores.correo', 'proveedores.telefono_contacto', 'proveedores.num_documento')->join('tipo_documentos','proveedores.id_tipo_doc', '=', 'tipo_documentos.id')->get();
+            $proveedor = Proveedor::select('proveedores.id', 'proveedores.codigo', 'proveedores.razon', 'tipo_documentos.tipo_doc as tipo_documento', 'proveedores.direccion', 'proveedores.num_documento','proveedores.correo', 'proveedores.telefono_contacto', 'proveedores.num_documento')->join('tipo_documentos','proveedores.id_tipo_doc', '=', 'tipo_documentos.id')->get();
             /*$proveedor = proveedor::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
             return $proveedor;
         }
