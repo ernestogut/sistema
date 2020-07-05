@@ -115,7 +115,7 @@
                                             <input type="text" class="form-control" id="año" placeholder="Ingresa el año" v-model="objetoSerie.anio">
                                         </div>
                                         <div class="form-group col-md-6">
-                                            <label for="estado">Estado</label>
+                                            <label for="estado">Almacén</label>
                                             <select v-model="objetoSerie.id_almacen" class="form-control">
                                                 <option v-for="almacen in arrayAlmacen" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                             </select>

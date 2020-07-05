@@ -109,7 +109,64 @@ class DFactController extends Controller
         //$detalle = D_fact::find($id);
         return $detalle;
     }
+    public function rankingProductos($fecha, $almacen)
+    {
+        if($almacen != 0){
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->where(DB::raw('DATE(created_at)'), $fecha)->where('almacen_producto', $almacen)->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }else{
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->where(DB::raw('DATE(created_at)'), $fecha)->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }
+        
+    }
+    public function rankingProductosPorRango($fecha_inicio, $fecha_fin, $almacen)
+    {
+        if($almacen != 0){
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->whereBetween(DB::raw('DATE(created_at)'), array($fecha_inicio, $fecha_fin))->where('almacen_producto', $almacen)->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }else{
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->whereBetween(DB::raw('DATE(created_at)'), array($fecha_inicio, $fecha_fin))->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }
+    }
+    public function rankingProductosCategoria($fecha, $almacen, $id_categoria)
+    {
 
+        //->whereIn('codigo_producto', $array_productos)
+        $productos_categoria = DB::connection("speed")->table('wp_posts as post')->select('ID')->join('wp_term_relationships as rs', 'rs.object_id', 'post.ID')->where('post.post_type', 'product')->where('post.post_status', 'publish')->where('rs.term_taxonomy_id', $id_categoria)->orderBy('post.post_title')->get();
+
+        $array_productos[] = null;
+        foreach($productos_categoria as $producto){
+            array_push($array_productos, $producto->ID);
+        }
+
+        if($almacen != 0){
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->where(DB::raw('DATE(created_at)'), $fecha)->where('almacen_producto', $almacen)->whereIn('codigo_producto', $array_productos)->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }else{
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->where(DB::raw('DATE(created_at)'), $fecha)->whereIn('codigo_producto', $array_productos)->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }
+        
+    }
+    public function rankingProductosPorRangoCategoria($fecha_inicio, $fecha_fin, $almacen, $array_productos)
+    {
+
+        $productos_categoria = DB::connection("speed")->table('wp_posts as post')->select('ID')->join('wp_term_relationships as rs', 'rs.object_id', 'post.ID')->where('post.post_type', 'product')->where('post.post_status', 'publish')->where('rs.term_taxonomy_id', $id_categoria)->orderBy('post.post_title')->get();
+
+        $array_productos[] = null;
+        foreach($productos_categoria as $producto){
+            array_push($array_productos, $producto['id']);
+        }
+        if($almacen != 0){
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->whereBetween(DB::raw('DATE(created_at)'), array($fecha_inicio, $fecha_fin))->where('almacen_producto', $almacen)->whereIn('codigo_producto', $array_productos)->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }else{
+            $ranking = D_fact::select(DB::raw('codigo_producto, descripcion_producto, SUM(cantidad_producto) as cantidad'))->groupBy('codigo_producto')->whereBetween(DB::raw('DATE(created_at)'), array($fecha_inicio, $fecha_fin))->whereIn('codigo_producto', $array_productos)->orderBy(DB::raw('sum(cantidad_producto)'), 'desc')->get();
+            return $ranking;
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *

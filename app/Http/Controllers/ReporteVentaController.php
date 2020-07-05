@@ -19,7 +19,27 @@ class ReporteVentaController extends Controller
         $ventas = ReporteVenta::select(DB::raw('YEAR(fecha) as year, MONTHNAME(fecha) month, SUM(total) as subtotal, count(*) as orders'))->groupBy(DB::raw('YEAR(fecha), MONTHNAME(fecha)'))->orderBy(DB::raw('MONTH(fecha)'))->where('id_almacen', '=', 2)->get();
         return $ventas;
     }
-
+    public function ventasPorFecha($fecha, $almacen)
+    {
+        if($almacen != 0){
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', $fecha)->where('c_facts.id_almacen', $almacen)->orderBy('c_facts.id', 'desc')->get();
+            return $ventas;
+        }else{
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', $fecha)->orderBy('c_facts.id', 'desc')->get();
+            return $ventas;
+        }
+        
+    }
+    public function ventasPorFechaRango($fecha_inicio, $fecha_fin, $almacen)
+    {
+        if($almacen != 0){
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->whereBetween('c_facts.fecha', array($fecha_inicio, $fecha_fin))->where('c_facts.id_almacen', $almacen)->orderBy('c_facts.id', 'desc')->get();
+            return $ventas;
+        }else{
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->whereBetween('c_facts.fecha', array($fecha_inicio, $fecha_fin))->orderBy('c_facts.id', 'desc')->get();
+            return $ventas;
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *

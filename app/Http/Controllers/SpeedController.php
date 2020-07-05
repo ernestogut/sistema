@@ -34,7 +34,14 @@ class SpeedController extends Controller
     {
         //
     }
-
+    public function obtenerCategoriasProductos(){
+        $categorias = DB::connection("speed")->table('wp_terms as t')->select('t.term_id as id', 't.name as post_title', 't.slug as post_url')->leftJoin('wp_term_taxonomy as tt', 't.term_id', 'tt.term_id')->where('tt.taxonomy', 'product_cat')->orderBy('name')->get();
+        return $categorias;
+    }
+    public function obtenerProductosDeCategoria($id_categoria){
+        $productos_categoria = DB::connection("speed")->table('wp_posts as post')->select('ID')->join('wp_term_relationships as rs', 'rs.object_id', 'post.ID')->where('post.post_type', 'product')->where('post.post_status', 'publish')->where('rs.term_taxonomy_id', $id_categoria)->orderBy('post.post_title')->get();
+        return $productos_categoria;
+    }
     /**
      * Store a newly created resource in storage.
      *

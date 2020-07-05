@@ -47,6 +47,20 @@
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Reportes</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=22" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-bag"></i> Por fecha</a>
+                        </li>
+                        <li  @click="menu=23" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-bag"></i> Ranking productos</a>
+                        </li>
+                        <li  @click="menu=24" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-bag"></i> Ranking categorias</a>
+                        </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Socios de negocio</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=6" class="nav-item">

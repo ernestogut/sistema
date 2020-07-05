@@ -54,6 +54,15 @@
             <template v-if="menu==20">
                 <compra></compra>
             </template>
+            <template v-if="menu==22">
+                <reporte></reporte>
+            </template>
+            <template v-if="menu==23">
+                <reporte-ranking-producto></reporte-ranking-producto>
+            </template>
+            <template v-if="menu==24">
+                <reporte-ranking-categoria></reporte-ranking-categoria>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <facturacion></facturacion>

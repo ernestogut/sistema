@@ -18,6 +18,8 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import Vuex from 'vuex';
 import StoreData from './store';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import VueExcelXlsx from "vue-excel-xlsx";
+Vue.use(VueExcelXlsx);
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 import 'bootstrap/dist/css/bootstrap.css'
@@ -50,6 +52,9 @@ Vue.component('tipo-comprobante', require('./components/TipoComprobante.vue').de
 Vue.component('ingreso-almacen', require('./components/IngresoAlmacen.vue').default);
 Vue.component('producto-speed', require('./components/ProductoSpeed.vue').default);
 Vue.component('pedido-speed', require('./components/PedidoSpeed.vue').default);
+Vue.component('reporte', require('./components/Reportes.vue').default);
+Vue.component('reporte-ranking-producto', require('./components/ReporteRankingProducto.vue').default);
+Vue.component('reporte-ranking-categoria', require('./components/ReportePorCategoria.vue').default);
 Vue.component('traspaso-almacen', require('./components/TraspasoAlmacen.vue').default);
 Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
 Vue.component('movimiento-caja', require('./components/MovimientoCaja.vue').default);

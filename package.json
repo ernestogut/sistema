@@ -41,9 +41,11 @@
         "v-charts": "^1.19.0",
         "vue-barcode": "^1.2.0",
         "vue-d3-charts": "^0.2.8",
+        "vue-excel-xlsx": "^1.0.11",
         "vue-select": "^2.6.4",
         "vue-simple-spinner": "^1.2.10",
         "vue-sweetalert2": "^3.0.5",
+        "vue2-datepicker": "^3.6.0",
         "vuex": "^3.4.0"
     }
 }
