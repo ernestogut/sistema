@@ -17,6 +17,7 @@ class CreateInventariosTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('id_producto');
             $table->unsignedBigInteger('id_almacen');
+            $table->unsignedBigInteger('id_padre');
             $table->foreign('id_almacen')->references('id')->on('almacens');
             $table->bigInteger('cantidad');
             $table->timestamps();

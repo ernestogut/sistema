@@ -22,7 +22,7 @@
             </div>
             <div class="row">
               <div class="col-6">
-                <button type="submit" class="btn boton-oscuro">Acceder</button>
+                <button type="submit" class="btn btn-success">Acceder</button>
               </div>
             </div>
           </div>

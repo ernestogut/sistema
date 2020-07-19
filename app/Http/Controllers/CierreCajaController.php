@@ -38,9 +38,6 @@ class CierreCajaController extends Controller
      */
     public function store(Request $request)
     {
-
-        $mensaje = "Existe una caja abierta para esta tienda!";
-        $tipo = "danger";
         $arrayUsuarios = User::select('id', 'usuario', 'id_almacen')->get();
         $controlador = false;
         foreach($arrayUsuarios as $objUsuario){
@@ -49,7 +46,6 @@ class CierreCajaController extends Controller
             }
         }
         if($controlador){
-            $tipo = "danger";
            return  back()->withErrors(['error' => 'Existe una caja abierta para esta tienda!']);
             //return redirect()->back()->with('alert',);
         }else{

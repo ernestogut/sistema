@@ -5,7 +5,8 @@ export default {
         arrayProductos: [],
         arrayPedidos: [],
         arrayVentas: [],
-        arrayAlmacen: []
+        arrayAlmacen: [],
+        arrayDocumentos: []
 
     },
     mutations:{
@@ -26,6 +27,9 @@ export default {
         },
         SET_ALMACENES (state, arrayAlmacen){
             state.arrayAlmacen = arrayAlmacen;
+        },
+        SET_DOCUMENTOS (state, arrayDocumentos){
+            state.arrayDocumentos = arrayDocumentos;
         }
     },
     getters:{
@@ -44,6 +48,9 @@ export default {
         arrayAlmacen(state){
             return state.arrayAlmacen;
         },
+        arrayDocumentos(state){
+            return state.arrayDocumentos;
+        },
         arrayVentas(state){
             return state.arrayVentas;
         }
@@ -60,6 +67,12 @@ export default {
                     let arrayAlmacen = response.data
                     commit('SET_ALMACENES', arrayAlmacen)
                 })
+        },
+        cargarDocumentos({commit}){
+            return axios.get('/tipo_documento').then(response=>{
+                let arrayDocumentos = response.data
+                commit('SET_DOCUMENTOS', arrayDocumentos)
+            })
         },
         cargarVentas({commit}){
             return axios.get('/reporte_venta').then((response)=>{

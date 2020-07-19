@@ -16,6 +16,9 @@
                         <li  @click="menu=19" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Pedidos web</a>
                         </li>
+                        <li  @click="menu=25" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Impresion</a>
+                        </li>
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">

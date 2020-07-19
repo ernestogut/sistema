@@ -20,6 +20,7 @@ require('./responsive.bootstrap4.min.js')
 
 require('../css/dataTables.bootstrap4.min.css')
 require('../css/responsive.bootstrap4.min.css')
+require('../../../public/js/Impresora')
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

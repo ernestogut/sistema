@@ -222,6 +222,9 @@ export default {
                 if(i == 'producto'){
                     obj.producto = item[i]
                 }
+                if(i == 'codigo_padre'){
+                    obj.codigo_padre = item[i]
+                }
                 if(i == 'precio'){
                     obj.precio = item[i]
                 }
@@ -263,7 +266,6 @@ export default {
                     controlador = false
                 }
             }
-            console.log(this.ventas)
             if(controlador){
                 this.$emit('emitirEvProductos', this.ventas)
             }else{

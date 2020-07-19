@@ -96,7 +96,7 @@
             size="sm"
             @click="(controlador!=5)?funcionConjunto(row.item):funcionBoton(row.item)"
           >
-            <i class="icon-pencil"></i>
+            <i :class="[controlador!=10?'icon-pencil':'icon-plus']"></i>
           </b-button>
           <b-button
             variant="primary"
@@ -211,6 +211,8 @@ export default {
         $("#modalSeries").modal("show");
       } else if (this.factura) {
         this.funcionBoton(item);
+      }else if(this.controlador == 10){
+        this.funcionBoton(item.codigo)
       }
       /*else if(this.controlador == 4){
                 this.funcionBoton(item)

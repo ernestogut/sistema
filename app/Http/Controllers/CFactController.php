@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\C_fact;
+use App\D_fact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -38,13 +39,66 @@ class CFactController extends Controller
      */
     public function store(Request $request)
     {
+
+        
+
         if(!$request->ajax()) return redirect('/');
-        DB::select("call insertarCabeceraFact(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[$request->id_serie, $request->id_tipo_comprobante, $request->cod_cliente,$request->ruc_cliente,$request->dir_cliente,$request->razon,$request->id_user,$request->fecha,$request->tipo_venta,$request->serie,$request->sub_total,$request->desc_global,$request->igv_total,$request->total,$request->id_almacen, $request->tipo_pago]);
-        if($request->tipo_pago == 'efectivo'){
-            DB::select("call generarCuentas(?,?,?)",[$request->total, $request->fecha, $request->id_almacen]);
+
+
+        $detalle = $request->ventas;
+        $cabecera = $request->objeto_factura;
+        $en_almacen = true;
+
+
+        foreach ($detalle as $key => $value) {
+            $producto_en_almacen = DB::table('inventarios')->where('id_producto', $value['codigo'])->where('id_almacen', $value['almacen'])->get();
+            if(sizeof($producto_en_almacen) == 0){
+                $en_almacen = false;
+            break;
+            }
         }
-        $cabecera = C_fact::orderBy('id', 'desc')->first()->id;
-        return $cabecera;
+
+
+        if($en_almacen){
+            DB::select("call insertarCabeceraFact(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[$cabecera['id_serie'], $cabecera['id_tipo_comprobante'], $cabecera['cod_cliente'],$cabecera['ruc_cliente'],$cabecera['dir_cliente'],$cabecera['razon'],$cabecera['id_user'],$cabecera['fecha'],$cabecera['tipo_venta'],$cabecera['serie'],$cabecera['sub_total'],$cabecera['desc_global'],$cabecera['igv_total'],$cabecera['total'],$cabecera['id_almacen'], $cabecera['tipo_pago']]);
+            if($cabecera['tipo_pago'] == 'efectivo'){
+                DB::select("call generarCuentas(?,?,?)",[$cabecera['total'], $cabecera['fecha'], $cabecera['id_almacen']]);
+            }
+            $id_cabecera = C_fact::orderBy('id', 'desc')->first()->id;
+
+            foreach ($detalle as $key => $value) {
+                //# code...
+                //var_dump($key);
+                //var_dump($value);
+                DB::connection("mysql")->statement("call disminuirInventarioAlm(?,?,?)",[$value['codigo'],$value['cantidad'],$value['almacen']]);
+                
+                $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo'])->sum('cantidad');
+
+                DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo'],$suma_total]);
+                if($value['codigo_padre'] != 0){
+                    DB::connection("mysql")->statement("call disminuirInventarioAlm(?,?,?)",[$value['codigo_padre'],$value['cantidad'],$value['almacen']]);
+                
+                    $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_padre'])->sum('cantidad');
+
+                    DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_padre'],$suma_total]);
+                }
+                //Artisan::call('cache:clear');
+                /*DB::select("call disminuirInventario(?,?)",[$value['codigo'],$value['cantidad']]);*/
+                $dfact = new D_fact();
+                $dfact->id_fact = $id_cabecera;
+                $dfact->codigo_producto = $value['codigo'];
+                $dfact->descripcion_producto = $value['producto'];
+                $dfact->precio_producto = $value['precio'];
+                $dfact->cantidad_producto = $value['cantidad'];
+                $dfact->almacen_producto = $value['almacen'];
+                $dfact->descuento_producto = $value['descuento'];
+                $dfact->total_producto = $value['total'];
+                $dfact->save();
+            }
+        }else{
+           return response()->json(['error' => 'Se detectó un producto que no está en almacén'], 404);
+        }
+        
     }
     /**
      * Display the specified resource.
@@ -130,6 +184,22 @@ class CFactController extends Controller
      */
     public function destroy($id)
     {
+
+        $productos = D_fact::where('id_fact', $id)->get();
+        
+        foreach ($productos as $key => $value) {
+            //# code...
+            //var_dump($key);
+            //var_dump($value);
+
+            DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo_producto'],$value['cantidad_producto'],$value['almacen_producto']]);
+
+            $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_producto'])->sum('cantidad');
+
+            DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_producto'],$suma_total]);
+            
+        }
+
         $cabecera = C_fact::find($id);
         $cabecera->delete();
     }

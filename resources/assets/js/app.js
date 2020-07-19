@@ -9,7 +9,7 @@ require('./bootstrap');
 window.$ = window.jQuery = require('jquery');
 
 window.Vue = require('vue');
-
+require('../../../public/js/Impresora');
 
 import moment from 'moment'
 import VCharts from 'v-charts'
@@ -25,6 +25,7 @@ Vue.use(IconsPlugin)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(Vuex);
+
 Vue.use(VueSweetalert2);
 import 'sweetalert2/dist/sweetalert2.min.css';
 Object.defineProperty(Vue.prototype, '$moment', {value: moment})
@@ -55,6 +56,7 @@ Vue.component('pedido-speed', require('./components/PedidoSpeed.vue').default);
 Vue.component('reporte', require('./components/Reportes.vue').default);
 Vue.component('reporte-ranking-producto', require('./components/ReporteRankingProducto.vue').default);
 Vue.component('reporte-ranking-categoria', require('./components/ReportePorCategoria.vue').default);
+Vue.component('impresora', require('./components/impresionPrueba.vue').default);
 Vue.component('traspaso-almacen', require('./components/TraspasoAlmacen.vue').default);
 Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
 Vue.component('movimiento-caja', require('./components/MovimientoCaja.vue').default);
@@ -87,6 +89,7 @@ var app = new Vue({
         async cargarUsuarioLog(){
             await this.$store.dispatch('cargarUsuarioLogeado')
             await this.$store.dispatch('cargarAlmacen')
+            await this.$store.dispatch('cargarDocumentos')
             await this.$store.dispatch('cargarUsuarios').then(()=>{
                 if(this.usuarioLogeado.idrole == 1){
                     this.menu = 1

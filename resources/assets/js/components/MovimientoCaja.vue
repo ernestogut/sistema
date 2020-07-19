@@ -286,21 +286,16 @@ export default {
                 //this.listarUsuarios();
                 this.seleccionarAlmacen();
                 this.obtenerFecha()
-                $("#monto").on('blur change input', function() {
-                    $(this).val(function(i, input) {
+                //$("#monto").on('blur change input', function() {
+               /*     $(this).val(function(i, input) {
                         input = input.replace(/\D/g, '');
                         return (input / 100).toFixed(2);
                     });
-                }).trigger('blur');
+                }).trigger('blur');*/
                 $('#modalMovimiento').modal('show');
         },
         obtenerFecha(){
             this.objetoMovimiento.fecha = this.$moment().format("YYYY-MM-DD")
-        },
-        miTabla(){
-            $( function () {
-                $('#miTabla').DataTable();
-            } );
         },
         insertarMovimiento(){
                 var me = this;
@@ -311,7 +306,6 @@ export default {
                         text: `El ${this.objetoMovimiento.tipo_movimiento} ha sido procesado con éxito`,
                         icon: 'success'
                     });
-                    $('#miTabla').DataTable().destroy();
                     this.listarMovimientosCaja();
                 })
                 .catch(error=>{

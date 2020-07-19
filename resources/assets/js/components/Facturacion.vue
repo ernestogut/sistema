@@ -1,5 +1,6 @@
 <template>
     <main class="main">
+        
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex flex-wrap justify-content-between align-items-center">
@@ -150,6 +151,8 @@
                     </div>
                 </div>
             </div>
+
+            
             <div class="modal fade" id="modalTipoPago" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -219,9 +222,12 @@
                                 <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
+                            <b-button size="sm" variant="primary" @click="abrirModalRegistro()">
+                                Nuevo cliente
+                            </b-button>
                             <div class="table-responsive">
                                 <spinner v-if="loading"></spinner>
-                                <vue-datatable :items="arrayClientes" :fields="cabecerasCliente" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="controlador" :funcionBoton="buscarCliente" :factura="false" :idTabla="'myTableClientes'"></vue-datatable>
+                                <vue-datatable :items="arrayClientes" :fields="cabecerasCliente" :icono="iconos" v-else-if="initiated" :listaVentasPadre="ventas" :controlador="10" :funcionBoton="buscarCliente" :factura="false" :idTabla="'myTableClientes'"></vue-datatable>
                             </div>
                         </div>
                     </div>
@@ -305,6 +311,77 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCliente">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Nuevo cliente</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                                <form
+                                    id="formA"
+                                    action
+                                    @submit.prevent="agregarCliente()"
+                                    enctype="multipart/form-data"
+                                    >
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="codigo">Codigo</label>
+                                                <input
+                                                type="text"
+                                                class="form-control"
+                                                v-model="objetoCliente.codigo"
+                                                placeholder="Ingrese el codigo del cliente"
+                                                />
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="razon">Razón social</label>
+                                                <input
+                                                type="text"
+                                                class="form-control"
+                                                v-model="objetoCliente.razon"
+                                                placeholder="Ingresa la razón social"
+                                                />
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="direccion">Dirección</label>
+                                                <input
+                                                type="text"
+                                                class="form-control"
+                                                v-model="objetoCliente.direccion"
+                                                placeholder="Ingrese la direccion del cliente"
+                                                />
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label >Tipo de documento</label>
+                                                <select class="form-control" v-model="objetoCliente.id_tipo_doc">
+                                                    <option v-for="documento in arrayDocumentos" :key="documento.id" :value="documento.id">{{documento.tipo_doc}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="tipo_documento">Número de documento</label>
+                                                <input
+                                                type="text"
+                                                class="form-control"
+                                                v-model="objetoCliente.num_documento"
+                                                placeholder="Ingrese el número de documento del cliente"
+                                                />
+                                            </div>
+                                        </div>
+                                        <b-button size="sm" @click="cerrarModalClientes()">Cerrar</b-button>
+                                        <b-button size="sm"  type="submit" variant="primary">Guardar</b-button>
+                                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<b-modal size="lg" hide-footer v-model="estadoModalClientes" id="modalCliente" title="Nuevo cliente" @hidden="resetModal" :no-enforce-focus="true">
+            
+                </b-modal> -->
             <div class="modal fade bd-example-modal-lg show" id="modalImagen" role="dialog">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -314,7 +391,7 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
     </main>
 </template>
 <script>
@@ -322,6 +399,7 @@
 export default {
     data(){
         return{
+            estadoModalClientes: false,
             initiated: false,
             loading: false,
             initiatedImagen: false,
@@ -384,6 +462,13 @@ export default {
                 {tipo: 'Tarjeta', valor: 'tarjeta'},
                 {tipo: 'Cheque', valor: 'cheque'}
             ],
+            objetoCliente:{
+                id_tipo_doc: null,
+                codigo: null,
+                razon: null,
+                direccion: null,
+                num_documento: null
+            },
             pagarSinComision: 0,
             comision: 0.04,
             controlador: 0, // 1 - productos, 2 - clientes, 4 -> facturas
@@ -401,6 +486,9 @@ export default {
         },
         arrayAlmacenFijo(){
             return this.$store.getters.arrayAlmacen;
+        },
+        arrayDocumentos(){
+            return this.$store.getters.arrayDocumentos;
         },
         totalItem: function(){
             let sum = 0;
@@ -435,6 +523,26 @@ export default {
         })
     },
     methods:{
+        //clientes
+        abrirModalRegistro(){
+            $('#modalCliente').modal('show');
+            //this.$bvModal.show('modalCliente')
+        },
+        agregarCliente(){
+            axios.post('/cliente', this.objetoCliente).then(response=>{
+                this.listarClientes();
+                $('#modalCliente').modal('hide')
+            })
+        },
+        cerrarModalClientes(){
+            this.objetoCliente.id_tipo_doc = null
+            this.objetoCliente.codigo = null
+            this.objetoCliente.razon = null
+            this.objetoCliente.direccion = null
+            this.objetoCliente.num_documento = null 
+            $('#modalCliente').modal('hide')
+        },
+        //termina clientes
         abrirModalImagen(producto){
             this.loadingImagen = true
             $('#modalImagen').modal('show');
@@ -600,11 +708,12 @@ export default {
             })
         },
         insertarCabecera(){
+            this.busy = true
             var me = this;
-            axios.post('/c_fact', this.objetoFactura).then((response)=>{
-                this.id_cabecera = response.data
+            axios.post('/c_fact', {'ventas': this.ventas, 'objeto_factura': this.objetoFactura}).then((response)=>{
+                //this.id_cabecera = response.data
                 var productos = this.arrayProductos
-                axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
+                //axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
                     for(var k = 0; k < this.ventas.length; k++){
                         for(var l = 0; l < productos.length; l++){
                             if(this.ventas[k].codigo == productos[l].codigo){
@@ -613,19 +722,26 @@ export default {
                         }
                     }
                     this.$store.dispatch('actualizarProductos', productos)
-                    $('#modalTipoPago').modal('hide')
-                    $('#modalVenta').modal('hide');
-                })
+                    
+                //})
                 Vue.swal(
                     'Venta concretada!',
                     'La venta se proceso correctamente!',
                     'success'
-                );
-                this.listarTipodeComprobante();
+                ).then((result) => {
+                if (result.value) {
+                    $('#modalTipoPago').modal('hide')
+                    $('#modalVenta').modal('hide');
+                    this.busy = false
+                   this.listarTipodeComprobante();
+                    
+                }
+            });
+                
             })
             .catch(error=>{
                 Vue.swal({
-                        title: 'Venta no concretada!',
+                        title: `${error.response.data.error}`,
                         text: 'Hubo un error al procesar la venta!',
                         icon: 'error'
                     }   
