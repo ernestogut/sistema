@@ -290,10 +290,17 @@
                         </div>
                     </div>
                 </div> 
+                <loading :active.sync="show" 
+            :can-cancel="false" 
+            
+            :is-full-page="true"></loading>
     </main>
 </template>
 <script>
-
+// Import component
+    import Loading from 'vue-loading-overlay';
+    // Import stylesheet
+    import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
     data(){
         return{
@@ -345,10 +352,14 @@ export default {
             sortDirection: "asc",
             filter: null,
             filterOn: [],
-            cargando: false
+            cargando: false,
+            show: false
         }
         //ingreso colocado, terminar con facturacion detallada y demás botones
     },
+    components: {
+            Loading
+        },
     computed:{
         usuarioLogeado(){
             return this.$store.getters.arrayUsuarioLogeado;
@@ -453,11 +464,13 @@ export default {
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         insertarCabecera(){
+            this.show = true
             axios.post('/cabecera_ingreso', this.objetoIngreso).then((response)=>{
                 this.id_cabecera_ingreso = response.data
                 var productos = this.arrayProductos
                 //this.ventas.almacen = this.objetoIngreso.id_almacen;
                 axios.post('/detalle_ingreso', {'ventas': this.ventas, 'id_cabecera_ingreso': this.id_cabecera_ingreso}).then((response)=>{
+                    this.show = false
                     for(var k = 0; k < this.ventas.length; k++){
                         for(var l = 0; l < productos.length; l++){
                             if(this.ventas[k].codigo == productos[l].codigo){
@@ -481,6 +494,7 @@ export default {
                 this.listarIngresos();
             })
             .catch(error=>{
+                this.show = false
                 Vue.swal({
                     title: 'Ingreso fallido!',
                     text: 'Ha habido un error al procesar el ingreso!',

@@ -69,7 +69,7 @@
                     </div>
                     <div class="card-footer" style="width:44%; border-radius: 10px; background: #1E2137; width: 100%; border-color: #1E2137;">
                         <button type="submit" class="btn btn-success" >Aperturar caja</button>
-                        <button type="button" class="btn" style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Abrir gaveta</button>
+                        <button type="button" class="btn" id="abrirGaveta" style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Abrir gaveta</button>
                         @if(Auth::user()->idrole==1)
                             <a href="{{route('principal')}}" class="btn " style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Omitir apertura</a>
                         @endif
@@ -83,6 +83,7 @@
   <!-- Bootstrap and necessary plugins -->
   <script src="js/app.js"></script>
   <script src="js/plantilla.js"></script>
+  <script src="js/Impresora.js"></script>
   <script type="text/javascript">
         $("#inputID").on('blur change input', function() {
             $(this).val(function(i, input) {
@@ -90,6 +91,16 @@
                 return (input / 100).toFixed(2);
             });
         }).trigger('blur');
+        $( "#abrirGaveta" ).click(function() {
+            const RUTA_API = "http://localhost:8000";
+            
+            let impresora = new Impresora(RUTA_API);
+            impresora.cash();
+            impresora.end()
+                .then(valor => {
+                    console.log(valor)
+                })
+        });
 </script>
 
 </body>

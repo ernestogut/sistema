@@ -211,9 +211,10 @@ Route::get('speed/obtenerCategoriasProductos', 'SpeedController@obtenerCategoria
 Route::get('speed/{id_categoria}/obtenerProductosDeCategoria', 'SpeedController@obtenerProductosDeCategoria');
 Route::get('proveedor/listarProveedorModal', 'ProveedorController@listarProveedorModal');
 Route::get('cierre_caja/{almacen}/montoDiaAnterior', 'CierreCajaController@montoDiaAnterior');
+Route::put('c_fact/{id}/deshabilitarFactura', 'CFactController@deshabilitarFactura');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
-Route::get('reporte/{fecha}/{almacen}/ventasPorFecha', 'reporteVentaController@ventasPorFecha');
-Route::get('reporte/{fecha_inicio}/{fecha_fin}/{almacen}/ventasPorFechaRango', 'reporteVentaController@ventasPorFechaRango');
+Route::get('reporte/{fecha}/{almacen}/ventasPorFecha', 'ReporteVentaController@ventasPorFecha');
+Route::get('reporte/{fecha_inicio}/{fecha_fin}/{almacen}/ventasPorFechaRango', 'ReporteVentaController@ventasPorFechaRango');
 Route::get('d_fact/{fecha}/{almacen}/rankingProductos', 'DFactController@rankingProductos');
 Route::get('d_fact/{fecha_inicio}/{fecha_fin}/{almacen}/rankingProductosPorRango', 'DFactController@rankingProductosPorRango');
 Route::get('d_fact/{fecha}/{almacen}/{id_categoria}/rankingProductosCategoria', 'DFactController@rankingProductosCategoria');

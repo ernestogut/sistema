@@ -195,10 +195,18 @@
                 </div>
             </div>
         </div>
+        <loading :active.sync="show" 
+            :can-cancel="false" 
+            
+            :is-full-page="true"></loading>
     </main>
 </template>
 
 <script>
+// Import component
+    import Loading from 'vue-loading-overlay';
+    // Import stylesheet
+    import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
     mounted(){
         this.obtenerCierres()
@@ -215,6 +223,7 @@ export default {
             arrayProductosVenta: [],
             totalRows: 1,
             currentPage: 1,
+            show: false,
             perPage: 10,
             pageOptions: [5, 10, 15],
             sortBy: "",
@@ -237,6 +246,9 @@ export default {
             ]
         }
     },
+    components: {
+            Loading
+        },
     computed:{
         usuarioLogeado(){
             return this.$store.getters.arrayUsuarioLogeado;
@@ -287,9 +299,11 @@ export default {
                 cancelButtonText: 'Cancelar'
                 }).then((result) => {
                 if (result.value) {
+                    this.show = true
                     axios.get(`cierre_caja/${item.id}/consultarCajaSeleccionada`).then(respuesta=>{
                         if(this.usuarioLogeado.id == respuesta.data.id_usuario){
                             axios.post(`cierre_caja/${item.id}/cerrarCaja`, formDatos).then(async (response)=>{
+                                this.show = false
                                 Vue.swal({
                                     title: 'Cierre de caja exitoso!',
                                     text: 'El cierre de caja ha sido procesado con éxito!',
@@ -299,6 +313,7 @@ export default {
                                      this.obtenerCierres()
                                 })
                             }).catch(error=>{
+                                this.show = false
                                 Vue.swal({
                                     title: 'Cierre de caja fallido!',
                                     text: 'No ha podido procesarse el cierre de caja!',

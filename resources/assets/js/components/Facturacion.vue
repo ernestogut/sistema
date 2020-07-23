@@ -1,5 +1,5 @@
 <template>
-    <main class="main">
+    <main class=" main">
         
             <div class="card">
                 <div class="card-header">
@@ -16,13 +16,13 @@
             <spinner v-if="loading"></spinner>
             <div v-else-if="initiated" class="d-flex flex-wrap justify-content-around align-items-center">
                 <div v-for="comprobante in arrayComprobantes" :key="comprobante.id">
-                    <input type="radio" v-model="comprobanteEscogido" v-bind:value="comprobante.id" @change="capturarComprobante(comprobante)">
+                    <input type="radio" v-model="comprobanteEscogido" v-bind:value="comprobante" @change="capturarComprobante(comprobante)">
                     <label >{{comprobante.nombre}}</label>
                 </div>
             </div>
-            <vue-datatable  :items="arrayFacturas" :fields="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :eliminarItem="eliminarItem" v-if="initiated" >
+            <vue-datatable  :items="arrayFacturas" :fields="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :eliminarItem="deshabilitarFactura" v-if="initiated" >
             </vue-datatable>
-            <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
+            <div class="modal fade bd-example-modal-lg1" id="modalVenta"  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -153,7 +153,7 @@
             </div>
 
             
-            <div class="modal fade" id="modalTipoPago" tabindex="-1" role="dialog">
+            <div class="modal fade" id="modalTipoPago"  role="dialog">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -194,7 +194,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" tabindex="-1" role="dialog" id="modalProducto" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaProductos" style="overflow-y: scroll;">
+            <div class="modal fade"  role="dialog" id="modalProducto" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaProductos" style="overflow-y: scroll;">
                 <div class="modal-dialog modal-xl">
                     <div class="card-body">
                         <div class="modal-content" >
@@ -212,7 +212,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" tabindex="-1" role="dialog" id="modalClientes" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaClientes">
+            <div class="modal fade"  role="dialog" id="modalClientes" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaClientes">
                 <div class="modal-dialog modal-xl">
                     <div class="card-body">
                         <div class="modal-content" >
@@ -233,7 +233,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" tabindex="-1" role="dialog" id="modalInformacionFact" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="modalInformacionFact">
+            <div class="modal fade"  role="dialog" id="modalInformacionFact" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="modalInformacionFact">
                 <div class="modal-dialog modal-xl">
                     <div class="card-body">
                         <div class="modal-content" >
@@ -286,7 +286,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
+            <div class="modal fade bd-example-modal-lg"  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -311,7 +311,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCliente">
+            <div class="modal fade bd-example-modal-lg"  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCliente">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -392,11 +392,20 @@
                     </div>
                 </div>
             </div>
+            <loading :active.sync="show" 
+            :can-cancel="false" 
+            
+            :is-full-page="true"></loading>
+        
     </main>
 </template>
 <script>
-
+// Import component
+    import Loading from 'vue-loading-overlay';
+    // Import stylesheet
+    import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
+    
     data(){
         return{
             estadoModalClientes: false,
@@ -407,6 +416,7 @@ export default {
             arrayClientes: [],
             arrayItems: [],
             arrayFacturas: [],
+            show: false,
             arrayFacturaDetalle: [],
             arrayComprobantes: [],
             arraySeries: [],
@@ -433,7 +443,7 @@ export default {
                 { key: "actions", label: "acciones" , class: "text-center"}
             ],
             usuarioLogueado: {},
-            comprobanteEscogido: 0,
+            comprobanteEscogido: {},
             tipoDocumento: null,
             //datos de la factura
             almacen_id: '',
@@ -474,6 +484,9 @@ export default {
             controlador: 0, // 1 - productos, 2 - clientes, 4 -> facturas
         }
     },
+    components: {
+            Loading
+        },
     computed:{
         usuarioLogeado(){
             return this.$store.getters.arrayUsuarioLogeado;
@@ -583,16 +596,19 @@ export default {
             this.objetoFactura.folio = ''
         },
         generarTotal(item){
-            item.total = item.precio * item.cantidad
+            item.total = (item.precio * item.cantidad) - item.descuento
             var lista = []
             var suma = 0
+            var descuento_global = 0
             for(var i = 0; i < this.ventas.length; i++){
                 lista.push(this.ventas[i].total)
+                descuento_global += Number(this.ventas[i].descuento)
             }
             suma = lista.reduce((a, b) => a + b, 0)
             this.objetoFactura.total = suma
             this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
             this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
+            this.objetoFactura.desc_global = descuento_global;
         },
         recibirVenta(venta){
             this.ventas = venta
@@ -628,7 +644,7 @@ export default {
             })
         },
         listarTipodeComprobante(){
-            axios.get(`/c_fact/${this.comprobanteEscogido}/${this.almacen_id}/mostrarPorAlmacen`).then(response=>{
+            axios.get(`/c_fact/${this.comprobanteEscogido.id}/${this.almacen_id}/mostrarPorAlmacen`).then(response=>{
                 this.arrayFacturas = response.data;
                 this.loading = false;
                 this.initiated = true;
@@ -644,7 +660,7 @@ export default {
         },
         listarSeries(){
             this.loading = true
-            axios.get(`/serie_comprobante/${this.comprobanteEscogido}/${this.usuarioLogeado.id_almacen}/listarSeries`).then(response=>{
+            axios.get(`/serie_comprobante/${this.comprobanteEscogido.id}/${this.usuarioLogeado.id_almacen}/listarSeries`).then(response=>{
                 if(response.data.length > 0){
                     this.arraySeries = response.data;
                     this.objetoFactura.id_serie = response.data[0].id;
@@ -665,7 +681,7 @@ export default {
             this.objetoFactura.serie = selected;
         },
         abrirModalVenta(){
-            if(this.comprobanteEscogido == 0){
+            if(this.comprobanteEscogido.id == 0){
                 Vue.swal({
                     title: 'Debes elegir un tipo de comprobante',
                     text: '¡No tienes nigún tipo de comprobante seleccionado!',
@@ -707,11 +723,68 @@ export default {
                 $('#modalInformacionFact').modal('show')
             })
         },
+        imprimirBoleta(serie, folio){
+            //console.log(this.ventas)
+            const RUTA_API = "http://localhost:8000";
+            
+            let impresora = new Impresora(RUTA_API);
+                        
+            impresora.setFontSize(1, 1);
+            impresora.setEmphasize(0);
+            impresora.setAlign("center");
+            impresora.write("SPEEDCUBER PERU\n");
+            //impresora.write("ROJAS RIOS VANESSA KATHERINE\n");
+            impresora.write("AV. ARENALES 1624 Tienda 34\n");
+            impresora.write("LIMA - LIMA - LINCE\n");
+            impresora.write("RUC: 10457782417\n");
+            impresora.write("Telefono: 01-7505980\n");
+            impresora.write(`${this.comprobanteEscogido.nombre} N: ${serie} - ${folio}\n`);
+            impresora.write(`Fecha: ${this.objetoFactura.fecha}\n`);
+            impresora.write("DATOS DEL CLIENTE:\n");
+            if(this.objetoFactura.razon){
+                impresora.write(`Nombre: ${this.objetoFactura.razon}\n`);
+            }
+            if(this.objetoFactura.cod_cliente){
+                impresora.write(`Direccion: ${this.objetoFactura.dir_cliente}\n`);
+            }
+                impresora.write(`FORMA DE PAGO: ${this.objetoFactura.tipo_pago}\n`);
+            impresora.write("DATOS DEL PRODUCTO:\n");
+            impresora.write("CANTID.:  ");
+            impresora.write("P.VENTA:  ");
+            impresora.write("TOTAL:  \n");
+            impresora.write("--------------------------------\n");
+            for(var s = 0; s < this.ventas.length; s++){
+                impresora.setAlign("center");
+                impresora.write(`${this.ventas[s].producto}\n`);
+                impresora.write(`${this.ventas[s].cantidad}UNIDAD  `);
+                impresora.write(`${parseFloat(this.ventas[s].precio).toFixed(2)}  `);
+                impresora.setAlign("right");
+                impresora.write(`${parseFloat(this.ventas[s].total).toFixed(2)}\n`);
+                impresora.write("--------------------------------\n");
+            }
+            impresora.setAlign("right");
+            impresora.write(`SUBTOTAL: S/ ${this.objetoFactura.sub_total}\n`);
+            impresora.write(`IGV 18%: ${this.objetoFactura.igv_total}\n`);
+            impresora.write(`TOTAL: S/ ${parseFloat(this.objetoFactura.total).toFixed(2)}\n\n`);
+            impresora.setAlign("center");
+            impresora.write("***Gracias por su compra***");
+            impresora.feed(5);
+            impresora.cut();
+            impresora.cutPartial(); // Pongo este y también cut porque en ocasiones no funciona con cut, solo con cutPartial
+            impresora.cash();
+            impresora.end()
+                .then(valor => {
+                    console.log(valor)
+                })
+        },
         insertarCabecera(){
-            this.busy = true
+            this.show = true
             var me = this;
             axios.post('/c_fact', {'ventas': this.ventas, 'objeto_factura': this.objetoFactura}).then((response)=>{
-                //this.id_cabecera = response.data
+                var factura = response.data
+                //console.log('Factura: ', factura)
+                //console.log('folio', factura.folio)
+                this.show = false
                 var productos = this.arrayProductos
                 //axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
                     for(var k = 0; k < this.ventas.length; k++){
@@ -724,6 +797,7 @@ export default {
                     this.$store.dispatch('actualizarProductos', productos)
                     
                 //})
+                this.imprimirBoleta(factura.serie, factura.folio);
                 Vue.swal(
                     'Venta concretada!',
                     'La venta se proceso correctamente!',
@@ -732,7 +806,6 @@ export default {
                 if (result.value) {
                     $('#modalTipoPago').modal('hide')
                     $('#modalVenta').modal('hide');
-                    this.busy = false
                    this.listarTipodeComprobante();
                     
                 }
@@ -740,6 +813,7 @@ export default {
                 
             })
             .catch(error=>{
+                this.show = false
                 Vue.swal({
                         title: `${error.response.data.error}`,
                         text: 'Hubo un error al procesar la venta!',
@@ -747,6 +821,39 @@ export default {
                     }   
                 );
             })
+        },
+        deshabilitarFactura(item, index){
+            
+            Vue.swal({
+                    title: `Está seguro de deshabilitar el documento ${item.num_doc}?`,
+                    text: 'No podrás volver a habilitar este documento',
+                    icon: 'warning'
+                }
+                ).then((result) => {
+                if (result.value) {
+                    this.show = true
+                    let formDatos = new FormData();
+                    formDatos.append('fecha', item.fecha)
+                    formDatos.append('folio', item.folio);
+                    formDatos.append('num_doc', item.num_doc)
+                    formDatos.append('serie', item.serie);
+                    formDatos.append('total', item.total)
+                    formDatos.append('id_almacen', item.id_almacen);
+                    formDatos.append('id_tipo_comprobante', item.id_tipo_comprobante);
+                    formDatos.append('tipo_pago', item.tipo_pago);
+                    formDatos.append('estado', item.estado);
+                    formDatos.append("_method", "put");
+                    axios.post(`c_fact/${item.num_doc}/deshabilitarFactura`, formDatos).then(response=>{
+                        this.show = false
+                        this.arrayFacturas.splice(index,1) 
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                 
+                }
+            })
+            
+            
         },
         eliminarItem(item, index){
             if(confirm(`Está seguro de eliminar el item ${item.num_doc}?`)){
@@ -792,7 +899,7 @@ export default {
         },
         comprobanteEscogido(){
             this.listarSeries()
-            this.objetoFactura.id_tipo_comprobante = this.comprobanteEscogido;
+            this.objetoFactura.id_tipo_comprobante = this.comprobanteEscogido.id;
             this.listarTipodeComprobante()
 
         }

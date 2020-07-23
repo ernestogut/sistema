@@ -17,7 +17,7 @@ class CFactController extends Controller
     public function index(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
-        $cabecera = C_fact::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', date('Y-m-d'))->orderBy('c_facts.id', 'desc')->get();
+        $cabecera = C_fact::select('c_facts.id as num_doc', 'c_facts.id_tipo_comprobante', 'c_facts.id_almacen', 'c_facts.tipo_pago', 'c_facts.estado', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', date('Y-m-d'))->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
         return $cabecera;
     }
 
@@ -95,6 +95,8 @@ class CFactController extends Controller
                 $dfact->total_producto = $value['total'];
                 $dfact->save();
             }
+            $ultimo_registro = C_fact::orderBy('id', 'desc')->first();
+            return $ultimo_registro;
         }else{
            return response()->json(['error' => 'Se detectó un producto que no está en almacén'], 404);
         }
@@ -111,14 +113,14 @@ class CFactController extends Controller
         if(!$request->ajax()) return redirect('/');
         /*$cabecera = C_fact::find($id);
         return $cabecera;*/
-        $cabecera = C_fact::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('c_facts.id_tipo_comprobante', '=', $tipo_comprobante)->where('c_facts.fecha', '=', date('Y-m-d'))->orderBy('c_facts.id', 'desc')->get();
+        $cabecera = C_fact::select('c_facts.id as num_doc', 'c_facts.id_tipo_comprobante', 'c_facts.id_almacen', 'c_facts.tipo_pago', 'c_facts.estado', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('c_facts.id_tipo_comprobante', '=', $tipo_comprobante)->where('c_facts.fecha', '=', date('Y-m-d'))->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
         return $cabecera;
     }
 
 
     public function mostrarPorAlmacen($tipo_comprobante, $id_alm)
     {
-        $cabecera = C_fact::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('c_facts.id_tipo_comprobante', '=', $tipo_comprobante)->where('c_facts.fecha', '=', date('Y-m-d'))->where('c_facts.id_almacen', '=', $id_alm)->orderBy('c_facts.id', 'desc')->get();
+        $cabecera = C_fact::select('c_facts.id as num_doc', 'c_facts.id_tipo_comprobante', 'c_facts.id_almacen', 'c_facts.tipo_pago', 'c_facts.estado', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('c_facts.id_tipo_comprobante', '=', $tipo_comprobante)->where('c_facts.fecha', '=', date('Y-m-d'))->where('c_facts.id_almacen', '=', $id_alm)->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
         return $cabecera;
     }
     public function mostrarVentasTipoPago($tipo_venta, $fecha, $almacen){
@@ -175,6 +177,30 @@ class CFactController extends Controller
         return $cabecera;
 
     }
+    public function deshabilitarFactura(Request $request, $id)
+    {
+        if($request->tipo_pago == 'efectivo'){
+            DB::select("call generarCuentasDeshabilitar(?,?,?)",[$request->total, $request->fecha, $request->id_almacen]);
+        }
+        $productos = D_fact::where('id_fact', $request->num_doc)->get();
+        
+        foreach ($productos as $key => $value) {
+            //# code...
+            //var_dump($key);
+            //var_dump($value);
+
+            DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo_producto'],$value['cantidad_producto'],$value['almacen_producto']]);
+
+            $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_producto'])->sum('cantidad');
+
+            DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_producto'],$suma_total]);
+            
+        }
+        $cabecera = C_fact::find($id);
+        $cabecera->estado = 'deshabilitado';
+        $cabecera->save();
+        
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -185,6 +211,9 @@ class CFactController extends Controller
     public function destroy($id)
     {
 
+        if($cabecera['tipo_pago'] == 'efectivo'){
+            DB::select("call generarCuentas(?,?,?)",[$cabecera['total'], $cabecera['fecha'], $cabecera['id_almacen']]);
+        }
         $productos = D_fact::where('id_fact', $id)->get();
         
         foreach ($productos as $key => $value) {

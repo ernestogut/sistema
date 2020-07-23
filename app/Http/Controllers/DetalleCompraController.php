@@ -51,11 +51,14 @@ class DetalleCompraController extends Controller
             $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo'])->sum('cantidad');
             DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo'],$suma_total]); 
             if($value['codigo_padre'] != 0){
-                DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo_padre'],$value['cantidad'],$value['almacen']]);
+                foreach ($value['cantidades'] as $clave => $valo){
+                    DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo_padre'],$valo['cantidad'],$valo['id_almacen']]);
+                }
+                //DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo_padre'],$value['cantidad'],$value['almacen']]);
             
                 $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_padre'])->sum('cantidad');
 
-                DB::connection("speed")->statement("call aumentarInventarioAlm(?,?)",[$value['codigo_padre'],$suma_total]);
+                DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_padre'],$suma_total]);
             }  
             $detalle_compra = new DetalleCompra();
             $detalle_compra->id_compra = $request->id_cabecera;

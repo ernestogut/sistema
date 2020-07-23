@@ -243,12 +243,12 @@ export default {
                     for(var k = 0; k < obj.cantidades.length; k++){
                         cantidadTotal += obj.cantidades[k].cantidad  
                     }
-                    obj.descuento = 1
+                    obj.descuento = 0
                     obj.total = cantidadTotal*obj.precio
                 }else{
                     obj.almacen = 1;
                     obj.cantidad = 1
-                    obj.descuento = 1
+                    obj.descuento = 0
                     obj.total = obj.cantidad*obj.precio
                 }
             }

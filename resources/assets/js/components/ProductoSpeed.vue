@@ -320,7 +320,6 @@ export default {
             formDatos.append('id_almacen', this.objetoProdAlmacen.id_almacen)
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             axios.post('/inventario', formDatos).then((response)=>{
-                console.log(response)
                 var productos = this.arrayProductos
                 this.loading = false;
                 this.initiated = true;
@@ -331,7 +330,27 @@ export default {
                         //this.arrayAlmacen[j].editable = true;
                     }
                 }
-                for(var i = 0; i < productos.length; i++){
+                
+                    for(var i = 0; i < productos.length; i++){
+                        if(typeof response.data === 'object'){
+                            if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
+                                var producto = productos[i].producto
+                                productos[i].stock = response.data[0]
+                            }
+                            if(productos[i].codigo == this.objetoProdAlmacen.codigo_padre){
+                                
+                                productos[i].stock = response.data[1]
+                            }
+                        }else{
+                            if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
+                                var producto = productos[i].producto
+                                productos[i].stock = response.data
+                            }
+                    }
+                        
+                    
+                }
+                /*for(var i = 0; i < productos.length; i++){
                     if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
                         var producto = productos[i].producto
                         productos[i].stock = response.data[0]
@@ -340,7 +359,7 @@ export default {
                         
                         productos[i].stock = response.data[1]
                     }
-                }
+                }*/
                 this.$store.dispatch('actualizarProductos', productos)
                 Vue.swal({
                     title: `Añadiste ${this.objetoProdAlmacen.cantidad} unidades`,
@@ -383,15 +402,23 @@ export default {
                     }
                 }
                 for(var i = 0; i < productos.length; i++){
-                    if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
-                        var producto = productos[i].producto
-                        productos[i].stock = response.data[0]
-                    }
-                    if(productos[i].codigo == this.objetoProdAlmacen.codigo_padre){
-                        
-                        productos[i].stock = response.data[1]
+                        if(typeof response.data === 'object'){
+                            if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
+                                var producto = productos[i].producto
+                                productos[i].stock = response.data[0]
+                            }
+                            if(productos[i].codigo == this.objetoProdAlmacen.codigo_padre){
+                                
+                                productos[i].stock = response.data[1]
+                            }
+                        }else{
+                            if(productos[i].codigo == this.objetoProdAlmacen.id_producto){
+                                var producto = productos[i].producto
+                                productos[i].stock = response.data
+                            }
                     }
                 }
+                
                 this.$store.dispatch('actualizarProductos', productos)
                 Vue.swal({
                     title: `Modificación de stock exitoso!`,

@@ -42,6 +42,7 @@
         "vue-barcode": "^1.2.0",
         "vue-d3-charts": "^0.2.8",
         "vue-excel-xlsx": "^1.0.11",
+        "vue-loading-overlay": "^3.3.2",
         "vue-select": "^2.6.4",
         "vue-simple-spinner": "^1.2.10",
         "vue-sweetalert2": "^3.0.5",
