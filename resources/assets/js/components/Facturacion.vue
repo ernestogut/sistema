@@ -8,6 +8,7 @@
                             <h4>Facturación</h4>
                         </div>
                         <div>
+                            <button type="button" class="btn btn-success" @click="abrirGaveta()">Abrir gaveta</button>
                             <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalVenta()">Nueva venta</button>
                         </div>   
                     </div>
@@ -620,6 +621,7 @@ export default {
             if(this.arrayProductos.length == 0){
                 this.loading = true
                 await this.$store.dispatch('cargarProductos').then(()=>{
+                    
                     this.loading = false;
                     this.initiated = true;
                 });
@@ -771,6 +773,16 @@ export default {
             impresora.feed(5);
             impresora.cut();
             impresora.cutPartial(); // Pongo este y también cut porque en ocasiones no funciona con cut, solo con cutPartial
+            impresora.cash();
+            impresora.end()
+                .then(valor => {
+                    console.log(valor)
+                })
+        },
+        abrirGaveta(){
+            const RUTA_API = "http://localhost:8000";
+            
+            let impresora = new Impresora(RUTA_API);
             impresora.cash();
             impresora.end()
                 .then(valor => {

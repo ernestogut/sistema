@@ -101,6 +101,9 @@
           <b-button size="sm" @click="abrirModalCantidades(row.item)" class="mr-1">
             <i class="icon-pencil"></i>
           </b-button>
+          <b-button size="sm" @click="consultarVariaciones(row.item)" class="mr-1">
+            <i class="icon-eye"></i>
+          </b-button>
         </template>
         <template v-slot:table-busy>
           <div class="text-center text-danger my-2">
@@ -255,6 +258,7 @@ export default {
         async listarItem(){
             this.cargando = true
             await this.$store.dispatch('cargarProductos').then(()=>{
+                console.log(this.arrayProductos)
                 this.totalRows = this.arrayProductos.length
                 this.cargando = false;
             });
@@ -440,7 +444,12 @@ export default {
                     text: 'Intentalo nuevamente más tarde',
                 })
             })
-        }
+        },
+        /*consultarVariaciones(item){
+            axios.get('').then(response=>{
+
+            })
+        }*/
     }
 }
 </script>
