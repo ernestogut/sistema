@@ -58,7 +58,6 @@
                     >{{categoria.post_title}}</option>
                   </select>
                 </div>
-                {{categoria_filtro}}
               </div>
               <button class="btn btn-success btn-sm" type="submit">Filtrar</button>
             </form>

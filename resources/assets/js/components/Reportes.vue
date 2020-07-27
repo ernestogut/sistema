@@ -356,7 +356,7 @@ export default {
     },
 
     ventasTotal() {
-      return this.visibleRows.reduce((accum, item) => {
+      return this.arrayReporte.reduce((accum, item) => {
         // Assuming expenses is the field you want to total up
         return accum + parseFloat(item.total);
       }, 0.0);

@@ -545,7 +545,14 @@ export default {
         agregarCliente(){
             axios.post('/cliente', this.objetoCliente).then(response=>{
                 this.listarClientes();
+                this.objetoCliente.id_tipo_doc = null
+                this.objetoCliente.codigo = null
+                this.objetoCliente.razon = null
+                this.objetoCliente.direccion = null
+                this.objetoCliente.num_documento = null 
                 $('#modalCliente').modal('hide')
+            }).catch(err=>{
+                console.log(err);
             })
         },
         cerrarModalClientes(){
@@ -585,6 +592,7 @@ export default {
             this.objetoComprobante = item
         },
         limpiarTabla(){
+            console.log('limpiando...')
             this.ventas = []
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
             this.controlador = 4
@@ -593,8 +601,10 @@ export default {
             this.objetoFactura.dir_cliente =  ''
             this.objetoFactura.razon =  ''
             this.objetoFactura.fecha =  ''
+            this.objetoFactura.tipo_pago = 'efectivo'
             this.objetoFactura.tipo_venta =  'A'
             this.objetoFactura.folio = ''
+            this.comision = 0.04
         },
         generarTotal(item){
             item.total = (item.precio * item.cantidad) - item.descuento
@@ -618,14 +628,14 @@ export default {
             this.arrayAlmacen = almacen
         },
         async listarItem(){
-            if(this.arrayProductos.length == 0){
+            //if(this.arrayProductos.length == 0){
                 this.loading = true
                 await this.$store.dispatch('cargarProductos').then(()=>{
                     
                     this.loading = false;
                     this.initiated = true;
                 });
-            }
+            //}
         },
         listarClientes(){
             this.loading = true
@@ -725,7 +735,7 @@ export default {
                 $('#modalInformacionFact').modal('show')
             })
         },
-        imprimirBoleta(serie, folio){
+        imprimirBoleta(factura){
             //console.log(this.ventas)
             const RUTA_API = "http://localhost:8000";
             
@@ -740,14 +750,17 @@ export default {
             impresora.write("LIMA - LIMA - LINCE\n");
             impresora.write("RUC: 10457782417\n");
             impresora.write("Telefono: 01-7505980\n");
-            impresora.write(`${this.comprobanteEscogido.nombre} N: ${serie} - ${folio}\n`);
-            impresora.write(`Fecha: ${this.objetoFactura.fecha}\n`);
+            impresora.write(`${this.comprobanteEscogido.nombre} N: ${factura.serie} - ${factura.folio}\n`);
+            impresora.write(`Fecha/Hora: ${factura.created_at}\n`);
             impresora.write("DATOS DEL CLIENTE:\n");
             if(this.objetoFactura.razon){
                 impresora.write(`Nombre: ${this.objetoFactura.razon}\n`);
             }
             if(this.objetoFactura.cod_cliente){
                 impresora.write(`Direccion: ${this.objetoFactura.dir_cliente}\n`);
+            }
+            if(factura.ruc_cliente){
+                impresora.write(`DNI: ${factura.ruc_cliente}\n`);
             }
                 impresora.write(`FORMA DE PAGO: ${this.objetoFactura.tipo_pago}\n`);
             impresora.write("DATOS DEL PRODUCTO:\n");
@@ -770,7 +783,7 @@ export default {
             impresora.write(`TOTAL: S/ ${parseFloat(this.objetoFactura.total).toFixed(2)}\n\n`);
             impresora.setAlign("center");
             impresora.write("***Gracias por su compra***");
-            impresora.feed(5);
+            impresora.feed(3);
             impresora.cut();
             impresora.cutPartial(); // Pongo este y también cut porque en ocasiones no funciona con cut, solo con cutPartial
             impresora.cash();
@@ -809,7 +822,7 @@ export default {
                     this.$store.dispatch('actualizarProductos', productos)
                     
                 //})
-                this.imprimirBoleta(factura.serie, factura.folio);
+                this.imprimirBoleta(factura);
                 Vue.swal(
                     'Venta concretada!',
                     'La venta se proceso correctamente!',
@@ -884,14 +897,18 @@ export default {
             handler: function(){
                 var lista = []
                 var suma = 0
+                var descuento_global = 0
                 for(var i = 0; i < this.ventas.length; i++){
                     lista.push(this.ventas[i].total)
                     this.ventas[i].almacen = this.almacen_id;
+                    descuento_global += Number(this.ventas[i].descuento)
+                    
                 }
                 suma = lista.reduce((a, b) => a + b, 0)
                 this.objetoFactura.total = suma
                 this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
                 this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
+                this.objetoFactura.desc_global = descuento_global;
             },
             deep: true
         },

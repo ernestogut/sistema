@@ -64,8 +64,9 @@
                 <reporte-ranking-categoria></reporte-ranking-categoria>
             </template>
             <template v-if="menu==25">
-                <impresora></impresora>
+                <reporte-cierre></reporte-cierre>
             </template>
+            
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <facturacion></facturacion>

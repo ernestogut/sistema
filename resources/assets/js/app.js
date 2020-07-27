@@ -56,7 +56,7 @@ Vue.component('pedido-speed', require('./components/PedidoSpeed.vue').default);
 Vue.component('reporte', require('./components/Reportes.vue').default);
 Vue.component('reporte-ranking-producto', require('./components/ReporteRankingProducto.vue').default);
 Vue.component('reporte-ranking-categoria', require('./components/ReportePorCategoria.vue').default);
-Vue.component('impresora', require('./components/impresionPrueba.vue').default);
+Vue.component('reporte-cierre', require('./components/ReporteCierre.vue').default);
 Vue.component('traspaso-almacen', require('./components/TraspasoAlmacen.vue').default);
 Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
 Vue.component('movimiento-caja', require('./components/MovimientoCaja.vue').default);

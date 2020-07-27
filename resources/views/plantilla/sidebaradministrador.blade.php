@@ -16,9 +16,6 @@
                         <li  @click="menu=19" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Pedidos web</a>
                         </li>
-                        <li  @click="menu=25" class="nav-item">
-                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Impresion</a>
-                        </li>
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">
@@ -54,6 +51,9 @@
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=22" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-bag"></i> Por fecha</a>
+                        </li>
+                        <li  @click="menu=25" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Cierres de caja</a>
                         </li>
                         <li  @click="menu=23" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-bag"></i> Ranking productos</a>

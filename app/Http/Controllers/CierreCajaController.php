@@ -6,6 +6,7 @@ use App\CierreCaja;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CierreCajaController extends Controller
 {
@@ -84,6 +85,30 @@ class CierreCajaController extends Controller
     {
         $cierre_caja = CierreCaja::select('cierre_cajas.id', 'users.usuario as responsable', 'cierre_cajas.id_almacen', 'fecha', 'cierre_cajas.fecha', 'cierre_cajas.saldo_inicial', 'cierre_cajas.ventas_diarias', 'cierre_cajas.ingresos', 'cierre_cajas.egresos', 'cierre_cajas.saldo_final', 'cierre_cajas.estado')->join('users', 'cierre_cajas.id_usuario', '=', 'users.id')->where('cierre_cajas.id_almacen', '=', $codigo)->orderBy('cierre_cajas.id', 'desc')->take(10)->get();
         return $cierre_caja;
+    }
+    public function obtenerCierres($fecha, $almacen)
+    {
+        if($almacen != 0){
+            $cierre_caja = CierreCaja::select('cierre_cajas.id', 'users.usuario as responsable', 'cierre_cajas.id_almacen', 'fecha', 'cierre_cajas.fecha', 'cierre_cajas.saldo_inicial', 'cierre_cajas.ventas_diarias', 'cierre_cajas.ingresos', 'cierre_cajas.egresos', 'cierre_cajas.saldo_final', 'cierre_cajas.estado')->join('users', 'cierre_cajas.id_usuario', '=', 'users.id')->where(DB::raw('DATE(cierre_cajas.created_at)'), $fecha)->where('cierre_cajas.id_almacen', $almacen)->orderBy('cierre_cajas.id', 'desc')->get();
+            return $cierre_caja;
+
+        }else{
+            $cierre_caja = CierreCaja::select('cierre_cajas.id', 'users.usuario as responsable', 'cierre_cajas.id_almacen', 'fecha', 'cierre_cajas.fecha', 'cierre_cajas.saldo_inicial', 'cierre_cajas.ventas_diarias', 'cierre_cajas.ingresos', 'cierre_cajas.egresos', 'cierre_cajas.saldo_final', 'cierre_cajas.estado')->join('users', 'cierre_cajas.id_usuario', '=', 'users.id')->where(DB::raw('DATE(cierre_cajas.created_at)'), $fecha)->orderBy('cierre_cajas.id', 'desc')->get();
+            return $cierre_caja;
+        }
+        
+    }
+    public function obtenerCierresPorRango($fecha_inicio, $fecha_fin, $almacen)
+    {
+        if($almacen != 0){
+            $cierre_caja = CierreCaja::select('cierre_cajas.id', 'users.usuario as responsable', 'cierre_cajas.id_almacen', 'fecha', 'cierre_cajas.fecha', 'cierre_cajas.saldo_inicial', 'cierre_cajas.ventas_diarias', 'cierre_cajas.ingresos', 'cierre_cajas.egresos', 'cierre_cajas.saldo_final', 'cierre_cajas.estado')->join('users', 'cierre_cajas.id_usuario', '=', 'users.id')->whereBetween(DB::raw('DATE(cierre_cajas.created_at)'), array($fecha_inicio, $fecha_fin))->where('cierre_cajas.id_almacen', $almacen)->orderBy('cierre_cajas.id', 'desc')->get();
+            return $cierre_caja;
+
+        }else{
+            $cierre_caja = CierreCaja::select('cierre_cajas.id', 'users.usuario as responsable', 'cierre_cajas.id_almacen', 'fecha', 'cierre_cajas.fecha', 'cierre_cajas.saldo_inicial', 'cierre_cajas.ventas_diarias', 'cierre_cajas.ingresos', 'cierre_cajas.egresos', 'cierre_cajas.saldo_final', 'cierre_cajas.estado')->join('users', 'cierre_cajas.id_usuario', '=', 'users.id')->whereBetween(DB::raw('DATE(cierre_cajas.created_at)'), array($fecha_inicio, $fecha_fin))->orderBy('cierre_cajas.id', 'desc')->get();
+            return $cierre_caja;
+        }
+        
     }
     public function verificarEstadoCaja($codigo)
     {

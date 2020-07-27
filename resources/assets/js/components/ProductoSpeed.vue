@@ -104,6 +104,13 @@
           <b-button size="sm" @click="consultarVariaciones(row.item)" class="mr-1">
             <i class="icon-eye"></i>
           </b-button>
+          <b-button
+            variant="info"
+            size="sm"
+            @click="abrirModalImagen(row.item)"
+          >
+            <i class="icon-picture"></i>
+          </b-button>
         </template>
         <template v-slot:table-busy>
           <div class="text-center text-danger my-2">
@@ -166,6 +173,16 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade bd-example-modal-lg show" id="modalImagen" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <spinner v-if="loadingImagen"></spinner>
+                            <div class="modal-body d-flex flex-wrap justify-content-center align-items-center" id="dynamic-content" v-for="productoImagen in objetoProductoImagen" :key="productoImagen.key" v-else-if="initiatedImagen">
+                                <img :src="productoImagen.imagen" style="width: 18rem;" class="img-fluid" alt=""/>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
     </b-container>
 </main>
   
@@ -208,6 +225,9 @@ export default {
                 },
                 { key: "actions", label: "acciones", class: "text-center" }
             ],
+            loadingImagen: false,
+            objetoProductoImagen: {},
+            initiatedImagen: false,
             totalRows: 1,
             currentPage: 1,
             perPage: 10,
@@ -254,6 +274,17 @@ export default {
         rowClass(item, type) {
             if (!item || type !== 'row') return
             if (item.stock < 5) return 'bg-danger'
+        },
+        abrirModalImagen(producto){
+            //var imagenProducto = {}
+            this.loadingImagen = true
+            $('#modalImagen').modal('show');
+            axios.get(`speed/${producto.codigo}`).then(response=>{
+                this.objetoProductoImagen = response.data
+                this.loadingImagen = false
+                this.initiatedImagen = true;
+                //this.$emit('emitirImagen', imagenProducto);
+            })
         },
         async listarItem(){
             this.cargando = true

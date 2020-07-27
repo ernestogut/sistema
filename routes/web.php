@@ -219,6 +219,9 @@ Route::get('d_fact/{fecha}/{almacen}/rankingProductos', 'DFactController@ranking
 Route::get('d_fact/{fecha_inicio}/{fecha_fin}/{almacen}/rankingProductosPorRango', 'DFactController@rankingProductosPorRango');
 Route::get('d_fact/{fecha}/{almacen}/{id_categoria}/rankingProductosCategoria', 'DFactController@rankingProductosCategoria');
 Route::get('d_fact/{fecha_inicio}/{fecha_fin}/{almacen}/{id_categoria}/rankingProductosPorRangoCategoria', 'DFactController@rankingProductosPorRangoCategoria');
+Route::get('movimiento_caja/{almacen}/{fecha}/reporteDeMovimientos', 'MovimientoCajaController@reporteDeMovimientos');
+Route::get('reporte_cierre/{fecha}/{almacen}/obtenerCierres', 'CierreCajaController@obtenerCierres');
+Route::get('reporte_cierre/{fecha_inicio}/{fecha_fin}/{almacen}/obtenerCierresPorRango', 'CierreCajaController@obtenerCierresPorRango');
 Route::get('c_fact/{tipo_comprobante}/{id_alm}/mostrarPorAlmacen', 'CFactController@mostrarPorAlmacen');
 //Route::get('inventario/{codigo}/cantidadesAlmacenInventario', 'InventarioController@cantidadesAlmacenInventario');
 Route::resource('almacen', 'AlmacenController');

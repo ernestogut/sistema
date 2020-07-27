@@ -16,7 +16,7 @@ class MovimientoCajaController extends Controller
      */
     public function index()
     {
-        $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->get();
+        $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->orderBy('movimiento_cajas.id', 'desc')->get();
         return $movimiento_caja;
     }
 
@@ -62,6 +62,11 @@ class MovimientoCajaController extends Controller
     public function show($almacen)
     {
         $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->where('movimiento_cajas.id_almacen', '=', $almacen)->where('movimiento_cajas.fecha', '=', date('Y-m-d'))->get();
+        return $movimiento_caja;
+    }
+    public function reporteDeMovimientos($almacen, $fecha)
+    {
+        $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->where('movimiento_cajas.id_almacen', '=', $almacen)->where('movimiento_cajas.fecha', '=', $fecha)->get();
         return $movimiento_caja;
     }
 

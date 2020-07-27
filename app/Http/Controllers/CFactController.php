@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\C_fact;
 use App\D_fact;
+use App\Inventario;
+use App\Speed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -76,11 +78,17 @@ class CFactController extends Controller
 
                 DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo'],$suma_total]);
                 if($value['codigo_padre'] != 0){
-                    DB::connection("mysql")->statement("call disminuirInventarioAlm(?,?,?)",[$value['codigo_padre'],$value['cantidad'],$value['almacen']]);
-                
-                    $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_padre'])->sum('cantidad');
+                    $suma_variaciones = DB::table('inventarios')->where('id_padre', '=', $value['codigo_padre'])->where('id_almacen', $value['almacen'])->sum('cantidad');
+                    $prod_almacen_padre = Inventario::where('id_producto', $value['codigo_padre'])->where('id_almacen', $value['almacen'])->first();
+                    $prod_almacen_padre->cantidad = $suma_variaciones;
+                    $prod_almacen_padre->save();
 
-                    DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_padre'],$suma_total]);
+
+
+                    $suma_total_padre = DB::table('inventarios')->where('id_producto', '=', $prod_almacen_padre->id_producto)->sum('cantidad');
+
+
+                    DB::connection("speed")->statement("call actualizarInventario(?,?)",[$prod_almacen_padre->id_producto,$suma_total_padre]); 
                 }
                 //Artisan::call('cache:clear');
                 /*DB::select("call disminuirInventario(?,?)",[$value['codigo'],$value['cantidad']]);*/
@@ -124,7 +132,7 @@ class CFactController extends Controller
         return $cabecera;
     }
     public function mostrarVentasTipoPago($tipo_venta, $fecha, $almacen){
-        $facturas_id = C_fact::select('id')->where('tipo_pago', '=', $tipo_venta)->where('fecha','=', $fecha)->where('id_almacen', '=', $almacen)->get();
+        $facturas_id = C_fact::select('id')->where('tipo_pago', '=', $tipo_venta)->where('fecha','=', $fecha)->where('id_almacen', '=', $almacen)->where('estado', 'habilitado')->get();
         if(count($facturas_id) != 0){
             foreach($facturas_id as $fila) {
                 $ventas_filtradas = DB::table('d_facts')->select('descripcion_producto', 'precio_producto', 'cantidad_producto', 'total_producto')->where('id_fact', '=', $fila->id)->get();
@@ -194,6 +202,27 @@ class CFactController extends Controller
             $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_producto'])->sum('cantidad');
 
             DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_producto'],$suma_total]);
+
+            $post = Speed::where('ID', $value['codigo_producto'])->get();
+            //dd($post[0]->post_parent);
+            if($post[0]->post_parent != 0){
+
+                $suma_variaciones = DB::table('inventarios')->where('id_padre', '=', $post[0]->post_parent)->where('id_almacen', $value['almacen_producto'])->sum('cantidad');
+                $prod_almacen_padre = Inventario::where('id_producto', $post[0]->post_parent)->where('id_almacen', $value['almacen_producto'])->first();
+                $prod_almacen_padre->cantidad = $suma_variaciones;
+                $prod_almacen_padre->save();
+
+
+
+                $suma_total_padre = DB::table('inventarios')->where('id_producto', '=', $prod_almacen_padre->id_producto)->sum('cantidad');
+
+
+                DB::connection("speed")->statement("call actualizarInventario(?,?)",[$prod_almacen_padre->id_producto,$suma_total_padre]); 
+
+
+
+            }
+
             
         }
         $cabecera = C_fact::find($id);
@@ -225,7 +254,7 @@ class CFactController extends Controller
 
             $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_producto'])->sum('cantidad');
 
-            DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_producto'],$suma_total]);
+            DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_producto'],$suma_total]);      
             
         }
 

@@ -20,7 +20,7 @@ class ClienteController extends Controller
         }else{
             /*$cliente = Cliente::All();
             return $cliente;*/
-            $cliente = Cliente::select('clientes.id', 'clientes.codigo','clientes.razon','clientes.direccion','tipo_documentos.tipo_doc as tipo_documento','clientes.num_documento')->join('tipo_documentos','clientes.id_tipo_doc', '=', 'tipo_documentos.id')->get();
+            $cliente = Cliente::select('clientes.id', 'clientes.codigo','clientes.razon','clientes.direccion','tipo_documentos.tipo_doc as tipo_documento','clientes.num_documento')->join('tipo_documentos','clientes.id_tipo_doc', '=', 'tipo_documentos.id')->orderBy('clientes.id', 'desc')->get();
             /*$cliente = Cliente::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
             return $cliente;
         }
@@ -30,7 +30,7 @@ class ClienteController extends Controller
       
             /*$cliente = Cliente::All();
             return $cliente;*/
-            $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->where('id_tipo_doc', '=', $documento)->get();
+            $cliente = Cliente::select('codigo', 'razon', 'direccion', 'num_documento')->where('id_tipo_doc', '=', $documento)->orderBy('clientes.id', 'desc')->get();
             /*$cliente = Cliente::select('codigo', 'razon', 'direccion', 'ruc')->where('codigo', '=', $codigo)->get();*/
             return $cliente;
     
