@@ -17,7 +17,9 @@
                 <vue-datatable  :items="arrayTraslados" :fields="cabecerasTraslado" :funcionBoton="verFactura"  :controlador="4"  :factura="true" :cargando="loading">
                 </vue-datatable>
             </b-card>
-            <!---->
+            
+                    
+           
             <div class="modal fade bd-example-modal-lg1" id="modalVenta" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -62,13 +64,21 @@
                                     <label>Documento</label>
                                     <input type="text" class="form-control" disabled>
                                 </div>
-                            </div>
-                                <div class="form-group">
+                                <div class="form-group col-md-6">
                                     <label>Observación</label>
                                     <input type="text" class="form-control" v-model="objetoIngreso.observacion">
                                 </div>
+                                <div class="form-group col-md-6">
+                                    <label>Buscar producto</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                            <span class="input-group-text buscador" @click="abrirModalVariaciones(codigoProducto)"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                        </div>
+                                </div>
+                            </div>
+                                
                                 <div class="form-group col-md-4">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Agregar productos</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Lista de productos</button>
                                 </div>
                         <div class="table-responsive scroll">   
                             <table class="table table-bordered table-sm ">
@@ -103,8 +113,10 @@
                     </form>
                     </div>  
                 </div>
+            </div>  
+            
             </div>
-            </div>
+            
                 <div class="modal fade" tabindex="-1" role="dialog" id="modalProducto" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="tablaProductos">
                     <div class="modal-dialog modal-xl">
                         <div class="card-body">
@@ -117,7 +129,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                    <datatable-productos @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
                                 </div>
                             </div>
                         </div>
@@ -139,6 +151,28 @@
                                     </ul>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade bd-example-modal-lg show" tabindex="-1" id="modalVariaciones" aria-hidden="true" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        
+                        <div class="modal-content">
+                                <div class="modal-header bg-primary">
+                                    Variaciones de {{productoVariacion}}
+                                </div>
+                            <div class="modal-body">
+                                <b-list-group>
+                                    <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="agregarProducto(variacion)">
+                                        <div class="d-flex justify-content-around">
+                                            <span>{{variacion.variacion}}</span>
+                                            <span>{{variacion.stock}}</span>
+                                        </div>
+                                        
+                                    </b-list-group-item>
+                                </b-list-group>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -178,10 +212,17 @@
                         </div>
                     </div>
                 </div> 
+                <loading :active.sync="show" 
+            :can-cancel="false" 
+            
+            :is-full-page="true"></loading>
     </main>
 </template>
 <script>
-
+// Import component
+    import Loading from 'vue-loading-overlay';
+    // Import stylesheet
+    import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
     data(){
         return{
@@ -195,7 +236,8 @@ export default {
             arrayComprobantes: [],
             arraySeries: [],
             arrayAlmacen: [],
-            ventas: [],
+            codigoProducto: '',
+            //ventas: [],
             objetoComprobante: {},
             objetoProductoImagen: {},
             iconos: 'icon-plus',
@@ -241,7 +283,22 @@ export default {
         },
         arrayAlmacenFijo(){
             return this.$store.getters.arrayAlmacen;
+        },
+        ventas(){
+            return this.$store.getters.tablaVenta;
+        },
+        arrayVariaciones(){
+            return this.$store.getters.arrayVariaciones;
+        },
+        productoVariacion(){
+            return this.$store.getters.productoVariacion;
+        },
+        show(){
+            return this.$store.getters.show;
         }
+    },
+    components: {
+        Loading
     },
     mounted(){
         this.listarTraslados()
@@ -262,8 +319,9 @@ export default {
             })
         },
         limpiarTabla(){
-            this.ventas = []
-            localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+            var ventasT = []
+            this.$store.dispatch('actualizarTablaVentas', ventasT)
+            localStorage.setItem('ventas', JSON.stringify(ventasT)) 
             this.controlador = 4
             this.objetoIngreso.id_almacen_origen = null
             this.objetoIngreso.id_almacen_destino = null
@@ -271,22 +329,89 @@ export default {
             this.objetoIngreso.fecha_emision = null
             this.objetoIngreso.motivo = ''
             this.objetoIngreso.observacion = ''
+            this.codigoProducto = ''
             
         },
-        recibirVenta(venta){
-            this.ventas = venta
+        agregarProducto(item){
+            console.log(item)
+            //document.getElementById(`producto${item.codigo}`).className = 'selected'
+            /*var estilos = document.querySelector(`.codigo${item.codigo}`).style
+            estilos.background = 'black'
+            estilos.borderColor = 'black'
+            estilos.color = 'white'*/
+            //this.estiloCeldaSeleccionada = 'table-success'
+            var obj = {}
+            var controlador = false
+            
+            for(const i in item){
+                if(i == 'codigo'){
+                    obj.codigo = item[i]
+                }
+                if(i == 'producto'){
+                    obj.producto = item[i]
+                }
+                if(i == 'codigo_padre'){
+                    obj.codigo_padre = item[i]
+                }
+                if(i == 'precio'){
+                    obj.precio = item[i]
+                }
+                    obj.almacen = 1;
+                    obj.cantidad = 1
+                    obj.descuento = 0
+                    obj.total = obj.cantidad*obj.precio
+            }
+            var ventasP = this.ventas;
+            for(var j = 0; j < ventasP.length; j++){
+                if(item.codigo == ventasP[j].codigo){
+                        ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
+                        ventasP[j].cantidad += 1
+                        ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
+                        controlador = true
+                        break;
+                }else{
+                    controlador = false
+                }
+            }
+            if(controlador){
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }else{
+                ventasP.push(obj)
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }
+            localStorage.setItem('ventas', JSON.stringify(this.ventas))
+        },
+        abrirModalVariaciones(codigo){
+            this.$store.dispatch('actualizarShow', true)
+            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
+                var producto = response.data[0];
+                this.$store.dispatch('actualizarProductoVariacion', producto.producto);
+                this.consultarProductoSimple(producto);
+            })
+            
+            
+        },
+        consultarProductoSimple(producto){
+            if(producto.situacion_producto == 'simple'){
+                    this.agregarProducto(producto);
+                    this.$store.dispatch('actualizarShow', false)
+                }else if(producto.situacion_producto == 'variable'){
+                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                        this.$store.dispatch('actualizarVariaciones', response.data);
+                        console.log(this.arrayVariaciones);
+                        $('#modalVariaciones').modal('show');
+                        this.$store.dispatch('actualizarShow', false)
+                    })
+                }
         },
         recibirCantidadesAlmacen(almacen){
             this.arrayAlmacen = almacen
         },
-        miTabla(){
-            $( function () {
-                $('#myTable').DataTable();
-            } );
-        },
         async listarItem(){
             this.loading = true
-            await this.$store.dispatch('cargarProductos').then(()=>{
+            await this.$store.dispatch('cargarProductos', this.usuarioLogeado.id_almacen).then(()=>{
                 this.loading = false;
                 this.initiated = true;
                 this.tablaProductos();
@@ -302,13 +427,6 @@ export default {
                 this.miTabla();
             })
         },
-        tablaProductos(){
-            $( function () {
-                $('#myTableProductos').DataTable({
-                    searching: true
-                });
-            } );
-        },
         abrirModalVenta(){
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
@@ -320,7 +438,9 @@ export default {
             $('#modalProducto').modal('show');
         },
         eliminarProductoTabla(index){
-            this.ventas.splice(index,1)
+            var ventasT = this.ventas;
+            ventasT.splice(index,1)
+            this.$store.dispatch('actualizarTablaVentas', ventasT);
             //document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
@@ -339,20 +459,21 @@ export default {
             }else{
                 axios.post('/cabecera_traslado', this.objetoIngreso).then((response)=>{
                     this.id_cabecera_traslado = response.data
-                    for(var i = 0; i < this.ventas.length; i++){
-                        this.ventas[i].almacen_origen = this.objetoIngreso.id_almacen_origen;
-                        this.ventas[i].almacen_destino = this.objetoIngreso.id_almacen_destino;
+                    var ventasT = this.ventas;
+                    for(var i = 0; i < ventasT.length; i++){
+                        ventasT[i].almacen_origen = this.objetoIngreso.id_almacen_origen;
+                        ventasT[i].almacen_destino = this.objetoIngreso.id_almacen_destino;
                     }
+                    this.$store.dispatch('actualizarTablaVentas', ventasT);
                     axios.post('/detalle_traslado', {'ventas': this.ventas, 'id_cabecera_traslado': this.id_cabecera_traslado}).then((response)=>{
+                        $('#modalVenta').modal('hide');
+                        Vue.swal({
+                            title: 'Traslado exitoso!',
+                            text: 'El traslado ha sido procesado con éxito!',
+                            icon: 'success'
+                        });
+                        this.listarTraslados();
                     })
-                    $('#modalVenta').modal('hide');
-                    Vue.swal({
-                        title: 'Traslado exitoso!',
-                        text: 'El traslado ha sido procesado con éxito!',
-                        icon: 'success'
-                    });
-                    $('#myTable').DataTable().destroy();
-                    this.listarTraslados();
                 })
                 .catch(error=>{
                     Vue.swal({

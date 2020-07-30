@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\C_fact;
 use App\D_fact;
 use App\Inventario;
-use App\Speed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -203,7 +202,7 @@ class CFactController extends Controller
 
             DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_producto'],$suma_total]);
 
-            $post = Speed::where('ID', $value['codigo_producto'])->get();
+            $post = DB::connection("speed")->table('wp_posts')->where('ID', $value['codigo_producto'])->get();
             //dd($post[0]->post_parent);
             if($post[0]->post_parent != 0){
 

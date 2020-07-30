@@ -94,7 +94,7 @@
           <b-button
             variant="info"
             size="sm"
-            @click="agregarProducto(row.item)"
+            @click="consultarProductoSimple(row.item)"
           >
             <i class="icon-plus"></i>
           </b-button>
@@ -131,25 +131,29 @@ export default {
     created(){
         let datosLS = JSON.parse(localStorage.getItem('ventas'));
         if(datosLS === null){
-            this.ventas = []
+            var ventasT = []
+            this.$store.dispatch('actualizarTablaVentas', ventasT)
+            localStorage.setItem('ventas', JSON.stringify(ventasT)) 
         }else{
-            this.ventas = datosLS
+            this.$store.dispatch('actualizarTablaVentas', datosLS)
         }
     },
     mounted(){
-        this.totalRows = this.arrayProductos.length
+        this.totalRows = this.arrayProductos.length;
         window.onbeforeunload = function (e) {
             var e = e || window.event;
 
             // For IE and Firefox
             if (e) {
-                this.ventas = []
-                localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+                var ventasT = []
+                //this.$store.dispatch('actualizarTablaVentas', ventasT)
+                localStorage.setItem('ventas', JSON.stringify(ventasT)) 
             }
 
             // For Safari
-            this.ventas = []
-            localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+            var ventasT = []
+            //this.$store.dispatch('actualizarTablaVentas', ventasT)
+            localStorage.setItem('ventas', JSON.stringify(ventasT)) 
         };
     },
     props:{
@@ -168,7 +172,6 @@ export default {
             ],
             enAlmacen: false,
             arrayAlmacen: [],
-            ventas: [],
             color: 'btn-primary',
             totalRows: 1,
             currentPage: 1,
@@ -179,7 +182,7 @@ export default {
             sortDirection: "asc",
             filter: null,
             filterOn: [],
-            seleccionado: []
+            seleccionado: [],
         }
     },
     computed:{
@@ -193,6 +196,12 @@ export default {
                 .map(f => {
                 return { text: f.label, value: f.key };
                 });
+        },
+        ventas(){
+            return this.$store.getters.tablaVenta;
+        },
+        usuarioLogeado(){
+            return this.$store.getters.arrayUsuarioLogeado;
         }
     },
     methods:{
@@ -204,6 +213,20 @@ export default {
         rowClass(item, type) {
             if (!item || type !== 'row') return
             if (item.stock < 5) return 'bg-danger'
+        },
+        consultarProductoSimple(producto){
+            this.$store.dispatch('actualizarShow', true);
+            if(producto.situacion_producto == 'simple'){
+                    this.agregarProducto(producto)
+                    this.$store.dispatch('actualizarShow', false);
+                }else if(producto.situacion_producto == 'variable'){
+                    this.$store.dispatch('actualizarProductoVariacion', producto.producto);
+                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                        this.$store.dispatch('actualizarVariaciones', response.data);
+                        $('#modalVariaciones').modal('show');
+                        this.$store.dispatch('actualizarShow', false);
+                    })
+                }
         },
         agregarProducto(item){
             //document.getElementById(`producto${item.codigo}`).className = 'selected'
@@ -252,13 +275,13 @@ export default {
                     obj.total = obj.cantidad*obj.precio
                 }
             }
-            
-            for(var j = 0; j < this.ventas.length; j++){
-                if(item.codigo == this.ventas[j].codigo){
+            var ventasP = this.ventas;
+            for(var j = 0; j < ventasP.length; j++){
+                if(item.codigo == ventasP[j].codigo){
                     if(!this.ingreso){
-                        this.ventas[j].cantidad = parseInt(this.ventas[j].cantidad)
-                        this.ventas[j].cantidad += 1
-                        this.ventas[j].total = this.ventas[j].cantidad*this.ventas[j].precio
+                        ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
+                        ventasP[j].cantidad += 1
+                        ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
                         controlador = true
                         break;
                     }
@@ -267,10 +290,12 @@ export default {
                 }
             }
             if(controlador){
-                this.$emit('emitirEvProductos', this.ventas)
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
             }else{
-                this.ventas.push(obj)
-                this.$emit('emitirEvProductos', this.ventas)
+                ventasP.push(obj)
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
             }
             localStorage.setItem('ventas', JSON.stringify(this.ventas))
         },
@@ -279,6 +304,7 @@ export default {
             $('#modalCantidades').modal('show');
             let me= this;
             var contador = 0
+            console.log(producto);
             axios.get(`almacen/${producto.codigo}/cantidadesAlmacen`).then(function (response){
                 if(response.data.length < 1){
                     me.enAlmacen = false;

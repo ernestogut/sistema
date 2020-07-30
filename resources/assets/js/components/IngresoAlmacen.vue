@@ -151,13 +151,22 @@
                                     <label>Documento</label>
                                     <input type="text" class="form-control" disabled>
                                 </div>
-                            </div>
-                                <div class="form-group">
+                                <div class="form-group col-md-6">
                                     <label>Observación</label>
                                     <input type="text" class="form-control" v-model="objetoIngreso.observacion">
                                 </div>
+                                <div class="form-group col-md-6">
+                                    <label>Buscar producto</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                            <span class="input-group-text buscador" @click="abrirModalVariaciones(codigoProducto)"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                        </div>
+                                </div>
+                            </div>
+                                
+                                
                                 <div class="form-group col-md-4">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Agregar productos</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Lista de productos</button>
                                 </div>
                         <div class="table-responsive scroll">   
                             <table class="table table-bordered table-sm ">
@@ -204,7 +213,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" :ingreso="true" v-else-if="initiated"></datatable-productos>
+                                    <datatable-productos @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" :ingreso="true" v-else-if="initiated"></datatable-productos>
                                 </div>
                             </div>
                         </div>
@@ -249,6 +258,28 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade bd-example-modal-lg show" tabindex="-1" id="modalVariaciones" aria-hidden="true" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        
+                        <div class="modal-content">
+                                <div class="modal-header bg-primary">
+                                    Variaciones de {{productoVariacion}}
+                                </div>
+                            <div class="modal-body">
+                                <b-list-group>
+                                    <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="agregarProducto(variacion)">
+                                        <div class="d-flex justify-content-around">
+                                            <span>{{variacion.variacion}}</span>
+                                            <span>{{variacion.stock}}</span>
+                                        </div>
+                                        
+                                    </b-list-group-item>
+                                </b-list-group>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>  
                 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -315,7 +346,8 @@ export default {
             arrayComprobantes: [],
             arraySeries: [],
             arrayAlmacen: [],
-            ventas: [],
+            //ventas: [],
+            codigoProducto: '',
             objetoComprobante: {},
             objetoProductoImagen: {},
             iconos: 'icon-plus',
@@ -353,7 +385,6 @@ export default {
             filter: null,
             filterOn: [],
             cargando: false,
-            show: false
         }
         //ingreso colocado, terminar con facturacion detallada y demás botones
     },
@@ -380,6 +411,18 @@ export default {
             .map(f => {
             return { text: f.label, value: f.key };
             });
+        },
+        ventas(){
+            return this.$store.getters.tablaVenta;
+        },
+        arrayVariaciones(){
+            return this.$store.getters.arrayVariaciones;
+        },
+        productoVariacion(){
+            return this.$store.getters.productoVariacion;
+        },
+        show(){
+            return this.$store.getters.show;
         }
     },
     mounted(){
@@ -410,25 +453,105 @@ export default {
             this.objetoComprobante = item
         },
         limpiarTabla(){
-            this.ventas = []
-            localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+            var ventasT = []
+            this.$store.dispatch('actualizarTablaVentas', ventasT)
+            localStorage.setItem('ventas', JSON.stringify(ventasT)) 
             this.controlador = 4
             this.objetoIngreso.id_almacen = null
-            this.objetoIngreso.id_usuario = null
             this.objetoIngreso.fecha_emision = null
             this.objetoIngreso.motivo = ''
             this.objetoIngreso.observacion = ''
+            this.codigoProducto = ''
             
         },
-        recibirVenta(venta){
-            this.ventas = venta
+        agregarProducto(item){
+            var obj = {}
+            var controlador = false
+            
+            for(const i in item){
+                if(i == 'codigo'){
+                    obj.codigo = item[i]
+                }
+                if(i == 'producto'){
+                    obj.producto = item[i]
+                }
+                if(i == 'codigo_padre'){
+                    obj.codigo_padre = item[i]
+                }
+                if(i == 'precio'){
+                    obj.precio = item[i]
+                }
+               
+                    var objetoCantidad = {}
+                    var arrayCantidad = []
+                    var cantidadTotal = 0
+                    for(var j = 0; j < this.arrayAlmacenFijo.length; j++){
+                        objetoCantidad.id_almacen = this.arrayAlmacenFijo[j].id
+                        objetoCantidad.cantidad = 0
+                        objetoCantidad.nombre = this.arrayAlmacenFijo[j].descripcion
+                        arrayCantidad.push(objetoCantidad)
+                        objetoCantidad = {}
+                    }
+                    obj.cantidades = arrayCantidad;
+                    for(var k = 0; k < obj.cantidades.length; k++){
+                        cantidadTotal += obj.cantidades[k].cantidad  
+                    }
+                    obj.descuento = 0
+                    obj.total = cantidadTotal*obj.precio
+            }
+            var ventasP = this.ventas;
+            for(var j = 0; j < ventasP.length; j++){
+                if(item.codigo == ventasP[j].codigo){
+                    if(!this.ingreso){
+                        ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
+                        ventasP[j].cantidad += 1
+                        ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
+                        controlador = true
+                        break;
+                    }
+                }else{
+                    controlador = false
+                }
+            }
+            if(controlador){
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }else{
+                ventasP.push(obj)
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }
+            localStorage.setItem('ventas', JSON.stringify(this.ventas))
+        },
+        abrirModalVariaciones(codigo){
+            this.$store.dispatch('actualizarShow', true)
+            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
+                var producto = response.data[0];
+                this.$store.dispatch('actualizarProductoVariacion', producto.producto);
+                this.consultarProductoSimple(producto);
+            })
+            
+            
+        },
+        consultarProductoSimple(producto){
+            if(producto.situacion_producto == 'simple'){
+                    this.agregarProducto(producto);
+                    this.$store.dispatch('actualizarShow', false)
+                }else if(producto.situacion_producto == 'variable'){
+                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                        this.$store.dispatch('actualizarVariaciones', response.data);
+                        console.log(this.arrayVariaciones);
+                        $('#modalVariaciones').modal('show');
+                        this.$store.dispatch('actualizarShow', false)
+                    })
+                }
         },
         recibirCantidadesAlmacen(almacen){
             this.arrayAlmacen = almacen
         },
         async listarItem(){
             this.loading = true
-            await this.$store.dispatch('cargarProductos').then(()=>{
+            await this.$store.dispatch('cargarProductos', this.usuarioLogeado.id_almacen).then(()=>{
                 this.loading = false;
                 this.initiated = true;
             });
@@ -459,18 +582,20 @@ export default {
             $('#modalProducto').modal('show');
         },
         eliminarProductoTabla(index){
-            this.ventas.splice(index,1)
+            var ventasT = this.ventas;
+            ventasT.splice(index,1)
+            this.$store.dispatch('actualizarTablaVentas', ventasT);
             //document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         insertarCabecera(){
-            this.show = true
+            this.$store.dispatch('actualizarShow', true)
             axios.post('/cabecera_ingreso', this.objetoIngreso).then((response)=>{
                 this.id_cabecera_ingreso = response.data
                 var productos = this.arrayProductos
                 //this.ventas.almacen = this.objetoIngreso.id_almacen;
                 axios.post('/detalle_ingreso', {'ventas': this.ventas, 'id_cabecera_ingreso': this.id_cabecera_ingreso}).then((response)=>{
-                    this.show = false
+                    this.$store.dispatch('actualizarShow', false)
                     for(var k = 0; k < this.ventas.length; k++){
                         for(var l = 0; l < productos.length; l++){
                             if(this.ventas[k].codigo == productos[l].codigo){
@@ -480,18 +605,15 @@ export default {
                             }
                         }
                     }
-                    this.$store.dispatch('actualizarProductos', productos)
-                     $('#modalVenta').modal('hide');
-                })
-
-               
-                Vue.swal({
+                    Vue.swal({
                     title: 'Ingreso exitoso!',
                     text: 'El ingreso ha sido realizado con éxito!',
                     icon: 'success'
-                });
-                $('#myTable').DataTable().destroy();
-                this.listarIngresos();
+                    });
+                    this.listarIngresos();
+                    this.$store.dispatch('actualizarProductos', productos)
+                     $('#modalVenta').modal('hide');
+                })        
             })
             .catch(error=>{
                 this.show = false

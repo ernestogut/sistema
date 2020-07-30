@@ -33,7 +33,7 @@
                                 </button>
                         </div>
                         <div class="card-body">
-                            <form class="kt-form kt-form--label-right" action="" @submit.prevent="insertarCabecera()">
+                                <form class="kt-form kt-form--label-right" action="" @submit.prevent="insertarCabecera()">
                                 <div class="kt-portlet__body" data-scroll="true" data-height="200" data-scrollbar-shown="true">
                                     <div class="row justify-content-start">
                                         <div class="col-2 col-form-label">Cod.Cliente</div>
@@ -53,22 +53,13 @@
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">Razón Social</div>
                                         <div class="col-4"><input type="text" name="SdnName" class="form-control" :value="objetoFactura.razon"></div>
+                                        <div class="col-2 col-form-label">Fecha Emi</div>
+                                        <div class="col-4"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoFactura.fecha"></div>
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">Vendedor</div>
                                         <div class="col-4">
                                             <select required="required" class="form-control" v-model="objetoFactura.id_user">
                                                 <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
-                                            </select>
-                                        </div>
-                                     
-                                        <div class="col-2 col-form-label">Fecha Emi</div>
-                                        <div class="col-4"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoFactura.fecha"></div>
-                                        <div class="w-100"></div>
-                                        <div class="col-2 col-form-label">Tipo Venta</div>
-                                        <div class="col-4">
-                                            <select name="PedTipo" class="form-control" v-model="objetoFactura.tipo_venta">
-                                                <option value="A">Artículo</option>
-                                                <option value="S">Servicio</option>
                                             </select>
                                         </div>
                                         <div class="col-2 col-form-label">Folio</div>
@@ -79,11 +70,25 @@
                                         </div>
                                         <div class="col-2"><input type="text" name="Folio" class="form-control"  placeholder="Folio" v-model="objetoFactura.folio"></div>
                                         <div class="w-100"></div>
+                                        <div class="col-2 col-form-label">Tipo Venta</div>
+                                        <div class="col-4">
+                                            <select name="PedTipo" class="form-control" v-model="objetoFactura.tipo_venta">
+                                                <option value="A">Artículo</option>
+                                                <option value="S">Servicio</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-2 col-form-label">Buscar producto</div>
+                                        <div class="input-group col-4">
+                                            <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                            <span class="input-group-text buscador" @click="abrirModalVariaciones(codigoProducto)"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                        </div>
+                                        <div class="w-100"></div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 ml-auto">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Agregar productos</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Lista de productos</button>
                                     </div>
                                 </div>
                                 <div class="table-responsive scroll">   
@@ -207,7 +212,7 @@
                             </div>
                             <div class="table-responsive">
                                 <spinner v-if="loading"></spinner>
-                                <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                <datatable-productos @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
                             </div>
                         </div>
                     </div>
@@ -287,6 +292,28 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade bd-example-modal-lg show" tabindex="-1" id="modalVariaciones" aria-hidden="true" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    
+                    <div class="modal-content">
+                            <div class="modal-header bg-primary">
+                                Variaciones de {{productoVariacion}}
+                            </div>
+                        <div class="modal-body">
+                            <b-list-group>
+                                <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="agregarProducto(variacion)">
+                                    <div class="d-flex justify-content-around">
+                                        <span>{{variacion.variacion}}</span>
+                                        <span>{{variacion.stock}}</span>
+                                    </div>
+                                    
+                                </b-list-group-item>
+                            </b-list-group>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>  
             <div class="modal fade bd-example-modal-lg"  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -301,10 +328,13 @@
                             <div class="card-body" v-else-if="initiated">
                                 <ul class="list-group">
                                     <li class="list-group-item cursor-pointer" v-for="almacen in arrayAlmacen" :key="almacen.id">
-                                        <span v-if="almacen.editable">{{almacen.id}}. Existen {{almacen.cantidad}} unidad(es) en el almacen de {{almacen.descripcion}}</span>
-                                        <span v-else>
-                                            {{almacen.id}}. No existen unidades en el almacen de {{almacen.descripcion}}
-                                        </span>
+                                        <div v-if="almacen.id != usuarioLogeado.id_almacen">
+                                            <span v-if="almacen.editable">{{almacen.id}}. Existen {{almacen.cantidad}} unidad(es) en el almacen de {{almacen.descripcion}}</span>
+                                            <span v-else>
+                                                {{almacen.id}}. No existen unidades en el almacen de {{almacen.descripcion}}
+                                            </span>
+                                        </div>
+                                        
                                     </li>
                                 </ul>
                             </div>
@@ -376,10 +406,11 @@
                                         <b-button size="sm" @click="cerrarModalClientes()">Cerrar</b-button>
                                         <b-button size="sm"  type="submit" variant="primary">Guardar</b-button>
                                         </form>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
-            </div>
             <!--<b-modal size="lg" hide-footer v-model="estadoModalClientes" id="modalCliente" title="Nuevo cliente" @hidden="resetModal" :no-enforce-focus="true">
             
                 </b-modal> -->
@@ -417,11 +448,11 @@ export default {
             arrayClientes: [],
             arrayItems: [],
             arrayFacturas: [],
-            show: false,
             arrayFacturaDetalle: [],
             arrayComprobantes: [],
             arraySeries: [],
-            ventas: [],
+            codigoProducto: '',
+            //ventas: [],
             arrayAlmacen: [],
             objetoComprobante: {},
             objetoProductoImagen: {},
@@ -510,6 +541,18 @@ export default {
                 sum += parseFloat(this.arrayFacturaDetalle[i].total_producto);
             }
             return sum.toFixed(2);
+        },
+        ventas(){
+            return this.$store.getters.tablaVenta;
+        },
+        arrayVariaciones(){
+            return this.$store.getters.arrayVariaciones;
+        },
+        productoVariacion(){
+            return this.$store.getters.productoVariacion;
+        },
+        show(){
+            return this.$store.getters.show;
         }
     },
     mounted(){
@@ -555,6 +598,67 @@ export default {
                 console.log(err);
             })
         },
+        agregarProducto(item){
+            console.log(item)
+            //document.getElementById(`producto${item.codigo}`).className = 'selected'
+            /*var estilos = document.querySelector(`.codigo${item.codigo}`).style
+            estilos.background = 'black'
+            estilos.borderColor = 'black'
+            estilos.color = 'white'*/
+            //this.estiloCeldaSeleccionada = 'table-success'
+            var obj = {}
+            var controlador = false
+            
+            for(const i in item){
+                if(i == 'codigo'){
+                    obj.codigo = item[i]
+                }
+                if(i == 'producto'){
+                    obj.producto = item[i]
+                }
+                if(i == 'codigo_padre'){
+                    obj.codigo_padre = item[i]
+                }
+                if(i == 'precio'){
+                    obj.precio = item[i]
+                }
+                    obj.almacen = 1;
+                    obj.cantidad = 1
+                    obj.descuento = 0
+                    obj.total = obj.cantidad*obj.precio
+            }
+            var ventasP = this.ventas;
+            for(var j = 0; j < ventasP.length; j++){
+                if(item.codigo == ventasP[j].codigo){
+                        ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
+                        ventasP[j].cantidad += 1
+                        ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
+                        controlador = true
+                        break;
+                }else{
+                    controlador = false
+                }
+            }
+            if(controlador){
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }else{
+                ventasP.push(obj)
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }
+            localStorage.setItem('ventas', JSON.stringify(this.ventas))
+        },
+        abrirModalVariaciones(codigo){
+            this.$store.dispatch('actualizarShow', true)
+            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
+                var producto = response.data[0];
+                this.$store.dispatch('actualizarProductoVariacion', producto.producto);
+                this.consultarProductoSimple(producto);
+            })
+            
+            
+        },
         cerrarModalClientes(){
             this.objetoCliente.id_tipo_doc = null
             this.objetoCliente.codigo = null
@@ -572,6 +676,19 @@ export default {
                 this.loadingImagen = false
                 this.initiatedImagen = true;
             })
+        },
+        consultarProductoSimple(producto){
+            if(producto.situacion_producto == 'simple'){
+                    this.agregarProducto(producto);
+                    this.$store.dispatch('actualizarShow', false)
+                }else if(producto.situacion_producto == 'variable'){
+                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                        this.$store.dispatch('actualizarVariaciones', response.data);
+                        console.log(this.arrayVariaciones);
+                        $('#modalVariaciones').modal('show');
+                        this.$store.dispatch('actualizarShow', false)
+                    })
+                }
         },
         totalPagar(){
             var comisionT = this.objetoFactura.total * this.comision
@@ -593,8 +710,10 @@ export default {
         },
         limpiarTabla(){
             console.log('limpiando...')
-            this.ventas = []
-            localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+            //this.ventas = []
+            var ventasT = []
+            this.$store.dispatch('actualizarTablaVentas', ventasT)
+            localStorage.setItem('ventas', JSON.stringify(ventasT)) 
             this.controlador = 4
             this.objetoFactura.cod_cliente =  ''
             this.objetoFactura.ruc_cliente =  ''
@@ -604,6 +723,7 @@ export default {
             this.objetoFactura.tipo_pago = 'efectivo'
             this.objetoFactura.tipo_venta =  'A'
             this.objetoFactura.folio = ''
+            this.codigoProducto = ''
             this.comision = 0.04
         },
         generarTotal(item){
@@ -621,17 +741,13 @@ export default {
             this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
             this.objetoFactura.desc_global = descuento_global;
         },
-        recibirVenta(venta){
-            this.ventas = venta
-        },
         recibirCantidadesAlmacen(almacen){
             this.arrayAlmacen = almacen
         },
         async listarItem(){
             //if(this.arrayProductos.length == 0){
                 this.loading = true
-                await this.$store.dispatch('cargarProductos').then(()=>{
-                    
+                await this.$store.dispatch('cargarProductos', this.usuarioLogeado.id_almacen).then(()=>{
                     this.loading = false;
                     this.initiated = true;
                 });
@@ -716,7 +832,9 @@ export default {
             this.controlador = 1
         },
         eliminarProductoTabla(venta, index){
-            this.ventas.splice(index,1)
+            var ventasT = this.ventas;
+            ventasT.splice(index,1)
+            this.$store.dispatch('actualizarTablaVentas', ventasT);
             //document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
@@ -803,13 +921,13 @@ export default {
                 })
         },
         insertarCabecera(){
-            this.show = true
+            this.$store.dispatch('actualizarShow', true)
             var me = this;
             axios.post('/c_fact', {'ventas': this.ventas, 'objeto_factura': this.objetoFactura}).then((response)=>{
                 var factura = response.data
                 //console.log('Factura: ', factura)
                 //console.log('folio', factura.folio)
-                this.show = false
+                this.$store.dispatch('actualizarShow', false)
                 var productos = this.arrayProductos
                 //axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
                     for(var k = 0; k < this.ventas.length; k++){
@@ -838,7 +956,7 @@ export default {
                 
             })
             .catch(error=>{
-                this.show = false
+                this.$store.dispatch('actualizarShow', false)
                 Vue.swal({
                         title: `${error.response.data.error}`,
                         text: 'Hubo un error al procesar la venta!',
@@ -856,7 +974,7 @@ export default {
                 }
                 ).then((result) => {
                 if (result.value) {
-                    this.show = true
+                    this.$store.dispatch('actualizarShow', true)
                     let formDatos = new FormData();
                     formDatos.append('fecha', item.fecha)
                     formDatos.append('folio', item.folio);
@@ -869,7 +987,7 @@ export default {
                     formDatos.append('estado', item.estado);
                     formDatos.append("_method", "put");
                     axios.post(`c_fact/${item.num_doc}/deshabilitarFactura`, formDatos).then(response=>{
-                        this.show = false
+                        this.$store.dispatch('actualizarShow', false)
                         this.arrayFacturas.splice(index,1) 
                     }).catch(err=>{
                         console.log(err)

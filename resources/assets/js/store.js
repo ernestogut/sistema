@@ -3,10 +3,15 @@ export default {
         arrayUsuarioLogeado: [],
         arrayUsuarios: [],
         arrayProductos: [],
+        arrayProductosTotales: [],
         arrayPedidos: [],
         arrayVentas: [],
         arrayAlmacen: [],
-        arrayDocumentos: []
+        arrayDocumentos: [],
+        tablaVenta: [],
+        arrayVariaciones: [],
+        productoVariacion: '',
+        show: false
 
     },
     mutations:{
@@ -30,6 +35,21 @@ export default {
         },
         SET_DOCUMENTOS (state, arrayDocumentos){
             state.arrayDocumentos = arrayDocumentos;
+        },
+        SET_TABLAVENTAS (state, tablaVenta){
+            state.tablaVenta = tablaVenta;
+        },
+        SET_VARIACIONES (state, arrayVariaciones){
+            state.arrayVariaciones = arrayVariaciones;
+        },
+        SET_PRODUCTOVARIACION (state, productoVariacion){
+            state.productoVariacion = productoVariacion;
+        },
+        SET_SHOW (state, show){
+            state.show = show;
+        },
+        SET_PRODUCTOSTOTALES (state, arrayProductosTotales){
+            state.arrayProductosTotales = arrayProductosTotales;
         }
     },
     getters:{
@@ -53,7 +73,23 @@ export default {
         },
         arrayVentas(state){
             return state.arrayVentas;
+        },
+        tablaVenta(state){
+            return state.tablaVenta;
+        },
+        arrayVariaciones(state){
+            return state.arrayVariaciones;
+        },
+        productoVariacion(state){
+            return state.productoVariacion;
+        },
+        show(state){
+            return state.show;
+        },
+        arrayProductosTotales(state){
+            return state.arrayProductosTotales;
         }
+
     },
     actions:{
         cargarUsuarioLogeado({commit}){
@@ -87,10 +123,16 @@ export default {
                     commit('SET_USUARIOS', arrayUsuarios)
                 })
         },
-        cargarProductos({commit}){
-            return axios.get('/speed').then(response =>{
+        cargarProductos({commit}, id_almacen){
+            return axios.get(`/speed/${id_almacen}/obtenerProductosPorAlmacen`).then(response =>{
                     let arrayProductos = response.data
                     commit('SET_PRODUCTOS', arrayProductos)
+                })
+        },
+        cargarProductosTotales({commit}){
+            return axios.get(`/speed`).then(response =>{
+                    let arrayProductosTotales = response.data
+                    commit('SET_PRODUCTOSTOTALES', arrayProductosTotales)
                 })
         },
         cargarPedidos({commit}){
@@ -104,6 +146,18 @@ export default {
         },
         actualizarVentas({ commit }, arrayVentas) {
             commit("SET_VENTAS", arrayVentas);
+        },
+        actualizarTablaVentas({ commit }, tablaVenta) {
+            commit("SET_TABLAVENTAS", tablaVenta);
+        },
+        actualizarVariaciones({ commit }, arrayVariaciones) {
+            commit("SET_VARIACIONES", arrayVariaciones);
+        },
+        actualizarProductoVariacion({ commit }, productoVariacion) {
+            commit("SET_PRODUCTOVARIACION", productoVariacion);
+        },
+        actualizarShow({ commit }, show) {
+            commit("SET_SHOW", show);
         },
         actualizarUsuarioLogeado({ commit }, arrayUsuarioLogeado) {
             commit("SET_USUARIO_LOGEADO", arrayUsuarioLogeado);

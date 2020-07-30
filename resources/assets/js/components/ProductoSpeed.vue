@@ -81,7 +81,7 @@
         small
         stacked="md"
         :busy="cargando"
-        :items="arrayProductos"
+        :items="arrayProductosTotales"
         :fields="fields"
         :tbody-tr-class="rowClass"
         :current-page="currentPage"
@@ -98,10 +98,10 @@
         <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
 
         <template v-slot:cell(actions)="row">
-          <b-button size="sm" @click="abrirModalCantidades(row.item)" class="mr-1">
+          <!--<b-button size="sm" @click="abrirModalCantidades(row.item)" class="mr-1">
             <i class="icon-pencil"></i>
-          </b-button>
-          <b-button size="sm" @click="consultarVariaciones(row.item)" class="mr-1">
+          </b-button>-->
+          <b-button size="sm" @click="abrirModalVariaciones(row.item)" class="mr-1">
             <i class="icon-eye"></i>
           </b-button>
           <b-button
@@ -121,7 +121,40 @@
       </b-table>      
         </b-card>
       <!-- User Interface controls -->
-      <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
+      
+        <div class="modal fade bd-example-modal-lg show" tabindex="-1" id="modalImagen" aria-hidden="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <spinner v-if="loadingImagen"></spinner>
+                    <div class="modal-body d-flex flex-wrap justify-content-center align-items-center" id="dynamic-content" v-for="productoImagen in objetoProductoImagen" :key="productoImagen.key" v-else-if="initiatedImagen">
+                        <img :src="productoImagen.imagen" style="width: 18rem;" class="img-fluid" alt=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade bd-example-modal-lg show" tabindex="-1" id="modalVariaciones" aria-hidden="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                
+                <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            Variaciones de {{productoVariacion}}
+                        </div>
+                    <div class="modal-body">
+                        <b-list-group>
+                            <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="abrirModalCantidades(variacion)">
+                                <div class="d-flex justify-content-around">
+                                    <span>{{variacion.variacion}}</span>
+                                    <span>{{variacion.stock}}</span>
+                                </div>
+                                
+                            </b-list-group-item>
+                        </b-list-group>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>  
+        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -173,22 +206,20 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade bd-example-modal-lg show" id="modalImagen" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <spinner v-if="loadingImagen"></spinner>
-                            <div class="modal-body d-flex flex-wrap justify-content-center align-items-center" id="dynamic-content" v-for="productoImagen in objetoProductoImagen" :key="productoImagen.key" v-else-if="initiatedImagen">
-                                <img :src="productoImagen.imagen" style="width: 18rem;" class="img-fluid" alt=""/>
-                            </div>
-                        </div>
-                    </div>
-                </div> 
+        <loading :active.sync="show" 
+            :can-cancel="false" 
+            
+            :is-full-page="true"></loading>
     </b-container>
 </main>
   
 </template>
 
 <script>
+// Import component
+    import Loading from 'vue-loading-overlay';
+    // Import stylesheet
+    import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
     mounted(){
         this.listarItem();
@@ -244,6 +275,8 @@ export default {
             loadingCantidades: false,
             initiatedCantidades: false,
             arrayAlmacen: [],
+            arrayVariaciones: [],
+            productoVariacion: '',
             objetoProdAlmacen: {
                 id_producto: null,
                 id_almacen: null,
@@ -254,6 +287,9 @@ export default {
             modoEditable: false,
         }
     },
+    components: {
+            Loading
+        },
     computed:{
         sortOptions() {
         // Create an options list from our fields
@@ -263,17 +299,33 @@ export default {
             return { text: f.label, value: f.key };
             });
         },
-        arrayProductos(){
-            return this.$store.getters.arrayProductos;
+        arrayProductosTotales(){
+            return this.$store.getters.arrayProductosTotales;
         },
         arrayAlmacenFijo(){
             return this.$store.getters.arrayAlmacen;
+        },
+        show(){
+            return this.$store.getters.show;
         }
     },
     methods:{
         rowClass(item, type) {
             if (!item || type !== 'row') return
             if (item.stock < 5) return 'bg-danger'
+        },
+        
+        async listarItem(){
+            this.cargando = true
+            await this.$store.dispatch('cargarProductosTotales').then(()=>{
+                this.totalRows = this.arrayProductosTotales.length
+                this.cargando = false;
+            });
+        },
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
         },
         abrirModalImagen(producto){
             //var imagenProducto = {}
@@ -286,18 +338,19 @@ export default {
                 //this.$emit('emitirImagen', imagenProducto);
             })
         },
-        async listarItem(){
-            this.cargando = true
-            await this.$store.dispatch('cargarProductos').then(()=>{
-                console.log(this.arrayProductos)
-                this.totalRows = this.arrayProductos.length
-                this.cargando = false;
-            });
-        },
-        onFiltered(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRows = filteredItems.length;
-            this.currentPage = 1;
+        abrirModalVariaciones(producto){
+            this.$store.dispatch('actualizarShow', true)
+            this.productoVariacion = producto.producto;
+            if(producto.situacion_producto == 'simple'){
+                this.abrirModalCantidades(producto)
+                this.$store.dispatch('actualizarShow', false)
+            }else if(producto.situacion_producto == 'variable'){
+                axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
+                    this.arrayVariaciones = response.data;
+                    this.$store.dispatch('actualizarShow', false)
+                    $('#modalVariaciones').modal('show');
+                })
+            }
         },
         abrirModalCantidades(producto){
             this.loadingCantidades = true
@@ -355,7 +408,7 @@ export default {
             formDatos.append('id_almacen', this.objetoProdAlmacen.id_almacen)
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             axios.post('/inventario', formDatos).then((response)=>{
-                var productos = this.arrayProductos
+                var productos = this.arrayProductosTotales
                 this.loading = false;
                 this.initiated = true;
                 for(var j = 0; j < this.arrayAlmacen.length; j++){
@@ -427,7 +480,7 @@ export default {
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             formDatos.append("_method", "put");
             axios.post(`/inventario/${idAlmacen}`, formDatos).then((response)=>{
-                var productos = this.arrayProductos
+                var productos = this.arrayProductosTotales
                 this.loading = false;
                 this.initiated = true;
                 for(var j = 0; j < this.arrayAlmacen.length; j++){
@@ -476,11 +529,6 @@ export default {
                 })
             })
         },
-        /*consultarVariaciones(item){
-            axios.get('').then(response=>{
-
-            })
-        }*/
     }
 }
 </script>

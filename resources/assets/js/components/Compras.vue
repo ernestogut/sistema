@@ -150,6 +150,8 @@
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">Razón Social</div>
                                         <div class="col-4"><input type="text" name="SdnName" class="form-control" :value="objetoCompra.razon"></div>
+                                        <div class="col-2 col-form-label">Fecha Emi</div>
+                                        <div class="col-4"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoCompra.fecha"></div>
                                         <div class="w-100"></div>
                                         <div class="col-2 col-form-label">Responsable</div>
                                         <div class="col-4">
@@ -157,10 +159,13 @@
                                                 <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
                                             </select>
                                         </div>
-                                        <div class="col-2 col-form-label">Fecha Emi</div>
-                                        <div class="col-4"><input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoCompra.fecha"></div>
+                                        <div class="col-2 col-form-label">Buscar producto</div>
+                                        <div class="input-group col-4">
+                                            <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                            <span class="input-group-text buscador" @click="abrirModalVariaciones(codigoProducto)"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                        </div>
                                         <div class="col-2 col-form-label"></div>
-                                        <div class="col-4"><button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Agregar productos</button></div>
+                                        <div class="col-4"><button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Lista de productos</button></div>
                                     </div>
                                 </div>
                                 <div class="table-responsive scroll">   
@@ -234,7 +239,7 @@
                             </div>
                             <div class="table-responsive">
                                 <spinner v-if="loading"></spinner>
-                                <datatable-productos @emitirEvProductos="recibirVenta" @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" :ingreso="true" v-else-if="initiated"></datatable-productos>
+                                <datatable-productos  @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
                             </div>
                         </div>
                     </div>
@@ -309,6 +314,28 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade bd-example-modal-lg show" tabindex="-1" id="modalVariaciones" aria-hidden="true" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    
+                    <div class="modal-content">
+                            <div class="modal-header bg-primary">
+                                Variaciones de {{productoVariacion}}
+                            </div>
+                        <div class="modal-body">
+                            <b-list-group>
+                                <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="agregarProducto(variacion)">
+                                    <div class="d-flex justify-content-around">
+                                        <span>{{variacion.variacion}}</span>
+                                        <span>{{variacion.stock}}</span>
+                                    </div>
+                                    
+                                </b-list-group-item>
+                            </b-list-group>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
             <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalCantidades">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -344,10 +371,18 @@
                     </div>
                 </div>
             </div> 
+            <loading :active.sync="show" 
+            :can-cancel="false" 
+            
+            :is-full-page="true"></loading>
     </main>
 </template>
 
 <script>
+// Import component
+    import Loading from 'vue-loading-overlay';
+    // Import stylesheet
+    import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
     data(){
         return{
@@ -359,7 +394,7 @@ export default {
             arrayItems: [],
             arrayCompras: [],
             arrayComprasDetalle: [],
-            ventas: [],
+            codigoProducto: '',
             arrayAlmacen: [],
             objetoComprobante: {},
             objetoProductoImagen: {},
@@ -407,6 +442,9 @@ export default {
             filterOn: [], // 1 - productos, 2 - proveedores, 4 -> compras
         }
     },
+    components: {
+            Loading
+        },
     computed:{
         usuarioLogeado(){
             return this.$store.getters.arrayUsuarioLogeado;
@@ -434,7 +472,20 @@ export default {
             .map(f => {
             return { text: f.label, value: f.key };
             });
+        },
+        ventas(){
+            return this.$store.getters.tablaVenta;
+        },
+        arrayVariaciones(){
+            return this.$store.getters.arrayVariaciones;
+        },
+        productoVariacion(){
+            return this.$store.getters.productoVariacion;
+        },
+        show(){
+            return this.$store.getters.show;
         }
+        
     },
     mounted(){
         this.listarCompras();
@@ -456,14 +507,98 @@ export default {
             })
         },
         limpiarTabla(){
-            this.ventas = []
-            localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+            var ventasT = []
+            this.$store.dispatch('actualizarTablaVentas', ventasT)
+            localStorage.setItem('ventas', JSON.stringify(ventasT)) 
             this.controlador = 4
             this.objetoCompra.cod_proveedor =  ''
             this.objetoCompra.ruc_proveedor =  ''
             this.objetoCompra.dir_proveedor =  ''
             this.objetoCompra.razon =  ''
             this.objetoCompra.fecha =  ''
+            this.codigoProducto = ''
+        },
+        agregarProducto(item){
+            var obj = {}
+            var controlador = false
+            
+            for(const i in item){
+                if(i == 'codigo'){
+                    obj.codigo = item[i]
+                }
+                if(i == 'producto'){
+                    obj.producto = item[i]
+                }
+                if(i == 'codigo_padre'){
+                    obj.codigo_padre = item[i]
+                }
+                if(i == 'precio'){
+                    obj.precio = item[i]
+                }
+               
+                    var objetoCantidad = {}
+                    var arrayCantidad = []
+                    var cantidadTotal = 0
+                    for(var j = 0; j < this.arrayAlmacenFijo.length; j++){
+                        objetoCantidad.id_almacen = this.arrayAlmacenFijo[j].id
+                        objetoCantidad.cantidad = 0
+                        objetoCantidad.nombre = this.arrayAlmacenFijo[j].descripcion
+                        arrayCantidad.push(objetoCantidad)
+                        objetoCantidad = {}
+                    }
+                    obj.cantidades = arrayCantidad;
+                    for(var k = 0; k < obj.cantidades.length; k++){
+                        cantidadTotal += obj.cantidades[k].cantidad  
+                    }
+                    obj.descuento = 0
+                    obj.total = cantidadTotal*obj.precio
+            }
+            var ventasP = this.ventas;
+            for(var j = 0; j < ventasP.length; j++){
+                if(item.codigo == ventasP[j].codigo){
+                    if(!this.ingreso){
+                        ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
+                        ventasP[j].cantidad += 1
+                        ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
+                        controlador = true
+                        break;
+                    }
+                }else{
+                    controlador = false
+                }
+            }
+            if(controlador){
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }else{
+                ventasP.push(obj)
+                this.$store.dispatch('actualizarTablaVentas', ventasP);
+                //this.$emit('emitirEvProductos', ventasP)
+            }
+            localStorage.setItem('ventas', JSON.stringify(this.ventas))
+        },
+        abrirModalVariaciones(codigo){
+            this.$store.dispatch('actualizarShow', true)
+            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
+                var producto = response.data[0];
+                this.$store.dispatch('actualizarProductoVariacion', producto.producto);
+                this.consultarProductoSimple(producto);
+            })
+            
+            
+        },
+        consultarProductoSimple(producto){
+            if(producto.situacion_producto == 'simple'){
+                    this.agregarProducto(producto);
+                    this.$store.dispatch('actualizarShow', false)
+                }else if(producto.situacion_producto == 'variable'){
+                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                        this.$store.dispatch('actualizarVariaciones', response.data);
+                        console.log(this.arrayVariaciones);
+                        $('#modalVariaciones').modal('show');
+                        this.$store.dispatch('actualizarShow', false)
+                    })
+                }
         },
         generarTotal(item){
             var cantidadTotal = 0
@@ -488,21 +623,13 @@ export default {
                 $('#modalInformacionCompra').modal('show');
             })
         },
-        recibirVenta(venta){
-            this.ventas = venta
-        },
         recibirCantidadesAlmacen(almacen){
             this.arrayAlmacen = almacen
-        },
-        miTabla(){
-            $( function () {
-                $('#myTableCompras').DataTable();
-            } );
         },
         async listarItem(){
             if(this.arrayProductos.length == 0){
                 this.loading = true
-                await this.$store.dispatch('cargarProductos').then(()=>{
+                await this.$store.dispatch('cargarProductos', this.usuarioLogeado.id_almacen).then(()=>{
                     this.loading = false;
                     this.initiated = true;
                 });
@@ -529,13 +656,6 @@ export default {
                 this.miTabla();
             })
         },
-        tablaProveedores(){
-            $( function () {
-                $('#myTableProveedores').DataTable({
-                    searching: true
-                });
-            } );
-        },
         abrirModalCompra(){
             this.obtenerFecha()
             $('#modalCompra').modal('show');
@@ -551,7 +671,9 @@ export default {
             this.controlador = 1
         },
         eliminarProductoTabla(venta, index){
-            this.ventas.splice(index,1)
+            var ventasT = this.ventas;
+            ventasT.splice(index,1)
+            this.$store.dispatch('actualizarTablaVentas', ventasT);
             //document.getElementById(`producto${venta.codigo}`).className = ''
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
@@ -587,7 +709,6 @@ export default {
                     'La compra se proceso correctamente!',
                     'success'
                 );
-                $('#myTableCompras').DataTable().destroy();
                 this.listarCompras();
             })
             //Ingreso multinventario completado, terminar parte tecnica

@@ -213,6 +213,10 @@ Route::get('proveedor/listarProveedorModal', 'ProveedorController@listarProveedo
 Route::get('cierre_caja/{almacen}/montoDiaAnterior', 'CierreCajaController@montoDiaAnterior');
 Route::put('c_fact/{id}/deshabilitarFactura', 'CFactController@deshabilitarFactura');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
+Route::get('speed/{almacen}/obtenerProductosPorAlmacen', 'SpeedController@obtenerProductosPorAlmacen');
+Route::get('speed/{id_padre}/{almacen}/consultarVariacion', 'SpeedController@consultarVariacion');
+Route::get('speed/{id_padre}/consultarVariacionTotal', 'SpeedController@consultarVariacionTotal');
+Route::get('speed/{codigo_producto}/{almacen}/buscarProducto', 'SpeedController@buscarProducto');
 Route::get('reporte/{fecha}/{almacen}/ventasPorFecha', 'ReporteVentaController@ventasPorFecha');
 Route::get('reporte/{fecha_inicio}/{fecha_fin}/{almacen}/ventasPorFechaRango', 'ReporteVentaController@ventasPorFechaRango');
 Route::get('d_fact/{fecha}/{almacen}/rankingProductos', 'DFactController@rankingProductos');
