@@ -80,8 +80,8 @@
                                         
                                         <div class="col-2 col-form-label">Buscar producto</div>
                                         <div class="input-group col-4">
-                                            <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
-                                            <span class="input-group-text buscador" @click="abrirModalVariaciones(codigoProducto)"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                            <input type="text" class="form-control" name="SdnCode" id="buscarP" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                            <span class="input-group-text buscador" @click="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''"><i class="fa fa-search" aria-hidden="true" ></i ></span>
                                         </div>
                                         <div class="w-100"></div>
                                     </div>
@@ -655,6 +655,19 @@ export default {
                 var producto = response.data[0];
                 this.$store.dispatch('actualizarProductoVariacion', producto.producto);
                 this.consultarProductoSimple(producto);
+            }).catch(error=>{ 
+                console.log(error)
+                this.$store.dispatch('actualizarShow', false)
+                Vue.swal({
+                        title: `${error.response.data.error}`,
+                        text: 'Código no válido o no está registrado a un producto!',
+                        icon: 'error'
+                    }).then((result) => {
+                        if (result.value) {
+                            this.codigoProducto = ''
+                            $('#buscarP').trigger('focus');
+                        }
+                    })
             })
             
             
@@ -819,6 +832,10 @@ export default {
                 this.colocarFolio()
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
+                $('#modalVenta').on('shown.bs.modal', function () {
+                    $('#buscarP').trigger('focus');
+                })
+                
             }
         },
         abrirModalClientes(){

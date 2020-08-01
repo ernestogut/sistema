@@ -160,6 +160,7 @@ export default {
                 { key: "order_id", label: "N° Orden", sortable: true, sortDirection: "desc" ,class: "text-center"},
                 { key: "nombre_facturacion", label: "Cliente", sortable: true, class: "text-center"},
                 { key: "telefono_facturacion", label: "Teléfono", sortable: true, class: "text-center"},
+                { key: "documento_facturacion", label: "DNI", sortable: true, class: "text-center"},
                 { key: "estado_compra", label: "Estado", sortable: true, class: "text-center"},
                 { key: "total_orden", label: "Total pedido", sortable: true, class: "text-center"},
                 { key: "fecha_compra", label: "Fecha", sortable: true, class: "text-center"},

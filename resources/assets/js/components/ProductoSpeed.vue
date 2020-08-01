@@ -95,7 +95,6 @@
         :emptyText="'No hay elementos para mostrar'"
         :emptyFilteredText="'No se han encontrado elementos para lo que buscas'"
       >
-        <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
 
         <template v-slot:cell(actions)="row">
           <!--<b-button size="sm" @click="abrirModalCantidades(row.item)" class="mr-1">
@@ -118,7 +117,11 @@
             <strong>Cargando...</strong>
           </div>
         </template>
-      </b-table>      
+      </b-table> 
+        <div>
+            <i class="fa fa-square-o text-danger bg-danger mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Menos de 5 unidades</span>
+            <i class="fa fa-square-o mr-2" style="width: 15px; height: 15px;"></i><span>5 unidades o más</span>
+        </div>     
         </b-card>
       <!-- User Interface controls -->
       
@@ -229,7 +232,6 @@ export default {
         return{
             cargando: false,
             fields: [
-                { key: "index", label: "#", sortable: true, sortDirection: "desc", class: "text-center" },
                 {
                 key: "codigo",
                 label: "Codigo",

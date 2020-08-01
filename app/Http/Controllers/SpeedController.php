@@ -62,7 +62,11 @@ class SpeedController extends Controller
     {
         $producto = Speed::where('sku', $codigo_producto)->where('almacen', $almacen)->get();
 
-        return $producto;
+        if(sizeof($producto) != 0){
+            return $producto;
+        }else{
+            return response()->json(['error' => 'El código no es válido'], 404);
+        }
     }
     /**
      * Store a newly created resource in storage.

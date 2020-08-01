@@ -121,7 +121,10 @@
         </div>
       </template>
     </b-table>
-
+      <div>
+        <i class="fa fa-square-o text-danger bg-danger mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Menos de 5 unidades</span>
+        <i class="fa fa-square-o mr-2" style="width: 15px; height: 15px;"></i><span>5 unidades o más</span>
+      </div>   
     <!-- User Interface controls -->
   </b-card>
 </template>
@@ -167,7 +170,7 @@ export default {
                 { key: "codigo", label: "Codigo", sortable: true,class: "text-center"},
                 { key: "producto", label: "Producto", sortable: true, class: "text-center"},
                 { key: "precio", label: "Precio", sortable: true, class: "text-center"},
-                { key: "stock", label: "Cantidad", sortable: true, class: "text-center"},
+                { key: "cantidad_alm", label: "Cantidad", sortable: true, class: "text-center"},
                 { key: "actions", label: "acciones" , class: "text-center"}
             ],
             enAlmacen: false,
