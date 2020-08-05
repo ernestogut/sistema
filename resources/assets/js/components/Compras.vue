@@ -160,10 +160,13 @@
                                             </select>
                                         </div>
                                         <div class="col-2 col-form-label">Buscar producto</div>
-                                        <div class="input-group col-4">
-                                            <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
-                                            <span class="input-group-text buscador" @click="abrirModalVariaciones(codigoProducto)"><i class="fa fa-search" aria-hidden="true" ></i ></span>
-                                        </div>
+                                        <form action="" @submit.prevent="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                                <span class="input-group-text buscador" @click="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                            </div>
+                                        </form>
+                                        
                                         <div class="col-2 col-form-label"></div>
                                         <div class="col-4"><button type="button" class="btn btn-primary" data-toggle="modal" @click="abrirModalAgregarProducto()">Lista de productos</button></div>
                                     </div>
@@ -490,6 +493,9 @@ export default {
     mounted(){
         this.listarCompras();
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
+        $('#modalVariaciones').on('hidden.bs.modal', function () {
+            $('#buscarP').trigger('focus');
+        })
     },
     methods:{
         onFiltered(filteredItems) {
@@ -579,10 +585,28 @@ export default {
         },
         abrirModalVariaciones(codigo){
             this.$store.dispatch('actualizarShow', true)
-            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
+            axios.get(`speed/${codigo}/buscarProductoEnListaGeneral`).then(response=>{
                 var producto = response.data[0];
                 this.$store.dispatch('actualizarProductoVariacion', producto.producto);
                 this.consultarProductoSimple(producto);
+                this.codigoProducto = ''
+            }).catch(error=>{ 
+                console.log(error)
+                this.$store.dispatch('actualizarShow', false)
+                Vue.swal({
+                        title: `${error.response.data.error}`,
+                        text: 'Código no válido o no está registrado a un producto!',
+                        icon: 'error',
+                        onDestroy: ()=>{
+                            this.codigoProducto = ''
+                            $('#buscarP').trigger('focus');
+                        }
+                    }).then((result) => {
+                        if (result.value) {
+                            this.codigoProducto = ''
+                            $('#buscarP').trigger('focus');
+                        }
+                    })
             })
             
             
@@ -592,9 +616,8 @@ export default {
                     this.agregarProducto(producto);
                     this.$store.dispatch('actualizarShow', false)
                 }else if(producto.situacion_producto == 'variable'){
-                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                    axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
                         this.$store.dispatch('actualizarVariaciones', response.data);
-                        console.log(this.arrayVariaciones);
                         $('#modalVariaciones').modal('show');
                         this.$store.dispatch('actualizarShow', false)
                     })

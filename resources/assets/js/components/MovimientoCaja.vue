@@ -107,12 +107,12 @@
             >
                 <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
 
-                <template v-slot:cell(actions)="">
-                <b-button size="sm">
+                <template v-slot:cell(actions)="row">
+                <!--<b-button size="sm">
                     <i class="icon-pencil"></i>
-                </b-button>
-                <b-button size="sm">
-                    <i class="icon-eye"></i>
+                </b-button>-->
+                <b-button size="sm" @click="anularMovimiento(row.item)">
+                    <i class="icon-trash"></i>
                 </b-button>
                 </template>
                 <template v-slot:table-busy>
@@ -178,10 +178,18 @@
                 </div>
             </div>
             </div>
+                            <loading :active.sync="show" 
+            :can-cancel="false" 
+            
+            :is-full-page="true"></loading>
     </main>
 </template>
 
 <script>
+// Import component
+    import Loading from 'vue-loading-overlay';
+    // Import stylesheet
+    import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
     mounted(){
         //this.listarMovimientosCaja()
@@ -225,6 +233,9 @@ export default {
             filterOn: []
         }
     },
+    components:{
+        Loading
+    },
     computed:{
         usuarioLogeado(){
             return this.$store.getters.arrayUsuarioLogeado;
@@ -239,6 +250,9 @@ export default {
             .map(f => {
             return { text: f.label, value: f.key };
             });
+        },
+        show(){
+            return this.$store.getters.show;
         }
     },
     methods:{
@@ -257,6 +271,23 @@ export default {
                 this.totalRows = this.arrayMovimientos.length
                 this.loading = false;
             })
+        },
+        anularMovimiento(item, index){
+            console.log(item)
+            this.$store.dispatch('actualizarShow', true)
+                    let formDatos = new FormData();
+                    formDatos.append('id', item.num_doc)
+                    formDatos.append('tipo_movimiento', item.tipo_movimiento)
+                    formDatos.append('monto', item.monto);
+                    formDatos.append('fecha', item.fecha)
+                    formDatos.append('id_almacen', item.id_almacen);
+                    formDatos.append("_method", "put");
+                    axios.post(`movimiento_caja/anularMovimiento`, formDatos).then(response=>{
+                        this.$store.dispatch('actualizarShow', false)
+                        this.arrayMovimientos.splice(index,1) 
+                    }).catch(err=>{
+                        console.log(err)
+                    })
         },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering

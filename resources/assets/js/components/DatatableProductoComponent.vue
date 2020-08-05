@@ -170,7 +170,7 @@ export default {
                 { key: "codigo", label: "Codigo", sortable: true,class: "text-center"},
                 { key: "producto", label: "Producto", sortable: true, class: "text-center"},
                 { key: "precio", label: "Precio", sortable: true, class: "text-center"},
-                { key: "cantidad_alm", label: "Cantidad", sortable: true, class: "text-center"},
+                { key: this.ingreso?"stock":"cantidad_alm", label: "Cantidad", sortable: true, class: "text-center"},
                 { key: "actions", label: "acciones" , class: "text-center"}
             ],
             enAlmacen: false,
@@ -224,11 +224,20 @@ export default {
                     this.$store.dispatch('actualizarShow', false);
                 }else if(producto.situacion_producto == 'variable'){
                     this.$store.dispatch('actualizarProductoVariacion', producto.producto);
-                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
-                        this.$store.dispatch('actualizarVariaciones', response.data);
-                        $('#modalVariaciones').modal('show');
-                        this.$store.dispatch('actualizarShow', false);
-                    })
+                    if(this.ingreso){
+                      axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
+                          this.$store.dispatch('actualizarVariaciones', response.data);
+                          $('#modalVariaciones').modal('show');
+                          this.$store.dispatch('actualizarShow', false);
+                      })
+                    }else{
+                      axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                          this.$store.dispatch('actualizarVariaciones', response.data);
+                          $('#modalVariaciones').modal('show');
+                          this.$store.dispatch('actualizarShow', false);
+                      })
+                    }
+                    
                 }
         },
         agregarProducto(item){
@@ -307,7 +316,6 @@ export default {
             $('#modalCantidades').modal('show');
             let me= this;
             var contador = 0
-            console.log(producto);
             axios.get(`almacen/${producto.codigo}/cantidadesAlmacen`).then(function (response){
                 if(response.data.length < 1){
                     me.enAlmacen = false;

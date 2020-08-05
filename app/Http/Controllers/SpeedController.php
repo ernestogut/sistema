@@ -68,6 +68,16 @@ class SpeedController extends Controller
             return response()->json(['error' => 'El código no es válido'], 404);
         }
     }
+    public function buscarProductoEnListaGeneral($codigo_producto)
+    {
+        $producto = Speed::where('sku', $codigo_producto)->get();
+
+        if(sizeof($producto) != 0){
+            return $producto;
+        }else{
+            return response()->json(['error' => 'El código no es válido'], 404);
+        }
+    }
     /**
      * Store a newly created resource in storage.
      *

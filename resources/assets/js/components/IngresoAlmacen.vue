@@ -157,10 +157,14 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Buscar producto</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" name="SdnCode" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
-                                            <span class="input-group-text buscador" @click="abrirModalVariaciones(codigoProducto)"><i class="fa fa-search" aria-hidden="true" ></i ></span>
-                                        </div>
+                                        <form action="" @submit.prevent="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''">
+                                            <div class="input-group">
+                                            
+                                                <input type="text" class="form-control" name="SdnCode" id="buscarP" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                                    <span class="input-group-text buscador" @click="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                            </div>    
+                                        </form>
+                                        
                                 </div>
                             </div>
                                 
@@ -194,7 +198,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button type="submit" class="btn btn-primary" v-on:keydown.enter.prevent>Guardar</button>
                         </div>
                     </form>
                     </div>  
@@ -431,6 +435,9 @@ export default {
         this.objetoIngreso.id_usuario = this.usuarioLogeado.id;
         this.controlador = 4
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
+        $('#modalVariaciones').on('hidden.bs.modal', function () {
+            $('#buscarP').trigger('focus');
+        })
     },
     methods:{
         onFiltered(filteredItems) {
@@ -525,22 +532,40 @@ export default {
         },
         abrirModalVariaciones(codigo){
             this.$store.dispatch('actualizarShow', true)
-            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
+           
+            axios.get(`speed/${codigo}/buscarProductoEnListaGeneral`).then(response=>{
+                
                 var producto = response.data[0];
                 this.$store.dispatch('actualizarProductoVariacion', producto.producto);
                 this.consultarProductoSimple(producto);
+                this.codigoProducto = ''
+                this.$store.dispatch('actualizarShow', false)
+            }).catch(error=>{ 
+                console.log(error)
+                this.$store.dispatch('actualizarShow', false)
+                Vue.swal({
+                        title: `${error.response.data.error}`,
+                        text: 'Código no válido o no está registrado a un producto!',
+                        icon: 'error',
+                        onDestroy: ()=>{
+                            this.codigoProducto = ''
+                            $('#buscarP').trigger('focus');
+                        }
+                    }).then((result) => {
+                        if (result.value) {
+                            this.codigoProducto = ''
+                            $('#buscarP').trigger('focus');
+                        }
+                    })
             })
-            
-            
         },
         consultarProductoSimple(producto){
             if(producto.situacion_producto == 'simple'){
                     this.agregarProducto(producto);
                     this.$store.dispatch('actualizarShow', false)
                 }else if(producto.situacion_producto == 'variable'){
-                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                    axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
                         this.$store.dispatch('actualizarVariaciones', response.data);
-                        console.log(this.arrayVariaciones);
                         $('#modalVariaciones').modal('show');
                         this.$store.dispatch('actualizarShow', false)
                     })
@@ -551,7 +576,7 @@ export default {
         },
         async listarItem(){
             this.loading = true
-            await this.$store.dispatch('cargarProductos', this.usuarioLogeado.id_almacen).then(()=>{
+            await this.$store.dispatch('cargarProductosTotales').then(()=>{
                 this.loading = false;
                 this.initiated = true;
             });
@@ -569,12 +594,16 @@ export default {
             axios.get(`detalle_ingreso/${ingreso.id}`).then((response)=>{
                 this.arrayIngresoDetalle = response.data;
                 $('#modalInformacionIngreso').modal('show');
+                
             })
         },
         abrirModalVenta(){
                 this.objetoIngreso.id_almacen = this.arrayAlmacenFijo[0].id
                 this.obtenerFecha()
                 $('#modalVenta').modal('show');
+                $('#modalVenta').on('shown.bs.modal', function () {
+                    $('#buscarP').trigger('focus');
+                })
         },
         abrirModalAgregarProducto(){
             this.listarItem()

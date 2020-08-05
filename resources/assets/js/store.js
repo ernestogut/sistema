@@ -131,8 +131,8 @@ export default {
         },
         cargarProductosTotales({commit}){
             return axios.get(`/speed`).then(response =>{
-                    let arrayProductosTotales = response.data
-                    commit('SET_PRODUCTOSTOTALES', arrayProductosTotales)
+                    let arrayProductos = response.data
+                    commit('SET_PRODUCTOS', arrayProductos)
                 })
         },
         cargarPedidos({commit}){

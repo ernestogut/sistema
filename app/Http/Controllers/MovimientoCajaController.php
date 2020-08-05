@@ -61,7 +61,7 @@ class MovimientoCajaController extends Controller
      */
     public function show($almacen)
     {
-        $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->where('movimiento_cajas.id_almacen', '=', $almacen)->where('movimiento_cajas.fecha', '=', date('Y-m-d'))->get();
+        $movimiento_caja = MovimientoCaja::select('movimiento_cajas.id as num_doc','users.usuario as responsable', 'almacens.id as id_almacen', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->where('movimiento_cajas.id_almacen', '=', $almacen)->where('movimiento_cajas.fecha', '=', date('Y-m-d'))->where('estado', 'habilitado')->get();
         return $movimiento_caja;
     }
     public function reporteDeMovimientos($almacen, $fecha)
@@ -92,7 +92,18 @@ class MovimientoCajaController extends Controller
     {
         //
     }
-
+    public function anularMovimiento(Request $request)
+    {
+        if($request->tipo_movimiento == 'egreso'){
+            DB::connection("mysql")->statement("call generarMovimientoIngreso(?,?,?)",[$request->monto, $request->fecha, $request->id_almacen]);
+        }else if($request->tipo_movimiento == 'ingreso'){
+            DB::connection("mysql")->statement("call generarMovimientoEgreso(?,?,?)",[$request->monto, $request->fecha, $request->id_almacen]);
+        }
+        $movimiento = MovimientoCaja::find($request->id);
+        $movimiento->estado = 'deshabilitado';
+        $movimiento->save();
+        
+    }
     /**
      * Remove the specified resource from storage.
      *

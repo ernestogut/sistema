@@ -81,7 +81,7 @@
         small
         stacked="md"
         :busy="cargando"
-        :items="arrayProductosTotales"
+        :items="arrayProductos"
         :fields="fields"
         :tbody-tr-class="rowClass"
         :current-page="currentPage"
@@ -301,8 +301,8 @@ export default {
             return { text: f.label, value: f.key };
             });
         },
-        arrayProductosTotales(){
-            return this.$store.getters.arrayProductosTotales;
+        arrayProductos(){
+            return this.$store.getters.arrayProductos;
         },
         arrayAlmacenFijo(){
             return this.$store.getters.arrayAlmacen;
@@ -320,7 +320,7 @@ export default {
         async listarItem(){
             this.cargando = true
             await this.$store.dispatch('cargarProductosTotales').then(()=>{
-                this.totalRows = this.arrayProductosTotales.length
+                this.totalRows = this.arrayProductos.length
                 this.cargando = false;
             });
         },
@@ -410,7 +410,7 @@ export default {
             formDatos.append('id_almacen', this.objetoProdAlmacen.id_almacen)
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             axios.post('/inventario', formDatos).then((response)=>{
-                var productos = this.arrayProductosTotales
+                var productos = this.arrayProductos
                 this.loading = false;
                 this.initiated = true;
                 for(var j = 0; j < this.arrayAlmacen.length; j++){
@@ -482,7 +482,7 @@ export default {
             formDatos.append('cantidad', this.objetoProdAlmacen.cantidad)
             formDatos.append("_method", "put");
             axios.post(`/inventario/${idAlmacen}`, formDatos).then((response)=>{
-                var productos = this.arrayProductosTotales
+                var productos = this.arrayProductos
                 this.loading = false;
                 this.initiated = true;
                 for(var j = 0; j < this.arrayAlmacen.length; j++){

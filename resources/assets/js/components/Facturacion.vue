@@ -77,12 +77,14 @@
                                                 <option value="S">Servicio</option>
                                             </select>
                                         </div>
-                                        
                                         <div class="col-2 col-form-label">Buscar producto</div>
-                                        <div class="input-group col-4">
-                                            <input type="text" class="form-control" name="SdnCode" id="buscarP" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
-                                            <span class="input-group-text buscador" @click="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''"><i class="fa fa-search" aria-hidden="true" ></i ></span>
-                                        </div>
+                                        <form action="" @submit.prevent="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="SdnCode" id="buscarP" v-model="codigoProducto" placeholder="Código de barras" style="width: 80%;">
+                                                <span class="input-group-text buscador" @click="codigoProducto.length > 0 ?abrirModalVariaciones(codigoProducto):''"><i class="fa fa-search" aria-hidden="true" ></i ></span>
+                                            </div>
+                                        </form>
+                                        
                                         <div class="w-100"></div>
                                     </div>
                                 </div>
@@ -570,6 +572,9 @@ export default {
                 this.listarTComprobantes();
                 this.controlador = 4
                 $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
+                $('#modalVariaciones').on('hidden.bs.modal', function () {
+                    $('#buscarP').trigger('focus');
+                })
             }else{
                 Vue.swal({
                     title: 'No hay alguna caja abierta',
@@ -655,13 +660,18 @@ export default {
                 var producto = response.data[0];
                 this.$store.dispatch('actualizarProductoVariacion', producto.producto);
                 this.consultarProductoSimple(producto);
+                this.codigoProducto = ''
             }).catch(error=>{ 
                 console.log(error)
                 this.$store.dispatch('actualizarShow', false)
                 Vue.swal({
                         title: `${error.response.data.error}`,
                         text: 'Código no válido o no está registrado a un producto!',
-                        icon: 'error'
+                        icon: 'error',
+                        onDestroy: ()=>{
+                            this.codigoProducto = ''
+                            $('#buscarP').trigger('focus');
+                        }
                     }).then((result) => {
                         if (result.value) {
                             this.codigoProducto = ''
