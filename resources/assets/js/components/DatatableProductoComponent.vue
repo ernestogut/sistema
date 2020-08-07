@@ -162,7 +162,9 @@ export default {
     props:{
         arrayAlmacenFijo: Array,
         abrirModalImagen: Function,
-        ingreso: Boolean
+        ingreso: Boolean,
+        traslado: Boolean,
+        factura: Boolean
     },
     data(){
         return{
@@ -218,13 +220,14 @@ export default {
             if (item.stock < 5) return 'bg-danger'
         },
         consultarProductoSimple(producto){
+          if((producto.cantidad_alm > 0 && this.factura) || !this.factura){
             this.$store.dispatch('actualizarShow', true);
             if(producto.situacion_producto == 'simple'){
                     this.agregarProducto(producto)
                     this.$store.dispatch('actualizarShow', false);
                 }else if(producto.situacion_producto == 'variable'){
                     this.$store.dispatch('actualizarProductoVariacion', producto.producto);
-                    if(this.ingreso){
+                    if(this.ingreso || this.traslado){
                       axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
                           this.$store.dispatch('actualizarVariaciones', response.data);
                           $('#modalVariaciones').modal('show');
@@ -239,17 +242,19 @@ export default {
                     }
                     
                 }
+          }else{
+            Vue.swal({
+                    title: 'Producto sin stock',
+                    text: '¡El producto tiene 0 unidades en este momento!',
+                    icon: 'error'
+                });
+          }
+            
         },
         agregarProducto(item){
-            //document.getElementById(`producto${item.codigo}`).className = 'selected'
-            /*var estilos = document.querySelector(`.codigo${item.codigo}`).style
-            estilos.background = 'black'
-            estilos.borderColor = 'black'
-            estilos.color = 'white'*/
-            //this.estiloCeldaSeleccionada = 'table-success'
+            
             var obj = {}
             var controlador = false
-            
             for(const i in item){
                 if(i == 'codigo'){
                     obj.codigo = item[i]
@@ -259,6 +264,9 @@ export default {
                 }
                 if(i == 'codigo_padre'){
                     obj.codigo_padre = item[i]
+                }
+                if(i == 'cantidad_alm'){
+                    obj.cantidad_alm = item[i]
                 }
                 if(i == 'precio'){
                     obj.precio = item[i]
@@ -292,7 +300,16 @@ export default {
                 if(item.codigo == ventasP[j].codigo){
                     if(!this.ingreso){
                         ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
-                        ventasP[j].cantidad += 1
+                        if(ventasP[j].cantidad == ventasP[j].cantidad_alm && this.factura){
+                          Vue.swal({
+                              title: 'Alerta de inventario',
+                              text: '¡No puedes sobrepasar la cantidad del producto!',
+                              icon: 'error'
+                          });
+                        }else{
+                          ventasP[j].cantidad += 1
+                        }
+                        
                         ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
                         controlador = true
                         break;

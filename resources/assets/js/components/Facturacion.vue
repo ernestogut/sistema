@@ -119,7 +119,7 @@
                                                 <td class="text-center align-middle"><input class="form-control" type="number" step="any" v-model="venta.cantidad" @input="generarTotal(venta)"></td>
                                                 <td class="text-center align-middle"><input class="form-control" type="number" id="monto2" step="any" v-model="venta.descuento" @input="generarTotal(venta)"></td>
                                                 <td class="text-center align-middle">
-                                                    <select v-model="venta.almacen" class="form-control">
+                                                    <select v-model="venta.almacen" class="form-control" disabled>
                                                         <option disabled value="">Escoje un almacén</option>
                                                         <option v-for="almacen in arrayAlmacenFijo" :key="almacen.id" :value="almacen.id">{{almacen.descripcion}}</option>
                                                     </select>
@@ -214,7 +214,7 @@
                             </div>
                             <div class="table-responsive">
                                 <spinner v-if="loading"></spinner>
-                                <datatable-productos @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                <datatable-productos @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated" :factura="true"></datatable-productos>
                             </div>
                         </div>
                     </div>
@@ -306,7 +306,7 @@
                                 <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="agregarProducto(variacion)">
                                     <div class="d-flex justify-content-around">
                                         <span>{{variacion.variacion}}</span>
-                                        <span>{{variacion.stock}}</span>
+                                        <span>{{variacion.cantidad_alm}}</span>
                                     </div>
                                     
                                 </b-list-group-item>
@@ -604,55 +604,68 @@ export default {
             })
         },
         agregarProducto(item){
-            console.log(item)
-            //document.getElementById(`producto${item.codigo}`).className = 'selected'
-            /*var estilos = document.querySelector(`.codigo${item.codigo}`).style
-            estilos.background = 'black'
-            estilos.borderColor = 'black'
-            estilos.color = 'white'*/
-            //this.estiloCeldaSeleccionada = 'table-success'
-            var obj = {}
-            var controlador = false
-            
-            for(const i in item){
-                if(i == 'codigo'){
-                    obj.codigo = item[i]
+            if(item.cantidad_alm > 0){
+                var obj = {}
+                var controlador = false
+                
+                for(const i in item){
+                    if(i == 'codigo'){
+                        obj.codigo = item[i]
+                    }
+                    if(i == 'producto'){
+                        obj.producto = item[i]
+                    }
+                    if(i == 'codigo_padre'){
+                        obj.codigo_padre = item[i]
+                    }
+                    if(i == 'cantidad_alm'){
+                        obj.cantidad_alm = item[i]
+                    }
+                    if(i == 'precio'){
+                        obj.precio = item[i]
+                    }
+                        obj.almacen = 1;
+                        obj.cantidad = 1
+                        obj.descuento = 0
+                        obj.total = obj.cantidad*obj.precio
                 }
-                if(i == 'producto'){
-                    obj.producto = item[i]
+                var ventasP = this.ventas;
+                for(var j = 0; j < ventasP.length; j++){
+                    if(item.codigo == ventasP[j].codigo){
+                            ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
+                            if(ventasP[j].cantidad == ventasP[j].cantidad_alm){
+                                Vue.swal({
+                                    title: 'Alerta de inventario',
+                                    text: '¡No puedes sobrepasar la cantidad del producto!',
+                                    icon: 'error'
+                                });
+                            }else{
+                                ventasP[j].cantidad += 1
+                            }
+                            ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
+                            controlador = true
+                            break;
+                    }else{
+                        controlador = false
+                    }
                 }
-                if(i == 'codigo_padre'){
-                    obj.codigo_padre = item[i]
-                }
-                if(i == 'precio'){
-                    obj.precio = item[i]
-                }
-                    obj.almacen = 1;
-                    obj.cantidad = 1
-                    obj.descuento = 0
-                    obj.total = obj.cantidad*obj.precio
-            }
-            var ventasP = this.ventas;
-            for(var j = 0; j < ventasP.length; j++){
-                if(item.codigo == ventasP[j].codigo){
-                        ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
-                        ventasP[j].cantidad += 1
-                        ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
-                        controlador = true
-                        break;
+                if(controlador){
+                    this.$store.dispatch('actualizarTablaVentas', ventasP);
+                    //this.$emit('emitirEvProductos', ventasP)
                 }else{
-                    controlador = false
+                    ventasP.push(obj)
+                    this.$store.dispatch('actualizarTablaVentas', ventasP);
+                    //this.$emit('emitirEvProductos', ventasP)
                 }
-            }
-            if(controlador){
-                this.$store.dispatch('actualizarTablaVentas', ventasP);
-                //this.$emit('emitirEvProductos', ventasP)
+                localStorage.setItem('ventas', JSON.stringify(this.ventas))
             }else{
-                ventasP.push(obj)
-                this.$store.dispatch('actualizarTablaVentas', ventasP);
-                //this.$emit('emitirEvProductos', ventasP)
+                Vue.swal({
+                    title: 'Producto sin stock',
+                    text: '¡El producto tiene 0 unidades en este momento!',
+                    icon: 'error'
+                });
             }
-            localStorage.setItem('ventas', JSON.stringify(this.ventas))
+            
         },
         abrirModalVariaciones(codigo){
             this.$store.dispatch('actualizarShow', true)
@@ -707,7 +720,6 @@ export default {
                 }else if(producto.situacion_producto == 'variable'){
                     axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
                         this.$store.dispatch('actualizarVariaciones', response.data);
-                        console.log(this.arrayVariaciones);
                         $('#modalVariaciones').modal('show');
                         this.$store.dispatch('actualizarShow', false)
                     })
@@ -732,8 +744,6 @@ export default {
             this.objetoComprobante = item
         },
         limpiarTabla(){
-            console.log('limpiando...')
-            //this.ventas = []
             var ventasT = []
             this.$store.dispatch('actualizarTablaVentas', ventasT)
             localStorage.setItem('ventas', JSON.stringify(ventasT)) 
@@ -750,19 +760,29 @@ export default {
             this.comision = 0.04
         },
         generarTotal(item){
-            item.total = (item.precio * item.cantidad) - item.descuento
-            var lista = []
-            var suma = 0
-            var descuento_global = 0
-            for(var i = 0; i < this.ventas.length; i++){
-                lista.push(this.ventas[i].total)
-                descuento_global += Number(this.ventas[i].descuento)
+            if(item.cantidad > 0 && item.cantidad <= item.cantidad_alm){
+                item.total = (item.precio * item.cantidad) - item.descuento
+                var lista = []
+                var suma = 0
+                var descuento_global = 0
+                for(var i = 0; i < this.ventas.length; i++){
+                    lista.push(this.ventas[i].total)
+                    descuento_global += Number(this.ventas[i].descuento)
+                }
+                suma = lista.reduce((a, b) => a + b, 0)
+                this.objetoFactura.total = suma
+                this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
+                this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
+                this.objetoFactura.desc_global = descuento_global;
+            }else{
+                Vue.swal({
+                    title: 'Alerta de inventario',
+                    text: '¡No puedes sobrepasar la cantidad del producto!',
+                    icon: 'error'
+                });
+                item.cantidad = 1;
             }
-            suma = lista.reduce((a, b) => a + b, 0)
-            this.objetoFactura.total = suma
-            this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
-            this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
-            this.objetoFactura.desc_global = descuento_global;
+            
         },
         recibirCantidadesAlmacen(almacen){
             this.arrayAlmacen = almacen
@@ -832,12 +852,12 @@ export default {
             this.objetoFactura.serie = selected;
         },
         abrirModalVenta(){
-            if(this.comprobanteEscogido.id == 0){
-                Vue.swal({
-                    title: 'Debes elegir un tipo de comprobante',
-                    text: '¡No tienes nigún tipo de comprobante seleccionado!',
-                    icon: 'error'
-                }); 
+            if(this.comprobanteEscogido.id == 0 || this.comprobanteEscogido.id == undefined){
+               Vue.swal({
+                        title: 'Comprobante no seleccionado',
+                        text: '¡Debes seleccionar un comprobante!',
+                        icon: 'error'
+                    });
             }else{
                 this.colocarFolio()
                 this.obtenerFecha()
@@ -1047,7 +1067,6 @@ export default {
                     lista.push(this.ventas[i].total)
                     this.ventas[i].almacen = this.almacen_id;
                     descuento_global += Number(this.ventas[i].descuento)
-                    
                 }
                 suma = lista.reduce((a, b) => a + b, 0)
                 this.objetoFactura.total = suma

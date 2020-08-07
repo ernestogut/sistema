@@ -132,7 +132,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <spinner v-if="loading"></spinner>
-                                    <datatable-productos @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated"></datatable-productos>
+                                    <datatable-productos @emitirEvArrayAlm="recibirCantidadesAlmacen"  :abrirModalImagen="abrirModalImagen" :arrayAlmacenFijo="arrayAlmacenFijo" v-else-if="initiated" :traslado="true"></datatable-productos>
                                 </div>
                             </div>
                         </div>
@@ -391,7 +391,7 @@ export default {
         },
         abrirModalVariaciones(codigo){
             this.$store.dispatch('actualizarShow', true)
-            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
+            axios.get(`speed/${codigo}/buscarProductoEnListaGeneral`).then(response=>{
                 var producto = response.data[0];
                 this.$store.dispatch('actualizarProductoVariacion', producto.producto);
                 this.consultarProductoSimple(producto);
@@ -422,7 +422,7 @@ export default {
                     this.agregarProducto(producto);
                     this.$store.dispatch('actualizarShow', false)
                 }else if(producto.situacion_producto == 'variable'){
-                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
+                    axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
                         this.$store.dispatch('actualizarVariaciones', response.data);
                         console.log(this.arrayVariaciones);
                         $('#modalVariaciones').modal('show');
@@ -435,7 +435,7 @@ export default {
         },
         async listarItem(){
             this.loading = true
-            await this.$store.dispatch('cargarProductos', this.usuarioLogeado.id_almacen).then(()=>{
+            await this.$store.dispatch('cargarProductosTotales').then(()=>{
                 this.loading = false;
                 this.initiated = true;
                 this.tablaProductos();
