@@ -157,9 +157,6 @@ export default {
     eliminarItem: Function,
     listarSeries: Function
   },
-  mounted(){
-    this.totalRows = this.items.length;
-  },
   data() {
     return {
       totalRows: 1,
@@ -220,6 +217,11 @@ export default {
     },
     funcionConjuntoTrash(item) {
       this.funcionBotonTrash(item);
+    }
+  },
+  watch:{
+    items(){
+      this.totalRows = this.items.length;
     }
   }
 };

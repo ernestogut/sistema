@@ -48,7 +48,7 @@
                     </ul>
                 </div>
             </div>
-            <form method="post" action="/cierre_caja">
+            <form method="post" action="/cierre_caja" id="abrirCajaCard">
                 {{csrf_field()}}
                     <div class="card-body text-white">
                         <div class="form-row">
@@ -58,7 +58,7 @@
                             </div>
                             <div class="form-group col-md-6" >
                                 <label>Almacen</label>
-                                <select class="form-control" name="id_almacen" style="border-radius: 10px; border-color: #FD3954;">
+                                <select class="form-control" name="id_almacen" style="border-radius: 10px; border-color: #FD3954;" id="selectAlmacen">
                                     @foreach(App\Http\Controllers\AlmacenController::indexLaravel() as $almacen)
                                         <option value='{{ $almacen->id }}'  >{{ $almacen->descripcion }}</option>
                                     @endforeach
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                     <div class="card-footer" style="width:44%; border-radius: 10px; background: #1E2137; width: 100%; border-color: #1E2137;">
-                        <button type="submit" class="btn btn-success" >Aperturar caja</button>
+                        <button type="submit" class="btn btn-success">Aperturar caja</button>
                         <button type="button" class="btn" id="abrirGaveta" style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Abrir gaveta</button>
                         @if(Auth::user()->idrole==1)
                             <a href="{{route('principal')}}" class="btn " style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Omitir apertura</a>
@@ -102,6 +102,14 @@
                     console.log(valor)
                 })
         });
+            $('#abrirCajaCard').on('submit', function(){
+                if(confirm(`Estás en el local que has seleccionado?`)){
+                    return true;
+                }else{
+                    return false
+                }
+            });
+        
 </script>
 
 </body>

@@ -300,7 +300,7 @@ export default {
                 if(item.codigo == ventasP[j].codigo){
                     if(!this.ingreso){
                         ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
-                        if(ventasP[j].cantidad == ventasP[j].cantidad_alm && this.factura){
+                        if(ventasP[j].cantidad == ventasP[j].cantidad_alm && (this.factura || this.traslado)){
                           Vue.swal({
                               title: 'Alerta de inventario',
                               text: '¡No puedes sobrepasar la cantidad del producto!',

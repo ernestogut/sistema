@@ -16,7 +16,7 @@ class CabeceraTrasladoController extends Controller
      */
     public function index()
     {
-        $cabecera_traslado = CabeceraTraslado::select('cabecera_traslados.id as num_documento', 'a1.descripcion as almacen_origen', 'a2.descripcion as almacen_destino', 'users.usuario as responsable','cabecera_traslados.fecha_emision', 'cabecera_traslados.motivo',  'cabecera_traslados.observacion')->join('almacens as a1','cabecera_traslados.id_almacen_origen', '=', 'a1.id')->join('almacens as a2','cabecera_traslados.id_almacen_destino', '=', 'a2.id')->join('users','cabecera_traslados.id_usuario', '=', 'users.id')->orderBy('cabecera_traslados.id', 'desc')->get();
+        $cabecera_traslado = CabeceraTraslado::select('cabecera_traslados.id as num_documento', 'cabecera_traslados.id_almacen_destino as id_alm_destino', 'cabecera_traslados.id_almacen_origen as id_alm_origen', 'a1.descripcion as almacen_origen', 'a2.descripcion as almacen_destino', 'users.usuario as responsable','cabecera_traslados.fecha_emision', 'cabecera_traslados.motivo',  'cabecera_traslados.observacion', 'cabecera_traslados.estado')->join('almacens as a1','cabecera_traslados.id_almacen_origen', '=', 'a1.id')->join('almacens as a2','cabecera_traslados.id_almacen_destino', '=', 'a2.id')->join('users','cabecera_traslados.id_usuario', '=', 'users.id')->orderBy('cabecera_traslados.id', 'desc')->get();
         return $cabecera_traslado;
     }
 

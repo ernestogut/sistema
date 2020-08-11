@@ -28,6 +28,14 @@
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Inventario</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=14" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Traspaso almacén</a>
+                        </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Socios de negocio</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=6" class="nav-item">

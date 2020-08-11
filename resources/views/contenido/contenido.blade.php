@@ -70,6 +70,9 @@
             <template v-if="menu==5">
                 <facturacion></facturacion>
             </template>
+            <template v-if="menu==14">
+                <traspaso-almacen></traspaso-almacen>
+            </template>
             <template v-if="menu==19">
                 <pedido-speed></pedido-speed>
             </template>

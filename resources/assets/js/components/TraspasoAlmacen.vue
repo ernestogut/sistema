@@ -14,8 +14,135 @@
                 </div>
             </div>
             <b-card>
-                <vue-datatable  :items="arrayTraslados" :fields="cabecerasTraslado" :funcionBoton="verFactura"  :controlador="4"  :factura="true" :cargando="loading">
-                </vue-datatable>
+                <b-card>
+                    <b-row>
+                    <b-col lg="6" class="my-1">
+                        <b-form-group
+                        label="Ordenar"
+                        label-cols-sm="3"
+                        label-align-sm="right"
+                        label-size="sm"
+                        label-for="sortBySelect"
+                        class="mb-0"
+                        >
+                        <b-input-group size="sm">
+                            <b-form-select v-model="sortBy" id="sortBySelect" :options="sortOptions" class="w-75">
+                            <template v-slot:first>
+                                <option value>-- ninguno --</option>
+                            </template>
+                            </b-form-select>
+                            <b-form-select v-model="sortDesc" size="sm" :disabled="!sortBy" class="w-25">
+                            <option :value="false">Asc</option>
+                            <option :value="true">Desc</option>
+                            </b-form-select>
+                        </b-input-group>
+                        </b-form-group>
+                    </b-col>
+                    <b-col lg="6" class="my-1">
+                        <b-form-group
+                        label="Buscar"
+                        label-cols-sm="3"
+                        label-align-sm="right"
+                        label-size="sm"
+                        label-for="filterInput"
+                        class="mb-0"
+                        >
+                        <b-input-group size="sm">
+                            <b-form-input v-model="filter" type="search" id="filterInput" placeholder="Busca algo"></b-form-input>
+                            <b-input-group-append>
+                            <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                        </b-form-group>
+                    </b-col>
+
+                    <b-col sm="5" md="6" class="my-1">
+                        <b-form-group
+                        label="Por pagina"
+                        label-cols-sm="6"
+                        label-cols-md="4"
+                        label-cols-lg="3"
+                        label-align-sm="right"
+                        label-size="sm"
+                        label-for="perPageSelect"
+                        class="mb-0"
+                        >
+                        <b-form-select v-model="perPage" id="perPageSelect" size="sm" :options="pageOptions"></b-form-select>
+                        </b-form-group>
+                    </b-col>
+
+                    <b-col sm="7" md="6" class="my-1">
+                        <b-pagination
+                        v-model="currentPage"
+                        :total-rows="totalRows"
+                        :per-page="perPage"
+                        align="fill"
+                        size="sm"
+                        class="my-0"
+                        ></b-pagination>
+                    </b-col>
+                    </b-row>
+
+                    <!-- Tabla principal -->
+                    <b-table
+                    show-empty
+                    small
+                    stacked="md"
+                    :busy="loading"
+                    :items="arrayTraslados"
+                    :fields="fields"
+                    :current-page="currentPage"
+                    :per-page="perPage"
+                    :filter="filter"
+                    :filterIncludedFields="filterOn"
+                    :sort-by.sync="sortBy"
+                    :sort-desc.sync="sortDesc"
+                    :sort-direction="sortDirection"
+                    @filtered="onFiltered"
+                    :emptyText="'No hay elementos para mostrar'"
+                    :emptyFilteredText="'No se han encontrado elementos para lo que buscas'"
+                    >
+                    <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
+
+                    <template v-slot:cell(actions)="row">
+                        
+                        <div>
+                            <b-button
+                                variant="primary"
+                                size="sm"
+                                @click="verFactura(row.item)"
+                            >
+                                <i class="icon-eye"></i>
+                            </b-button>
+                            <b-button
+                                variant="primary"
+                                size="sm"
+                                @click="procesarTraslado(row.item)"
+                                v-if="row.item.estado == 'pendiente' && usuarioLogeado.idrole == 1"
+                            >
+                                <i class="fa fa-square"></i>
+                            </b-button>
+                                <b-button
+                                variant="primary"
+                                size="sm"
+                                @click="completarTraslado(row.item)"
+                                v-else-if="row.item.estado == 'procesando'"
+                            >
+                                <i class="fa fa-check-square"></i>
+                            </b-button>
+                        </div>
+                        
+                    </template>
+                    <template v-slot:table-busy>
+                        <div class="text-center text-danger my-2">
+                        <b-spinner class="align-middle"></b-spinner>
+                        <strong>Cargando...</strong>
+                        </div>
+                    </template>
+                    </b-table>
+
+                    <!-- User Interface controls -->
+                </b-card>
             </b-card>
             
                     
@@ -30,7 +157,7 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <form  action="" @submit.prevent="insertarCabecera()">
+                        <form  action="" @submit.prevent="solicitarTraslado()">
                             <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label>Almacen de origen</label>
@@ -229,6 +356,17 @@
 export default {
     data(){
         return{
+            //Datos de Datatable
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 10,
+            pageOptions: [5, 10, 15],
+            sortBy: "",
+            sortDesc: false,
+            sortDirection: "asc",
+            filter: null,
+            filterOn: [],
+            // Terminan datos de data table
             initiated: false,
             loading: false,
             initiatedImagen: false,
@@ -244,7 +382,7 @@ export default {
             objetoComprobante: {},
             objetoProductoImagen: {},
             iconos: 'icon-plus',
-            cabecerasTraslado: [
+            fields: [
                 { key: "num_documento", label: "Num documento", sortable: true, sortDirection: "desc", class: "text-center" },
                 { key: "almacen_origen", label: "Almacén de origen", sortable: true, class: "text-center"},
                 { key: "almacen_destino", label: "Almacén de destino", sortable: true, class: "text-center"},
@@ -252,6 +390,7 @@ export default {
                 { key: "fecha_emision", label: "Fecha de emisión", sortable: true, class: "text-center"},
                 { key: "motivo", label: "Motivo", sortable: true, class: "text-center"},
                 { key: "observacion", label: "Observación", sortable: true, class: "text-center"},
+                { key: "estado", label: "Estado", sortable: true, class: "text-center"},
                 { key: "actions", label: "Acciones", class: "text-center"}
             ],
             comprobanteEscogido: '',
@@ -298,6 +437,14 @@ export default {
         },
         show(){
             return this.$store.getters.show;
+        },
+        sortOptions() {
+        // Create an options list from our fields
+            return this.fields
+                .filter(f => f.sortable)
+                .map(f => {
+                return { text: f.label, value: f.key };
+                });
         }
     },
     components: {
@@ -312,7 +459,13 @@ export default {
             $('#buscarP').trigger('focus');
         })
     },
+    
     methods:{
+        onFiltered(filteredItems) {
+        // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
+        },
         abrirModalImagen(producto){
             //var imagenProducto = {}
             this.loadingImagen = true
@@ -340,54 +493,67 @@ export default {
         },
         agregarProducto(item){
             console.log(item)
-            //document.getElementById(`producto${item.codigo}`).className = 'selected'
-            /*var estilos = document.querySelector(`.codigo${item.codigo}`).style
-            estilos.background = 'black'
-            estilos.borderColor = 'black'
-            estilos.color = 'white'*/
-            //this.estiloCeldaSeleccionada = 'table-success'
-            var obj = {}
-            var controlador = false
-            
-            for(const i in item){
-                if(i == 'codigo'){
-                    obj.codigo = item[i]
+            if(item.stock > 0){
+                var obj = {}
+                var controlador = false
+                
+                for(const i in item){
+                    if(i == 'codigo'){
+                        obj.codigo = item[i]
+                    }
+                    if(i == 'producto'){
+                        obj.producto = item[i]
+                    }
+                    if(i == 'codigo_padre'){
+                        obj.codigo_padre = item[i]
+                    }
+                    if(i == 'cantidad_alm'){
+                        obj.cantidad_alm = item[i]
+                    }
+                    if(i == 'precio'){
+                        obj.precio = item[i]
+                    }
+                        obj.almacen = 1;
+                        obj.cantidad = 1
+                        obj.descuento = 0
+                        obj.total = obj.cantidad*obj.precio
                 }
-                if(i == 'producto'){
-                    obj.producto = item[i]
+                var ventasP = this.ventas;
+                for(var j = 0; j < ventasP.length; j++){
+                    if(item.codigo == ventasP[j].codigo){
+                            ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
+                            if(ventasP[j].cantidad == ventasP[j].cantidad_alm){
+                                Vue.swal({
+                                    title: 'Alerta de inventario',
+                                    text: '¡No puedes sobrepasar la cantidad del producto!',
+                                    icon: 'error'
+                                });
+                            }else{
+                                ventasP[j].cantidad += 1
+                            }
+                            ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
+                            controlador = true
+                            break;
+                    }else{
+                        controlador = false
+                    }
                 }
-                if(i == 'codigo_padre'){
-                    obj.codigo_padre = item[i]
-                }
-                if(i == 'precio'){
-                    obj.precio = item[i]
-                }
-                    obj.almacen = 1;
-                    obj.cantidad = 1
-                    obj.descuento = 0
-                    obj.total = obj.cantidad*obj.precio
-            }
-            var ventasP = this.ventas;
-            for(var j = 0; j < ventasP.length; j++){
-                if(item.codigo == ventasP[j].codigo){
-                        ventasP[j].cantidad = parseInt(ventasP[j].cantidad)
-                        ventasP[j].cantidad += 1
-                        ventasP[j].total = ventasP[j].cantidad*ventasP[j].precio
-                        controlador = true
-                        break;
+                if(controlador){
+                    this.$store.dispatch('actualizarTablaVentas', ventasP);
+                    //this.$emit('emitirEvProductos', ventasP)
                 }else{
-                    controlador = false
+                    ventasP.push(obj)
+                    this.$store.dispatch('actualizarTablaVentas', ventasP);
+                    //this.$emit('emitirEvProductos', ventasP)
                 }
-            }
-            if(controlador){
-                this.$store.dispatch('actualizarTablaVentas', ventasP);
-                //this.$emit('emitirEvProductos', ventasP)
+                localStorage.setItem('ventas', JSON.stringify(this.ventas))
             }else{
-                ventasP.push(obj)
-                this.$store.dispatch('actualizarTablaVentas', ventasP);
-                //this.$emit('emitirEvProductos', ventasP)
+                Vue.swal({
+                    title: 'Producto sin stock',
+                    text: '¡El producto tiene 0 unidades en este momento!',
+                    icon: 'error'
+                });
             }
-            localStorage.setItem('ventas', JSON.stringify(this.ventas))
         },
         abrirModalVariaciones(codigo){
             this.$store.dispatch('actualizarShow', true)
@@ -438,7 +604,6 @@ export default {
             await this.$store.dispatch('cargarProductosTotales').then(()=>{
                 this.loading = false;
                 this.initiated = true;
-                this.tablaProductos();
             });
         },
         listarTraslados(){
@@ -446,9 +611,9 @@ export default {
             this.loading = true
             axios.get(urlItem).then(response=>{
                 this.arrayTraslados = response.data;
+                this.totalRows = this.arrayTraslados.length;
                 this.loading = false;
                 this.initiated = true;
-                this.miTabla();
             })
         },
         abrirModalVenta(){
@@ -476,6 +641,80 @@ export default {
 
             
             $('#modalInformacionFact').modal('show')
+        },
+        solicitarTraslado(){
+            if(this.objetoIngreso.id_almacen_origen == this.objetoIngreso.id_almacen_destino){
+                alert('El almacen de destino no puede ser el mismo que el de origen')
+            }else{
+                this.$store.dispatch('actualizarShow', true)
+                axios.post('/cabecera_traslado', this.objetoIngreso).then((response)=>{
+                    this.id_cabecera_traslado = response.data
+                    var ventasT = this.ventas;
+                    for(var i = 0; i < ventasT.length; i++){
+                        ventasT[i].almacen_origen = this.objetoIngreso.id_almacen_origen;
+                        ventasT[i].almacen_destino = this.objetoIngreso.id_almacen_destino;
+                    }
+                    this.$store.dispatch('actualizarTablaVentas', ventasT);
+                    axios.post('/detalle_traslado', {'ventas': this.ventas, 'id_cabecera_traslado': this.id_cabecera_traslado}).then((response)=>{
+                        $('#modalVenta').modal('hide');
+                        Vue.swal({
+                            title: 'Solicitud de traslado exitoso!',
+                            text: 'Comunicate con un administrador para que acepte tu traslado!',
+                            icon: 'success'
+                        });
+                        this.$store.dispatch('actualizarShow', false)
+                        this.listarTraslados();
+                    })
+                })
+                .catch(error=>{
+                    Vue.swal({
+                        title: 'Solicitud de traslado fallido',
+                        text: 'La solicitud no ha podido ser procesada',
+                        icon: 'error'
+                    });
+                })
+            }
+        },
+        procesarTraslado(traslado){
+            this.$store.dispatch('actualizarShow', true)
+            let formDatos = new FormData();
+            formDatos.append('estado', 'procesando')
+            formDatos.append("_method", "put");
+            axios.put(`detalle_traslado/${traslado.num_documento}/procesarTraslado`, formDatos).then(()=>{
+                Vue.swal({
+                    title: 'Traslado aprobado',
+                    text: `Has aprobado con éxito el traslado número ${traslado.num_documento}`,
+                    icon: 'success'
+                });
+                this.$store.dispatch('actualizarShow', false)
+                traslado.estado = 'procesando'
+            })
+        },
+        completarTraslado(traslado){
+            if(this.usuarioLogeado.id_almacen == traslado.id_alm_destino){
+                this.$store.dispatch('actualizarShow', true)
+                let formDatos = new FormData();
+                formDatos.append('estado', 'completado')
+                formDatos.append('almacen_origen', traslado.id_alm_origen)
+                formDatos.append('almacen_destino', traslado.id_alm_destino)
+                formDatos.append("_method", "put");
+                axios.put(`detalle_traslado/${traslado.num_documento}/completarTraslado`, formDatos).then(()=>{
+                    Vue.swal({
+                        title: 'Traslado completado',
+                        text: ``,
+                        icon: 'success'
+                    });
+                    this.$store.dispatch('actualizarShow', false)
+                    traslado.estado = 'completado'
+                })
+            }else{
+                Vue.swal({
+                    title: 'No puedes completar este traslado',
+                    text: `No eres el encargado de la tienda de ${traslado.almacen_destino}`,
+                    icon: 'error'
+                });
+            }
+            
         },
         insertarCabecera(){
             if(this.objetoIngreso.id_almacen_origen == this.objetoIngreso.id_almacen_destino){

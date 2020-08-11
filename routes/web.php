@@ -214,6 +214,8 @@ Route::get('cierre_caja/{almacen}/montoDiaAnterior', 'CierreCajaController@monto
 Route::put('movimiento_caja/anularMovimiento', 'MovimientoCajaController@anularMovimiento');
 Route::put('c_fact/{id}/deshabilitarFactura', 'CFactController@deshabilitarFactura');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
+Route::put('detalle_traslado/{id_cabecera}/procesarTraslado', 'DetalleTrasladoController@procesarTraslado');
+Route::put('detalle_traslado/{id_cabecera}/completarTraslado', 'DetalleTrasladoController@completarTraslado');
 Route::get('speed/{almacen}/obtenerProductosPorAlmacen', 'SpeedController@obtenerProductosPorAlmacen');
 Route::get('speed/{id_padre}/{almacen}/consultarVariacion', 'SpeedController@consultarVariacion');
 Route::get('speed/{id_padre}/consultarVariacionTotal', 'SpeedController@consultarVariacionTotal');
