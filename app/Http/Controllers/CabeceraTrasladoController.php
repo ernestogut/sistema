@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\CabeceraTraslado;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class CabeceraTrasladoController extends Controller
@@ -59,6 +60,10 @@ class CabeceraTrasladoController extends Controller
     public function show(CabeceraTraslado $cabeceraTraslado)
     {
         //
+    }
+    public function obtenerTrasladosPendientes(){
+        $traslados = CabeceraTraslado::select(DB::raw("COUNT(*) as cantidad"))->where('estado', 'pendiente')->get();
+        return $traslados;
     }
 
     /**

@@ -951,7 +951,9 @@ export default {
             impresora.feed(3);
             impresora.cut();
             impresora.cutPartial(); // Pongo este y también cut porque en ocasiones no funciona con cut, solo con cutPartial
-            impresora.cash();
+            if(factura.tipo_pago == 'efectivo'){
+                impresora.cash();
+            }
             impresora.end()
                 .then(valor => {
                     console.log(valor)

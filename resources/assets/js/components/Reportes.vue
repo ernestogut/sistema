@@ -169,18 +169,17 @@
             <strong>Cargando...</strong>
           </div>
         </template>
-        <template slot="bottom-row">
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td class="text-center align-middle">Total</td>
-
-          <!-- this is a computed prop that adds up all the expenses in the visible rows -->
-          <td class="text-center align-middle">{{ ventasTotal.toFixed(2) }}</td>
-        </template>
+         
       </b-table>
+      <div>
+        <strong>
+          Total efectivo: S/ {{ventasTotalEfectivo.toFixed(2)}}<br>
+          Total tarjeta: S/ {{ventasTotalTarjeta.toFixed(2)}}<br>
+          Total cheque: S/ {{ventasTotalCheque.toFixed(2)}}<br>
+          Total: S/ {{ventasTotal.toFixed(2)}}<br>
+        </strong>
+          
+        </div>
       <div
         class="modal fade"
         tabindex="-1"
@@ -358,7 +357,38 @@ export default {
     ventasTotal() {
       return this.arrayReporte.reduce((accum, item) => {
         // Assuming expenses is the field you want to total up
-        return accum + parseFloat(item.total);
+          return accum + parseFloat(item.total);
+        
+      }, 0.0);
+    },
+    ventasTotalEfectivo() {
+      return this.arrayReporte.reduce((accum, item) => {
+        // Assuming expenses is the field you want to total up
+        if(item.tipo_pago == 'efectivo'){
+          return accum + parseFloat(item.total);
+        }else{
+          return accum + 0
+        }
+      }, 0.0);
+    },
+    ventasTotalTarjeta() {
+      return this.arrayReporte.reduce((accum, item) => {
+        // Assuming expenses is the field you want to total up
+        if(item.tipo_pago == 'tarjeta'){
+          return accum + parseFloat(item.total);
+        }else{
+          return accum + 0
+        }
+      }, 0.0);
+    },
+    ventasTotalCheque() {
+      return this.arrayReporte.reduce((accum, item) => {
+        // Assuming expenses is the field you want to total up
+        if(item.tipo_pago == 'cheque'){
+          return accum + parseFloat(item.total);
+        }else{
+          return accum + 0
+        }
       }, 0.0);
     },
     arrayAlmacenFijo() {
@@ -392,6 +422,7 @@ export default {
           )
           .then(response => {
             this.arrayReporte = response.data;
+            console.log(this.arrayReporte);
             this.totalRows = this.arrayReporte.length;
             this.cargando = false;
           });

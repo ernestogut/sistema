@@ -209,6 +209,8 @@ Route::get('cierre_caja/{codigo}/consultarCajaSeleccionada', 'CierreCajaControll
 Route::get('c_fact/{tipo_venta}/{fecha}/{almacen}/mostrarVentasTipoPago', 'CFactController@mostrarVentasTipoPago');
 Route::get('speed/obtenerCategoriasProductos', 'SpeedController@obtenerCategoriasProductos');
 Route::get('speed/{id_categoria}/obtenerProductosDeCategoria', 'SpeedController@obtenerProductosDeCategoria');
+Route::get('reporte_venta/{almacen}/mostrarVentasPorSemana', 'ReporteVentaController@mostrarVentasPorSemana');
+Route::get('reporte_venta/{almacen}/obtenerVentasDiariasPorAlmacen', 'ReporteVentaController@obtenerVentasDiariasPorAlmacen');
 Route::get('proveedor/listarProveedorModal', 'ProveedorController@listarProveedorModal');
 Route::get('cierre_caja/{almacen}/montoDiaAnterior', 'CierreCajaController@montoDiaAnterior');
 Route::put('movimiento_caja/anularMovimiento', 'MovimientoCajaController@anularMovimiento');
@@ -231,6 +233,7 @@ Route::get('movimiento_caja/{almacen}/{fecha}/reporteDeMovimientos', 'Movimiento
 Route::get('reporte_cierre/{fecha}/{almacen}/obtenerCierres', 'CierreCajaController@obtenerCierres');
 Route::get('reporte_cierre/{fecha_inicio}/{fecha_fin}/{almacen}/obtenerCierresPorRango', 'CierreCajaController@obtenerCierresPorRango');
 Route::get('c_fact/{tipo_comprobante}/{id_alm}/mostrarPorAlmacen', 'CFactController@mostrarPorAlmacen');
+Route::get('cabecera_traslado/obtenerTrasladosPendientes', 'CabeceraTrasladoController@obtenerTrasladosPendientes');
 //Route::get('inventario/{codigo}/cantidadesAlmacenInventario', 'InventarioController@cantidadesAlmacenInventario');
 Route::resource('almacen', 'AlmacenController');
 Route::post('producto/modificarInventario', 'ProductoController@modificarInventario')->name('producto.inventario'); 

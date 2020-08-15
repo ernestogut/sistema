@@ -6,6 +6,7 @@ use App\ReporteVenta;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ReporteVentaController extends Controller
 {
@@ -40,6 +41,10 @@ class ReporteVentaController extends Controller
             return $ventas;
         }
     }
+    public function obtenerVentasDiariasPorAlmacen($almacen){
+        $ventas_diarias = ReporteVenta::select(DB::raw("SUM(c_facts.total) as total, almacens.descripcion as almacen"))->join('almacens', 'c_facts.id_almacen', 'almacens.id')->where('c_facts.fecha', date("Y-m-d"))->where('id_almacen', $almacen)->get();
+        return $ventas_diarias;
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -70,8 +75,17 @@ class ReporteVentaController extends Controller
     public function show($almacen)
     {
         DB::statement("SET lc_time_names = 'es_ES'");
-        $ventas = ReporteVenta::select(DB::raw('YEAR(fecha) as year, MONTHNAME(fecha) month, SUM(total) as total, count(*) as ordenes'))->groupBy(DB::raw('YEAR(fecha), MONTHNAME(fecha)'))->orderBy(DB::raw('MONTH(fecha)'))->where('id_almacen', '=', $almacen)->get();
+        $ventas = ReporteVenta::select(DB::raw('YEAR(fecha) as year, MONTHNAME(fecha) month, SUM(total) as total, count(*) as ordenes'))->groupBy(DB::raw('YEAR(fecha), MONTHNAME(fecha)'))->orderBy(DB::raw('MONTH(fecha)'))->where('id_almacen', '=', $almacen)->where('estado', 'habilitado')->get();
         return $ventas;
+    }
+
+    public function mostrarVentasPorSemana($almacen)
+    {
+        $ventas = ReporteVenta::select(DB::raw("(ELT(WEEKDAY(fecha) + 1, 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo')) AS dia_semana, SUM(total) as total, count(*) as ordenes"))->where(DB::raw('YEARWEEK(fecha)'),'=',DB::raw('YEARWEEK(NOW())'))->groupBy(DB::raw('dia_semana'))->orderBy(DB::raw('fecha, "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"'))->where('id_almacen', $almacen)->get();
+        return $ventas;
+
+       
+        //return $ventas;
     }
 
     /**

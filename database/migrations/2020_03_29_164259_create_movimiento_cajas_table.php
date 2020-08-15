@@ -23,6 +23,7 @@ class CreateMovimientoCajasTable extends Migration
             $table->string('observacion')->nullabe();
             $table->float('monto', 11,2);
             $table->string('tipo_movimiento');
+            $table->string('estado')->default('habilitado');
             $table->timestamps();
         });
     }

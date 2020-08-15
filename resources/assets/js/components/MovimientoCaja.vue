@@ -273,8 +273,13 @@ export default {
             })
         },
         anularMovimiento(item, index){
-            console.log(item)
-            this.$store.dispatch('actualizarShow', true)
+            Vue.swal({
+                title: 'Advertencia',
+                text: '¿Estás seguro de anular este movimiento de caja? !Esta acción no se puede deshacer!',
+                icon: 'warning'
+            }).then((result) => {
+                if (result.value) {
+                    this.$store.dispatch('actualizarShow', true)
                     let formDatos = new FormData();
                     formDatos.append('id', item.num_doc)
                     formDatos.append('tipo_movimiento', item.tipo_movimiento)
@@ -288,6 +293,9 @@ export default {
                     }).catch(err=>{
                         console.log(err)
                     })
+                }
+            })
+            
         },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
@@ -329,8 +337,10 @@ export default {
             this.objetoMovimiento.fecha = this.$moment().format("YYYY-MM-DD")
         },
         insertarMovimiento(){
+                this.$store.dispatch('actualizarShow', true)
                 var me = this;
                 axios.post('/movimiento_caja', this.objetoMovimiento).then((response)=>{
+                    this.$store.dispatch('actualizarShow', false)
                     $('#modalMovimiento').modal('hide');
                     Vue.swal({
                         title: `${this.objetoMovimiento.tipo_movimiento} exitoso!`,
@@ -340,6 +350,7 @@ export default {
                     this.listarMovimientosCaja();
                 })
                 .catch(error=>{
+                    this.$store.dispatch('actualizarShow', false)
                     Vue.swal({
                         title: `${this.objetoMovimiento.tipo_movimiento} fallido`,
                         text: `El ${this.objetoMovimiento.tipo_movimiento} no pudo procesarse`,

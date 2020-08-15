@@ -24,6 +24,7 @@ class CreateCabeceraTrasladosTable extends Migration
             $table->date('fecha_emision');
             $table->string('motivo');
             $table->longText('observacion');
+            $table->string('estado')->default('pendiente');
             $table->timestamps();
         });
     }

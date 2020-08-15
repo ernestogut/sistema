@@ -227,7 +227,7 @@
                                         <td class="text-center align-middle">{{venta.codigo}}</td>
                                         <td class="text-center align-middle">{{venta.producto}}</td>
                                         <td class="text-center align-middle" >   
-                                            <input type="number" class="form-control input-sm" v-model="venta.cantidad">
+                                            <input type="number" class="form-control input-sm" v-model="venta.cantidad" @input="validarCantidad(venta)">
                                         </td>
                                         <td class="text-center align-middle">
                                             <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
@@ -296,7 +296,7 @@
                                     <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="agregarProducto(variacion)">
                                         <div class="d-flex justify-content-around">
                                             <span>{{variacion.variacion}}</span>
-                                            <span>{{variacion.stock}}</span>
+                                            <span>{{variacion.cantidad_alm}}</span>
                                         </div>
                                         
                                     </b-list-group-item>
@@ -453,6 +453,7 @@ export default {
     mounted(){
         this.listarTraslados()
         this.objetoIngreso.id_usuario = this.usuarioLogeado.id
+        this.objetoIngreso.id_almacen_origen = this.usuarioLogeado.id_almacen;
         this.controlador = 4
         $(this.$refs.vuemodal).on("hidden.bs.modal", this.limpiarTabla)
         $('#modalVariaciones').on('hidden.bs.modal', function () {
@@ -482,9 +483,7 @@ export default {
             this.$store.dispatch('actualizarTablaVentas', ventasT)
             localStorage.setItem('ventas', JSON.stringify(ventasT)) 
             this.controlador = 4
-            this.objetoIngreso.id_almacen_origen = null
             this.objetoIngreso.id_almacen_destino = null
-            this.objetoIngreso.id_usuario = null
             this.objetoIngreso.fecha_emision = null
             this.objetoIngreso.motivo = ''
             this.objetoIngreso.observacion = ''
@@ -492,8 +491,8 @@ export default {
             
         },
         agregarProducto(item){
-            console.log(item)
-            if(item.stock > 0){
+            //console.log(item)
+            if(item.cantidad_alm > 0){
                 var obj = {}
                 var controlador = false
                 
@@ -557,7 +556,7 @@ export default {
         },
         abrirModalVariaciones(codigo){
             this.$store.dispatch('actualizarShow', true)
-            axios.get(`speed/${codigo}/buscarProductoEnListaGeneral`).then(response=>{
+            axios.get(`speed/${codigo}/${this.usuarioLogeado.id_almacen}/buscarProducto`).then(response=>{
                 var producto = response.data[0];
                 this.$store.dispatch('actualizarProductoVariacion', producto.producto);
                 this.consultarProductoSimple(producto);
@@ -588,9 +587,8 @@ export default {
                     this.agregarProducto(producto);
                     this.$store.dispatch('actualizarShow', false)
                 }else if(producto.situacion_producto == 'variable'){
-                    axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
+                    axios.get(`speed/${producto.codigo}/${this.usuarioLogeado.id_almacen}/consultarVariacion`).then(response=>{
                         this.$store.dispatch('actualizarVariaciones', response.data);
-                        console.log(this.arrayVariaciones);
                         $('#modalVariaciones').modal('show');
                         this.$store.dispatch('actualizarShow', false)
                     })
@@ -601,7 +599,7 @@ export default {
         },
         async listarItem(){
             this.loading = true
-            await this.$store.dispatch('cargarProductosTotales').then(()=>{
+            await this.$store.dispatch('cargarProductos', this.usuarioLogeado.id_almacen).then(()=>{
                 this.loading = false;
                 this.initiated = true;
             });
@@ -644,7 +642,17 @@ export default {
         },
         solicitarTraslado(){
             if(this.objetoIngreso.id_almacen_origen == this.objetoIngreso.id_almacen_destino){
-                alert('El almacen de destino no puede ser el mismo que el de origen')
+                Vue.swal({
+                    title: 'Error',
+                    text: 'El almacen de destino no puede ser el mismo que el de origen!',
+                    icon: 'error'
+                });
+            }else if(this.objetoIngreso.id_almacen_origen == null || this.objetoIngreso.id_almacen_destino == null){
+                Vue.swal({
+                    title: 'Error',
+                    text: 'Selecciona un almacén de origen o destino!',
+                    icon: 'error'
+                });
             }else{
                 this.$store.dispatch('actualizarShow', true)
                 axios.post('/cabecera_traslado', this.objetoIngreso).then((response)=>{
@@ -667,84 +675,79 @@ export default {
                     })
                 })
                 .catch(error=>{
+                    this.$store.dispatch('actualizarShow', false)
                     Vue.swal({
                         title: 'Solicitud de traslado fallido',
                         text: 'La solicitud no ha podido ser procesada',
                         icon: 'error'
-                    });
+                    })
                 })
             }
         },
         procesarTraslado(traslado){
-            this.$store.dispatch('actualizarShow', true)
-            let formDatos = new FormData();
-            formDatos.append('estado', 'procesando')
-            formDatos.append("_method", "put");
-            axios.put(`detalle_traslado/${traslado.num_documento}/procesarTraslado`, formDatos).then(()=>{
-                Vue.swal({
-                    title: 'Traslado aprobado',
-                    text: `Has aprobado con éxito el traslado número ${traslado.num_documento}`,
-                    icon: 'success'
-                });
-                this.$store.dispatch('actualizarShow', false)
-                traslado.estado = 'procesando'
+            Vue.swal({
+                title: `Advertencia`,
+                text: '¿Está seguro de continuar? Esta acción no se puede deshacer',
+                icon: 'warning'
+            }).then((result) => {
+                if (result.value) {
+                    this.$store.dispatch('actualizarShow', true)
+                    let formDatos = new FormData();
+                    formDatos.append('estado', 'procesando')
+                    formDatos.append("_method", "put");
+                    axios.put(`detalle_traslado/${traslado.num_documento}/procesarTraslado`, formDatos).then(()=>{
+                        Vue.swal({
+                            title: 'Traslado aprobado',
+                            text: `Has aprobado con éxito el traslado número ${traslado.num_documento}`,
+                            icon: 'success'
+                        });
+                        this.$store.dispatch('actualizarShow', false)
+                        traslado.estado = 'procesando'
+                    })
+                }
             })
         },
         completarTraslado(traslado){
-            if(this.usuarioLogeado.id_almacen == traslado.id_alm_destino){
-                this.$store.dispatch('actualizarShow', true)
-                let formDatos = new FormData();
-                formDatos.append('estado', 'completado')
-                formDatos.append('almacen_origen', traslado.id_alm_origen)
-                formDatos.append('almacen_destino', traslado.id_alm_destino)
-                formDatos.append("_method", "put");
-                axios.put(`detalle_traslado/${traslado.num_documento}/completarTraslado`, formDatos).then(()=>{
-                    Vue.swal({
-                        title: 'Traslado completado',
-                        text: ``,
-                        icon: 'success'
-                    });
-                    this.$store.dispatch('actualizarShow', false)
-                    traslado.estado = 'completado'
-                })
-            }else{
+            Vue.swal({
+                title: `Advertencia`,
+                text: '¿Está seguro de continuar? Los productos los debes tener físicamente',
+                icon: 'warning'
+            }).then((result) => {
+                if (result.value) {
+                    if(this.usuarioLogeado.id_almacen == traslado.id_alm_destino){
+                        this.$store.dispatch('actualizarShow', true)
+                        let formDatos = new FormData();
+                        formDatos.append('estado', 'completado')
+                        formDatos.append('almacen_origen', traslado.id_alm_origen)
+                        formDatos.append('almacen_destino', traslado.id_alm_destino)
+                        formDatos.append("_method", "put");
+                        axios.put(`detalle_traslado/${traslado.num_documento}/completarTraslado`, formDatos).then(()=>{
+                            Vue.swal({
+                                title: 'Traslado completado',
+                                text: ``,
+                                icon: 'success'
+                            });
+                            this.$store.dispatch('actualizarShow', false)
+                            traslado.estado = 'completado'
+                        })
+                    }else{
+                        Vue.swal({
+                            title: 'No puedes completar este traslado',
+                            text: `No eres el encargado de la tienda de ${traslado.almacen_destino}`,
+                            icon: 'error'
+                        });
+                    }
+                }
+            })
+        },
+        validarCantidad(venta){
+            if(venta.cantidad <= 0 || venta.cantidad > venta.cantidad_alm){
                 Vue.swal({
-                    title: 'No puedes completar este traslado',
-                    text: `No eres el encargado de la tienda de ${traslado.almacen_destino}`,
+                    title: 'Alerta de inventario',
+                    text: '¡No puedes sobrepasar la cantidad del producto!',
                     icon: 'error'
                 });
-            }
-            
-        },
-        insertarCabecera(){
-            if(this.objetoIngreso.id_almacen_origen == this.objetoIngreso.id_almacen_destino){
-                alert('El almacen de destino no puede ser el mismo que el de origen')
-            }else{
-                axios.post('/cabecera_traslado', this.objetoIngreso).then((response)=>{
-                    this.id_cabecera_traslado = response.data
-                    var ventasT = this.ventas;
-                    for(var i = 0; i < ventasT.length; i++){
-                        ventasT[i].almacen_origen = this.objetoIngreso.id_almacen_origen;
-                        ventasT[i].almacen_destino = this.objetoIngreso.id_almacen_destino;
-                    }
-                    this.$store.dispatch('actualizarTablaVentas', ventasT);
-                    axios.post('/detalle_traslado', {'ventas': this.ventas, 'id_cabecera_traslado': this.id_cabecera_traslado}).then((response)=>{
-                        $('#modalVenta').modal('hide');
-                        Vue.swal({
-                            title: 'Traslado exitoso!',
-                            text: 'El traslado ha sido procesado con éxito!',
-                            icon: 'success'
-                        });
-                        this.listarTraslados();
-                    })
-                })
-                .catch(error=>{
-                    Vue.swal({
-                        title: 'Traslado fallido',
-                        text: 'El traslado no ha podido ser procesado',
-                        icon: 'error'
-                    });
-                })
+                venta.cantidad = 1;
             }
         },
         obtenerFecha(){

@@ -33,6 +33,7 @@ class CreateCFactsTable extends Migration
             $table->decimal('desc_global', 11, 2);
             $table->decimal('igv_total', 11, 2);
             $table->decimal('total', 11, 2);
+            $table->string('estado')->default('habilitado');
             $table->timestamps();
         });
     }

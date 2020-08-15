@@ -220,14 +220,14 @@ export default {
             if (item.stock < 5) return 'bg-danger'
         },
         consultarProductoSimple(producto){
-          if((producto.cantidad_alm > 0 && this.factura) || !this.factura){
+          if((producto.cantidad_alm > 0 && (this.factura || this.traslado)) || (!this.factura && !this.traslado)){
             this.$store.dispatch('actualizarShow', true);
             if(producto.situacion_producto == 'simple'){
                     this.agregarProducto(producto)
                     this.$store.dispatch('actualizarShow', false);
                 }else if(producto.situacion_producto == 'variable'){
                     this.$store.dispatch('actualizarProductoVariacion', producto.producto);
-                    if(this.ingreso || this.traslado){
+                    if(this.ingreso){
                       axios.get(`speed/${producto.codigo}/consultarVariacionTotal`).then(response=>{
                           this.$store.dispatch('actualizarVariaciones', response.data);
                           $('#modalVariaciones').modal('show');
@@ -252,7 +252,6 @@ export default {
             
         },
         agregarProducto(item){
-            
             var obj = {}
             var controlador = false
             for(const i in item){
