@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\C_fact;
 use App\D_fact;
+use App\Envios;
 use App\Inventario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -66,7 +67,14 @@ class CFactController extends Controller
                 DB::select("call generarCuentas(?,?,?)",[$cabecera['total'], $cabecera['fecha'], $cabecera['id_almacen']]);
             }
             $id_cabecera = C_fact::orderBy('id', 'desc')->first()->id;
-
+            if($cabecera['tipo_pago'] == 'cheque'){
+                $envio = new Envios();
+                $envio->id_factura = $id_cabecera;
+                $envio->departamento = $cabecera['ciudad_destino']['departamento'];
+                $envio->provincia = $cabecera['provincia_destino']['provincia'];
+                $envio->distrito = $cabecera['distrito_destino']['distrito'];
+                $envio->save();
+            }
             foreach ($detalle as $key => $value) {
                 //# code...
                 //var_dump($key);

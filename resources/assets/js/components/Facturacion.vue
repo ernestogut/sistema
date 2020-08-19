@@ -152,7 +152,7 @@
                                     </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalTipoPago">Guardar</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalTipoPago" :disabled="ventas.length <= 0">Guardar</button>
                                 </div>
                             </form>
                         </div>
@@ -175,10 +175,6 @@
                                 <div class="card-body">
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <label>Total</label>
-                                            <input class="form-control" disabled :value="'S/ '+objetoFactura.total">
-                                        </div>
-                                        <div class="form-group col-md-6">
                                             <label >Tipo de pago</label>
                                             <div class="col-sm-10">
                                                 <div class="form-check" v-for="tipoPago in arrayObjetosTipoPago" :key="tipoPago.id">
@@ -189,8 +185,33 @@
                                                 </div>
                                                 <label v-if="objetoFactura.tipo_pago == 'tarjeta'">Comisión</label>
                                                 <input type="number" class="form-control" step="any" id="monto5" v-if="objetoFactura.tipo_pago == 'tarjeta'" v-model="comision">
+                                                <div>
+                                                    <label>Total</label>
+                                                    <input class="form-control" disabled :value="'S/ '+objetoFactura.total">
+                                                </div>
+                                                
+                                                
                                             </div>
                                         </div>
+                                        <template v-if="objetoFactura.tipo_pago == 'cheque'">
+                                            <div class="form-group col-md-6">
+                                                <label >Departamento</label>
+                                                <select v-model="objetoFactura.ciudad_destino" class="form-control" >
+                                                    <option value="">Escoje un departamento</option>
+                                                    <option v-for="departamento in arrayDepartamentos" :key="departamento.id" :value="departamento">{{departamento.departamento}}</option>
+                                                </select>
+                                                <label >Provincia</label>
+                                                <select  class="form-control" v-model="objetoFactura.provincia_destino">
+                                                    <option value="">Escoje una provincia</option>
+                                                    <option v-for="provincia in arrayProvincias" :key="provincia.id" :value="provincia">{{provincia.provincia}}</option>
+                                                </select>
+                                                <label >Distrito</label>
+                                                <select  class="form-control" v-model="objetoFactura.distrito_destino">
+                                                    <option value="">Escoje un distrito</option>
+                                                    <option v-for="distrito in arrayDistritos" :key="distrito.id" :value="distrito">{{distrito.distrito}}</option>
+                                                </select>
+                                            </div> 
+                                        </template>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -438,6 +459,7 @@
     import Loading from 'vue-loading-overlay';
     // Import stylesheet
     import 'vue-loading-overlay/dist/vue-loading.css';
+    import {departamentos, provincias, distritos} from '../ubigeo';
 export default {
     
     data(){
@@ -453,6 +475,9 @@ export default {
             arrayFacturaDetalle: [],
             arrayComprobantes: [],
             arraySeries: [],
+            arrayDepartamentos: [],
+            arrayProvincias:[],
+            arrayDistritos: [],
             codigoProducto: '',
             //ventas: [],
             arrayAlmacen: [],
@@ -496,6 +521,9 @@ export default {
                     tipo_pago: 'efectivo',
                     serie: 'F001',
                     folio: '',
+                    ciudad_destino: '',
+                    provincia_destino: '',
+                    distrito_destino: '',
                     sub_total: 0,
                     desc_global: 0,
                     igv_total: 0,
@@ -558,6 +586,7 @@ export default {
         }
     },
     mounted(){
+        this.arrayDepartamentos = departamentos;
         this.objetoFactura.id_user = this.usuarioLogeado.id
         this.objetoFactura.id_almacen = this.usuarioLogeado.id_almacen
         this.almacen_id = this.usuarioLogeado.id_almacen;
@@ -585,6 +614,15 @@ export default {
         })
     },
     methods:{
+        //Departamentos, provincias y distritos
+        /*onChangeDepartamento(event) {
+            var idDepartamento = event.target.value.coddepartamento
+            this.arrayProvincias = jQuery.grep(provincias, function (obj) {
+                return obj[idDepartamento];
+            });
+            console.log(this.arrayProvincias);
+            console.log(event.target.value.coddepartamento);
+        },*/
         //clientes
         abrirModalRegistro(){
             $('#modalCliente').modal('show');
@@ -757,7 +795,10 @@ export default {
             this.objetoFactura.tipo_venta =  'A'
             this.objetoFactura.folio = ''
             this.codigoProducto = ''
-            this.comision = 0.04
+            this.comision = 0.04,
+            this.objetoFactura.ciudad_destino = '',
+            this.objetoFactura.provincia_destino = '',
+            this.objetoFactura.distrito_destino = ''
         },
         generarTotal(item){
             if(item.cantidad > 0 && item.cantidad <= item.cantidad_alm){
@@ -970,49 +1011,59 @@ export default {
                 })
         },
         insertarCabecera(){
-            this.$store.dispatch('actualizarShow', true)
-            var me = this;
-            axios.post('/c_fact', {'ventas': this.ventas, 'objeto_factura': this.objetoFactura}).then((response)=>{
-                var factura = response.data
-                //console.log('Factura: ', factura)
-                //console.log('folio', factura.folio)
-                this.$store.dispatch('actualizarShow', false)
-                var productos = this.arrayProductos
-                //axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
-                    for(var k = 0; k < this.ventas.length; k++){
-                        for(var l = 0; l < productos.length; l++){
-                            if(this.ventas[k].codigo == productos[l].codigo){
-                                productos[l].stock = productos[l].stock - this.ventas[k].cantidad
+            console.log(this.objetoFactura.ciudad_destino)
+            if(!this.objetoFactura.ciudad_destino && this.objetoFactura.tipo_pago == 'cheque'){
+                Vue.swal({
+                    title: `Debes seleccionar un destino`,
+                    text: 'Selecciona un destino, por favor!',
+                    icon: 'error'
+                    }   
+                )
+            }else{
+                this.$store.dispatch('actualizarShow', true)
+                var me = this;
+                axios.post('/c_fact', {'ventas': this.ventas, 'objeto_factura': this.objetoFactura}).then((response)=>{
+                    var factura = response.data
+                    //console.log('Factura: ', factura)
+                    //console.log('folio', factura.folio)
+                    this.$store.dispatch('actualizarShow', false)
+                    var productos = this.arrayProductos
+                    //axios.post('/d_fact', {'ventas': this.ventas, 'id_cabecera': this.id_cabecera}).then((response)=>{
+                        for(var k = 0; k < this.ventas.length; k++){
+                            for(var l = 0; l < productos.length; l++){
+                                if(this.ventas[k].codigo == productos[l].codigo){
+                                    productos[l].stock = productos[l].stock - this.ventas[k].cantidad
+                                }
                             }
                         }
+                        this.$store.dispatch('actualizarProductos', productos)
+                        
+                    //})
+                    this.imprimirBoleta(factura);
+                    Vue.swal(
+                        'Venta concretada!',
+                        'La venta se proceso correctamente!',
+                        'success'
+                    ).then((result) => {
+                    if (result.value) {
+                        $('#modalTipoPago').modal('hide')
+                        $('#modalVenta').modal('hide');
+                    this.listarTipodeComprobante();
+                        
                     }
-                    this.$store.dispatch('actualizarProductos', productos)
+                });
                     
-                //})
-                this.imprimirBoleta(factura);
-                Vue.swal(
-                    'Venta concretada!',
-                    'La venta se proceso correctamente!',
-                    'success'
-                ).then((result) => {
-                if (result.value) {
-                    $('#modalTipoPago').modal('hide')
-                    $('#modalVenta').modal('hide');
-                   this.listarTipodeComprobante();
-                    
-                }
-            });
-                
-            })
-            .catch(error=>{
-                this.$store.dispatch('actualizarShow', false)
-                Vue.swal({
-                        title: `${error.response.data.error}`,
-                        text: 'Hubo un error al procesar la venta!',
-                        icon: 'error'
-                    }   
-                );
-            })
+                })
+                .catch(error=>{
+                    this.$store.dispatch('actualizarShow', false)
+                    Vue.swal({
+                            title: `${error.response.data.error}`,
+                            text: 'Hubo un error al procesar la venta!',
+                            icon: 'error'
+                        }   
+                    );
+                })
+            }
         },
         deshabilitarFactura(item, index){
             
@@ -1033,6 +1084,7 @@ export default {
                     formDatos.append('id_almacen', item.id_almacen);
                     formDatos.append('id_tipo_comprobante', item.id_tipo_comprobante);
                     formDatos.append('tipo_pago', item.tipo_pago);
+                    formDatos.append('ciudad_destino', item.ciudad_destino);
                     formDatos.append('estado', item.estado);
                     formDatos.append("_method", "put");
                     axios.post(`c_fact/${item.num_doc}/deshabilitarFactura`, formDatos).then(response=>{
@@ -1097,8 +1149,32 @@ export default {
             this.objetoFactura.id_tipo_comprobante = this.comprobanteEscogido.id;
             this.listarTipodeComprobante()
 
+        },
+        'objetoFactura.ciudad_destino'(newValue, oldValue){
+            if(newValue){
+                this.objetoFactura.provincia_destino = ''
+                this.objetoFactura.distrito_destino = ''
+                var idDepartamento = newValue.coddepartamento;
+                var provincias_result = jQuery.grep(provincias, function (obj) {
+                    return obj[idDepartamento];
+                });
+                this.arrayProvincias = provincias_result[0][idDepartamento];
+                }
+            
+        },
+        'objetoFactura.provincia_destino'(newValue, oldValue){
+            if(newValue){
+                 this.objetoFactura.distrito_destino = ''
+                var idPro = newValue.codprovincia;
+                var distritos_result = jQuery.grep(distritos, function (obj) {
+                    return obj[idPro];
+                });
+                this.arrayDistritos = distritos_result[0][idPro];
+            }
+           
         }
-    }
+    },
+    
 }
 </script>
 

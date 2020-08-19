@@ -23,10 +23,10 @@ class ReporteVentaController extends Controller
     public function ventasPorFecha($fecha, $almacen)
     {
         if($almacen != 0){
-            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', $fecha)->where('c_facts.id_almacen', $almacen)->orderBy('c_facts.id', 'desc')->get();
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', $fecha)->where('c_facts.id_almacen', $almacen)->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
             return $ventas;
         }else{
-            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', $fecha)->orderBy('c_facts.id', 'desc')->get();
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('fecha', '=', $fecha)->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
             return $ventas;
         }
         
@@ -34,15 +34,15 @@ class ReporteVentaController extends Controller
     public function ventasPorFechaRango($fecha_inicio, $fecha_fin, $almacen)
     {
         if($almacen != 0){
-            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->whereBetween('c_facts.fecha', array($fecha_inicio, $fecha_fin))->where('c_facts.id_almacen', $almacen)->orderBy('c_facts.id', 'desc')->get();
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->whereBetween('c_facts.fecha', array($fecha_inicio, $fecha_fin))->where('c_facts.id_almacen', $almacen)->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
             return $ventas;
         }else{
-            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->whereBetween('c_facts.fecha', array($fecha_inicio, $fecha_fin))->orderBy('c_facts.id', 'desc')->get();
+            $ventas = ReporteVenta::select('c_facts.id as num_doc', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.tipo_pago', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->whereBetween('c_facts.fecha', array($fecha_inicio, $fecha_fin))->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
             return $ventas;
         }
     }
     public function obtenerVentasDiariasPorAlmacen($almacen){
-        $ventas_diarias = ReporteVenta::select(DB::raw("SUM(c_facts.total) as total, almacens.descripcion as almacen"))->join('almacens', 'c_facts.id_almacen', 'almacens.id')->where('c_facts.fecha', date("Y-m-d"))->where('id_almacen', $almacen)->get();
+        $ventas_diarias = ReporteVenta::select(DB::raw("SUM(c_facts.total) as total, almacens.descripcion as almacen"))->join('almacens', 'c_facts.id_almacen', 'almacens.id')->where('c_facts.fecha', date("Y-m-d"))->where('id_almacen', $almacen)->where('estado', 'habilitado')->get();
         return $ventas_diarias;
     }
     /**
@@ -81,7 +81,7 @@ class ReporteVentaController extends Controller
 
     public function mostrarVentasPorSemana($almacen)
     {
-        $ventas = ReporteVenta::select(DB::raw("(ELT(WEEKDAY(fecha) + 1, 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo')) AS dia_semana, SUM(total) as total, count(*) as ordenes"))->where(DB::raw('YEARWEEK(fecha)'),'=',DB::raw('YEARWEEK(NOW())'))->groupBy(DB::raw('dia_semana'))->orderBy(DB::raw('fecha, "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"'))->where('id_almacen', $almacen)->get();
+        $ventas = ReporteVenta::select(DB::raw("(ELT(WEEKDAY(fecha) + 1, 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo')) AS dia_semana, SUM(total) as total, count(*) as ordenes"))->where(DB::raw('YEARWEEK(fecha)'),'=',DB::raw('YEARWEEK(NOW())'))->groupBy(DB::raw('dia_semana'))->orderBy(DB::raw('fecha, "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"'))->where('id_almacen', $almacen)->where('estado', 'habilitado')->get();
         return $ventas;
 
        
