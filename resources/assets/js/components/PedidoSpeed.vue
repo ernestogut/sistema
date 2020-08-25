@@ -104,7 +104,9 @@
                 :emptyFilteredText="'No se han encontrado elementos para lo que buscas'"
             >
                 <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
-
+                <template v-slot:cell(nombre_completo)="data">
+                  {{ data.item.nombre_facturacion }} {{ data.item.apellido_facturacion }}
+                </template>
                 <template v-slot:cell(actions)="row">
                 <b-button size="sm" @click="verDetalle(row.item)">
                     <i class="icon-eye"></i>
@@ -117,6 +119,11 @@
                 </div>
                 </template>
             </b-table>
+            <div>
+              <i class="fa fa-square-o text-danger bg-danger mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Sin pagar</span>
+              <i class="fa fa-square-o text-warning bg-warning mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Contra entrega</span>
+              <i class="fa fa-square-o text-success bg-success mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Pagado</span>
+            </div>  
       </div>
       <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalDetalle">
                     <div class="modal-dialog modal-lg">
@@ -131,9 +138,44 @@
                                 
                                 <div class="card-body">
                                     <ul class="list-group">
-                                        <li class="list-group-item cursor-pointer">
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
                                                 <p style="color: black;">
-                                                    {{ordenDetalle}}
+                                                    Tipo de pago: {{ordenMetodoDePago}}
+                                                </p>
+                                        </li>
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
+                                                <p style="color: black;">
+                                                    Nombre: {{ordenNombre}}
+                                                </p>
+                                        </li>
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
+                                                <p style="color: black;">
+                                                    Direccion: {{ordenDireccion}}
+                                                </p>
+                                        </li>
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
+                                                <p style="color: black;">
+                                                    DNI: {{ordenDocumento}}
+                                                </p>
+                                        </li>
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
+                                                <p style="color: black;">
+                                                    Teléfono: {{ordenTelefono}}
+                                                </p>
+                                        </li>
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
+                                                <p style="color: black;">
+                                                    Correo: {{ordenEmail}}
+                                                </p>
+                                        </li>
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
+                                                <p style="color: black;">
+                                                    Productos: {{ordenDetalle}}
+                                                </p>
+                                        </li>
+                                        <li class="list-group-item list-group-item-action list-group-item-primary">
+                                                <p style="color: black;">
+                                                    Envio: {{ordenEnvio}}
                                                 </p>
                                         </li>
                                     </ul>
@@ -154,13 +196,18 @@ export default {
         return{
             cabeceras: ['Acciones', 'N° Orden', 'Cliente', 'Teléfono', 'Estado', 'Total pedido', 'Fecha'],
             ordenDetalle: '',
+            ordenDireccion: '',
+            ordenDocumento: '',
+            ordenNombre: '',
+            ordenTelefono: '',
+            ordenEmail: '',
+            ordenMetodoDePago: '',
+            ordenEnvio: '',
             numPedido: '',
             loading: false,
             fields: [
                 { key: "order_id", label: "N° Orden", sortable: true, sortDirection: "desc" ,class: "text-center"},
-                { key: "nombre_facturacion", label: "Cliente", sortable: true, class: "text-center"},
-                { key: "telefono_facturacion", label: "Teléfono", sortable: true, class: "text-center"},
-                { key: "documento_facturacion", label: "DNI", sortable: true, class: "text-center"},
+                { key: "nombre_completo", label: "Cliente", sortable: true, class: "text-center"},
                 { key: "estado_compra", label: "Estado", sortable: true, class: "text-center"},
                 { key: "total_orden", label: "Total pedido", sortable: true, class: "text-center"},
                 { key: "fecha_compra", label: "Fecha", sortable: true, class: "text-center"},
@@ -193,9 +240,9 @@ export default {
     methods:{
         rowClass(item, type) {
             if (!item || type !== 'row') return
-            if (item.estado_compra == 'Procesando') return 'bg-danger'
-            if (item.estado_compra == 'Completado') return 'bg-success text-white'
-            if (item.estado_compra == 'En espera') return 'bg-warning text-dark'
+            if (item.metodo_pago == 'bacs') return 'bg-danger'
+            if (item.metodo_pago == 'cod') return 'bg-warning text-dark'
+            if (item.metodo_pago == 'culqi' && item.fecha_pago) {return 'bg-success text-white'} else return 'bg-danger';
         },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
@@ -210,9 +257,24 @@ export default {
             })
         },
         verDetalle(pedido){
-            $('#modalDetalle').modal('show');
+            if(pedido.metodo_pago == 'culqi' && pedido.fecha_pago){
+                this.ordenMetodoDePago = 'Tarjeta - Pagado'
+            }else if(pedido.metodo_pago == 'culqi' && !pedido.fecha_pago){
+              this.ordenMetodoDePago = 'Tarjeta - Sin pagar'
+            }else if(pedido.metodo_pago == 'cod'){
+              this.ordenMetodoDePago = 'Pago contra entrega'
+            }else if(pedido.metodo_pago == 'bacs'){
+              this.ordenMetodoDePago = 'Transferencia'
+            }
             this.ordenDetalle = pedido.productos_orden
+            this.ordenNombre = `${pedido.nombre_facturacion} ${pedido.apellido_facturacion}`
+            this.ordenDireccion = `${pedido.direccion_facturacion} - ${pedido.distrito_facturacion} - ${pedido.ciudad_facturacion}`
+            this.ordenDocumento = pedido.documento_facturacion?pedido.documento_facturacion:'No brindó el Documento'
+            this.ordenTelefono = pedido.telefono_facturacion
+            this.ordenEmail = pedido.email_facturacion
+            this.ordenEnvio = `Pagó S/ ${pedido.costo_envio} por ${pedido.envio}`
             this.numPedido = pedido.order_id
+            $('#modalDetalle').modal('show');
         }
     }
 }

@@ -96,7 +96,7 @@
             size="sm"
             @click="consultarProductoSimple(row.item)"
           >
-            <i class="icon-plus"></i>
+            <i :class="row.item.situacion_producto=='simple'?'icon-plus':'fa fa-cubes'"></i>
           </b-button>
           <b-button
             variant="info"

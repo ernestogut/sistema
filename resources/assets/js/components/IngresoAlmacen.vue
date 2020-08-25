@@ -268,16 +268,42 @@
                         <div class="modal-content">
                                 <div class="modal-header bg-primary">
                                     Variaciones de {{productoVariacion}}
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
                             <div class="modal-body">
                                 <b-list-group>
-                                    <b-list-group-item button v-for="variacion in arrayVariaciones" :key="variacion.codigo" @click="agregarProducto(variacion)">
-                                        <div class="d-flex justify-content-around">
+                                    <b-list-group-item v-for="variacion in arrayVariaciones" :key="variacion.codigo"  class="d-flex justify-content-between align-items-center">
+                                   
                                             <span>{{variacion.variacion}}</span>
                                             <span>{{variacion.stock}}</span>
-                                        </div>
-                                        
+                                            <div >
+                                                <b-button
+                                                    variant="warning"
+                                                    size="sm"
+                                                    @click="agregarProducto(variacion)"
+                                                >
+                                                    <i class="icon-plus"></i>
+                                                </b-button>
+                                                <b-button
+                                                    variant="warning"
+                                                    size="sm"
+                                                    @click="abrirModalCantidades(variacion)"
+                                                >
+                                                    <i class="icon-eye"></i>
+                                                </b-button>
+                                                <b-button
+                                                    variant="warning"
+                                                    size="sm"
+                                                    @click="abrirModalImagen(variacion)"
+                                                >
+                                                    <i class="icon-picture"></i>
+                                                </b-button>
+                                                </div>
+                                                
                                     </b-list-group-item>
+                                    <hr>
                                 </b-list-group>
                             </div>
                             
@@ -604,6 +630,39 @@ export default {
                 $('#modalVenta').on('shown.bs.modal', function () {
                     $('#buscarP').trigger('focus');
                 })
+        },
+        abrirModalCantidades(producto){
+            //this.loading = true
+            $('#modalCantidades').modal('show');
+            let me= this;
+            var contador = 0
+            axios.get(`almacen/${producto.codigo}/cantidadesAlmacen`).then(function (response){
+                if(response.data.length < 1){
+                    me.enAlmacen = false;
+                    me.arrayAlmacen = me.arrayAlmacenFijo
+                }else{
+                    if(response.data.length == me.arrayAlmacenFijo.length){
+                        me.enAlmacen = true;
+                        me.arrayAlmacen = response.data;
+                    }else{
+                        for(var i = 0; i < me.arrayAlmacenFijo.length; i++){
+                            contador = 0
+                            for(var j = 0; j < response.data.length; j++){
+                                if(response.data[j].id != me.arrayAlmacenFijo[i].id){
+                                    
+                                    contador += 1
+                                    if(contador == response.data.length){
+                                        me.arrayAlmacen = response.data;
+                                        me.arrayAlmacen.push(me.arrayAlmacenFijo[i])
+                                        me.arrayAlmacen[i].editable = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                me.$emit('emitirEvArrayAlm', me.arrayAlmacen);
+            })
         },
         abrirModalAgregarProducto(){
             this.listarItem()
