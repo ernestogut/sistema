@@ -144,6 +144,7 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         ),
         'A' => 
         array (
+            'Automattic\\WooCommerce\\' => 23,
             'App\\' => 4,
         ),
     );
@@ -399,6 +400,10 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         array (
             0 => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src',
         ),
+        'Automattic\\WooCommerce\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce',
+        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
@@ -459,6 +464,7 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         'App\\Http\\Controllers\\DetalleCompraController' => __DIR__ . '/../..' . '/app/Http/Controllers/DetalleCompraController.php',
         'App\\Http\\Controllers\\DetalleIngresoController' => __DIR__ . '/../..' . '/app/Http/Controllers/DetalleIngresoController.php',
         'App\\Http\\Controllers\\DetalleTrasladoController' => __DIR__ . '/../..' . '/app/Http/Controllers/DetalleTrasladoController.php',
+        'App\\Http\\Controllers\\EnviosController' => __DIR__ . '/../..' . '/app/Http/Controllers/EnviosController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
         'App\\Http\\Controllers\\InventarioController' => __DIR__ . '/../..' . '/app/Http/Controllers/InventarioController.php',
         'App\\Http\\Controllers\\MovimientoCajaController' => __DIR__ . '/../..' . '/app/Http/Controllers/MovimientoCajaController.php',
@@ -506,6 +512,14 @@ class ComposerStaticInit4d5cc0507e0e5e7b4af5f0198d7b4108
         'App\\TipoDocumento' => __DIR__ . '/../..' . '/app/TipoDocumento.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
         'App\\c' => __DIR__ . '/../..' . '/app/c.php',
+        'Automattic\\WooCommerce\\Client' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/Client.php',
+        'Automattic\\WooCommerce\\HttpClient\\BasicAuth' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/HttpClient/BasicAuth.php',
+        'Automattic\\WooCommerce\\HttpClient\\HttpClient' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/HttpClient/HttpClient.php',
+        'Automattic\\WooCommerce\\HttpClient\\HttpClientException' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/HttpClient/HttpClientException.php',
+        'Automattic\\WooCommerce\\HttpClient\\OAuth' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/HttpClient/OAuth.php',
+        'Automattic\\WooCommerce\\HttpClient\\Options' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/HttpClient/Options.php',
+        'Automattic\\WooCommerce\\HttpClient\\Request' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/HttpClient/Request.php',
+        'Automattic\\WooCommerce\\HttpClient\\Response' => __DIR__ . '/..' . '/automattic/woocommerce/src/WooCommerce/HttpClient/Response.php',
         'Barryvdh\\DomPDF\\Facade' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/Facade.php',
         'Barryvdh\\DomPDF\\PDF' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/PDF.php',
         'Barryvdh\\DomPDF\\ServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/ServiceProvider.php',

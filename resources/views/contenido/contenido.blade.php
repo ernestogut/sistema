@@ -66,6 +66,18 @@
             <template v-if="menu==25">
                 <reporte-cierre></reporte-cierre>
             </template>
+            <template v-if="menu==26">
+                <por-mayor></por-mayor>
+            </template>
+            <template v-if="menu==27">
+                <pedidos-por-mayor></pedidos-por-mayor>
+            </template>
+            <template v-if="menu==28">
+                <reporte-movimiento></reporte-movimiento>
+            </template>
+            <template v-if="menu==29">
+                <reporte-envio></reporte-envio>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <facturacion></facturacion>

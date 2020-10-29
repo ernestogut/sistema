@@ -47,6 +47,17 @@
                     </ul>
                 </li>
                 <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Por Mayor</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=26" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Productos</a>
+                        </li>
+                        <li  @click="menu=27" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Pedidos</a>
+                        </li>
+                    </ul>
+                </li>
+                <li  class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Reportes</a>
                     <ul class="nav-dropdown-items">
                         <li  @click="menu=22" class="nav-item">
@@ -60,6 +71,12 @@
                         </li>
                         <li  @click="menu=24" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-bag"></i> Ranking categorias</a>
+                        </li>
+                        <li  @click="menu=28" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-bag"></i> Movimientos usuarios</a>
+                        </li>
+                        <li  @click="menu=29" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-bag"></i> Envios</a>
                         </li>
                     </ul>
                 </li>

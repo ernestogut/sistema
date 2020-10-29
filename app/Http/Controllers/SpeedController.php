@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Speed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +29,38 @@ class SpeedController extends Controller
         $productos = DB::connection("speed")->table('total_productos')->get();
         return $productos;
     }
+    //Funciones de ventas al por mayor
+    //Obtener productos con precio al por mayor para saber con exactitud cuales tienen y cuales no su precio respectivo.
+    public function obtenerProductosConPrecioPorMayor()
+    {
+        $productos = DB::connection("speed")->table('total_productos')->select('codigo', 'producto', 'precio', 'precio_por_mayor')->get();
+        return $productos;
+    }
+    public function insertarPrecioPorMayor(Request $request)
+    {
+        DB::connection("speed")->statement("call  insertarPrecioPorMayor(?,?)",[$request->id_producto,$request->precioPorMayor]);
+
+    }
+    public function obtenerDetallePedidoPorMayor($id_pedido){
+        $detalle_pedido = DB::connection("speed2")->table('carrito_detalles')->select('id as doc', 'nombre as name', 'precio as price', 'cantidad', 'imagenes as images', 'codigo as id', 'es_variacion')->where('id_cabecera_carrito', $id_pedido)->get();
+        foreach($detalle_pedido as $value){
+            if(!$value->es_variacion){
+                $value->images = json_decode($value->images);
+            }else{
+                $value->image = json_decode($value->images);
+            }
+        }
+        return $detalle_pedido;
+    }
+    public function obtenerPedidosPorMayor()
+    {
+        $pedidos_por_mayor = DB::connection("speed2")->table("carrito_cabeceras")->select('carrito_cabeceras.id', 'users.name', 'users.apellido', 'carrito_cabeceras.observacion', 'carrito_cabeceras.total_carrito', 'carrito_cabeceras.nombre_envio', 'carrito_cabeceras.apellido_envio', 'carrito_cabeceras.dni_envio', 'carrito_cabeceras.telefono_envio', 'carrito_cabeceras.correo_envio', 'carrito_cabeceras.direccion_envio', 'carrito_cabeceras.departamento_envio', 'carrito_cabeceras.provincia_envio', 'carrito_cabeceras.distrito_envio', 'carrito_cabeceras.estado', 'carrito_cabeceras.created_at')->join('users', 'carrito_cabeceras.id_usuario', 'users.id')->orderBy('carrito_cabeceras.id', 'desc')->get();
+        return $pedidos_por_mayor;
+    }
+    public function cambiarEstadoPedido(Request $request, $id_pedido){
+        $pedido = DB::connection("speed2")->table("carrito_cabeceras")->where('id', $id_pedido)->update(['estado' => $request->opcion, 'observacion' => $request->observacion]);
+    }
+    // Fin de funciones para pedidos al por mayor
     /**
      * Show the form for creating a new resource.
      *

@@ -69,7 +69,26 @@ class MovimientoCajaController extends Controller
         $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->where('movimiento_cajas.id_almacen', '=', $almacen)->where('movimiento_cajas.fecha', '=', $fecha)->get();
         return $movimiento_caja;
     }
-
+    public function reporteMovimientosPorUsuario($fecha, $id_usuario)
+    {
+        if($id_usuario != 0){
+            $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->where('movimiento_cajas.fecha', '=', $fecha)->where('movimiento_cajas.id_usuario', '=', $id_usuario)->where('movimiento_cajas.estado', 'habilitado')->get();
+        return $movimiento_caja;
+        }else{
+            $movimiento_caja = MovimientoCaja::select('movimiento_cajas.id', 'users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->where('movimiento_cajas.fecha', '=', $fecha)->where('movimiento_cajas.estado', 'habilitado')->get();
+        return $movimiento_caja;
+        }   
+    }
+    public function reporteMovimientosPorUsuarioPorFecha($fecha_inicio, $fecha_fin, $id_usuario)
+    {
+        if($id_usuario != 0){
+            $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->whereBetween('movimiento_cajas.fecha', array($fecha_inicio, $fecha_fin))->where('movimiento_cajas.id_usuario', '=', $id_usuario)->where('movimiento_cajas.estado', 'habilitado')->get();
+            return $movimiento_caja;
+        }else{
+            $movimiento_caja = MovimientoCaja::select('users.usuario as responsable', 'almacens.descripcion as tienda', 'movimiento_cajas.fecha', 'movimiento_cajas.monto', 'movimiento_cajas.tipo_movimiento', 'movimiento_cajas.observacion')->join('users', 'movimiento_cajas.id_usuario', '=', 'users.id')->join('almacens', 'movimiento_cajas.id_almacen', '=', 'almacens.id')->whereBetween('movimiento_cajas.fecha', array($fecha_inicio, $fecha_fin))->where('movimiento_cajas.estado', 'habilitado')->get();
+            return $movimiento_caja;
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *

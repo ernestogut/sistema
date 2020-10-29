@@ -30,7 +30,7 @@ class UserController extends Controller
         //verifica si la peticion se la esta haciendo por ajax y si no es asi se lo redirige a /
         if(!$request->ajax()) return redirect('/');
         //listar todos los registros de la tabla categoria
-        $usuarios = User::select('id', 'usuario', 'id_almacen')->get();
+        $usuarios = User::select('id', 'usuario', 'id_almacen', 'nombre', 'apellido')->get();
         return $usuarios;
 
     }

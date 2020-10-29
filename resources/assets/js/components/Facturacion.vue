@@ -17,8 +17,8 @@
             <spinner v-if="loading"></spinner>
             <div v-else-if="initiated" class="d-flex flex-wrap justify-content-around align-items-center">
                 <div v-for="comprobante in arrayComprobantes" :key="comprobante.id">
-                    <input type="radio" v-model="comprobanteEscogido" v-bind:value="comprobante" @change="capturarComprobante(comprobante)">
-                    <label >{{comprobante.nombre}}</label>
+                    <input type="radio" v-model="comprobanteEscogido" v-bind:value="comprobante" :id="comprobante.id" @change="capturarComprobante(comprobante)">
+                    <label :for="comprobante.id">{{comprobante.nombre}}</label>
                 </div>
             </div>
             <vue-datatable  :items="arrayFacturas" :fields="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :eliminarItem="deshabilitarFactura" v-if="initiated" >
@@ -178,8 +178,8 @@
                                             <label >Tipo de pago</label>
                                             <div class="col-sm-10">
                                                 <div class="form-check" v-for="tipoPago in arrayObjetosTipoPago" :key="tipoPago.id">
-                                                    <input class="form-check-input" type="radio" :value="tipoPago.valor" v-model="objetoFactura.tipo_pago" @change="totalPagar()" checked>
-                                                    <label class="form-check-label" >
+                                                    <input class="form-check-input" type="radio" :value="tipoPago.valor" v-model="objetoFactura.tipo_pago" :id="tipoPago.valor" @change="totalPagar()" checked>
+                                                    <label class="form-check-label" :for="tipoPago.valor">
                                                         {{tipoPago.tipo}}
                                                     </label>
                                                 </div>

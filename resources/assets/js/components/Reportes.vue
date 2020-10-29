@@ -96,14 +96,9 @@
               <b-input-group-append>
                 <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
               </b-input-group-append>
-              <vue-excel-xlsx
-                :data="arrayReporte"
-                :columns="columns"
-                :filename="'filename'"
-                :sheetname="'sheetname'"
-                class="btn btn-info btn-sm">
+              <b-button class="btn btn-info btn-sm" @click="exportExcel">
                 Exportar XLSX
-            </vue-excel-xlsx>
+              </b-button>
             </b-input-group>
             
           </b-form-group>
@@ -252,7 +247,7 @@
 
 <script>
 import DatePicker from "vue2-datepicker";
-import VueExcelXlsx from "vue-excel-xlsx";
+import XLSX from 'xlsx';
 import "vue2-datepicker/index.css";
 import "vue2-datepicker/locale/es";
 export default {
@@ -353,7 +348,6 @@ export default {
           return { text: f.label, value: f.key };
         });
     },
-
     ventasTotal() {
       return this.arrayReporte.reduce((accum, item) => {
         // Assuming expenses is the field you want to total up
@@ -402,6 +396,20 @@ export default {
 
       return date > today;
     },
+    exportExcel: function () {
+      this.arrayReporte.push(
+        {tipo_pago: 'Total Efectivo', total: this.ventasTotalEfectivo},
+        {tipo_pago: 'Total Tarjeta', total: this.ventasTotalTarjeta},
+        {tipo_pago: 'Total Cheque', total: this.ventasTotalCheque},
+        {tipo_pago: 'Total', total: this.ventasTotal}
+        )
+      let data = XLSX.utils.json_to_sheet(this.arrayReporte)
+      const workbook = XLSX.utils.book_new()
+      const filename = 'holi'
+      XLSX.utils.book_append_sheet(workbook, data, filename)
+      XLSX.writeFile(workbook, `${filename}.xlsx`)
+      this.arrayReporte.splice(this.arrayReporte.length-4, 4);
+    },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
@@ -432,6 +440,7 @@ export default {
             `reporte/${this.fecha_inicio_filtro}/${this.fecha_fin_filtro}/${this.almacen_filtro}/ventasPorFechaRango`
           )
           .then(response => {
+            console.log(response.data)
             this.arrayReporte = response.data;
             this.totalRows = this.arrayReporte.length;
             this.cargando = false;

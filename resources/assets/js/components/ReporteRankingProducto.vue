@@ -97,14 +97,9 @@
               <b-input-group-append>
                 <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
               </b-input-group-append>
-              <vue-excel-xlsx
-                :data="arrayReporte"
-                :columns="columns"
-                :filename="'filename'"
-                :sheetname="'sheetname'"
-                class="btn btn-info btn-sm">
+              <b-button class="btn btn-info btn-sm" @click="exportExcel">
                 Exportar XLSX
-            </vue-excel-xlsx>
+              </b-button>
             </b-input-group>
             
           </b-form-group>
@@ -177,7 +172,7 @@
 
 <script>
 import DatePicker from "vue2-datepicker";
-import VueExcelXlsx from "vue-excel-xlsx";
+import XLSX from 'xlsx';
 import "vue2-datepicker/index.css";
 import "vue2-datepicker/locale/es";
 export default {
@@ -275,6 +270,14 @@ export default {
         this.arrayFacturaDetalle = response.data;
         $("#modalInformacionFact").modal("show");
       });
+    },
+    exportExcel: function () {
+      let data = XLSX.utils.json_to_sheet(this.arrayReporte)
+      const workbook = XLSX.utils.book_new()
+      const filename = 'holi'
+      XLSX.utils.book_append_sheet(workbook, data, filename)
+      XLSX.writeFile(workbook, `${filename}.xlsx`)
+      this.arrayReporte.splice(this.arrayReporte.length-4, 4);
     },
     obtenerResultadosFiltro() {
       this.cargando = true;
