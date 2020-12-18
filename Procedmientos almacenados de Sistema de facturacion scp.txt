@@ -1,0 +1,129 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `disminuirInventarioAlm`(IN `codigo_prod` BIGINT, IN `cantidad_prod` BIGINT, IN `almacen_prod` BIGINT)
+    NO SQL
+BEGIN
+
+DECLARE cantidad_producto BIGINT;
+
+SET cantidad_producto = (SELECT (cantidad - cantidad_prod) FROM inventarios WHERE id_producto = CONVERT(codigo_prod using utf8mb4) COLLATE utf8mb4_general_ci AND id_almacen = CONVERT(almacen_prod using utf8mb4) COLLATE utf8mb4_general_ci); 
+
+UPDATE inventarios SET cantidad = cantidad_producto where id_producto = CONVERT(codigo_prod using utf8mb4) collate utf8mb4_general_ci and id_almacen = CONVERT(almacen_prod using utf8mb4) collate utf8mb4_general_ci;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generarCuentas`(IN `total_venta` DECIMAL(11,2), IN `fecha_venta` DATE, IN `almacen_venta` BIGINT)
+    NO SQL
+BEGIN
+
+DECLARE ventas decimal(11,2);
+DECLARE total_diario decimal(11,2);
+
+SET ventas = (SELECT (ventas_diarias + total_venta) FROM cierre_cajas WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+UPDATE cierre_cajas SET ventas_diarias = ventas WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta;
+
+SET total_diario = (SELECT ((saldo_inicial + ventas + ingresos)-egresos) FROM cierre_cajas WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+
+UPDATE cierre_cajas SET saldo_final = total_diario WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta;
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `aumentarInventarioAlm`(IN `codigo_prod` BIGINT, IN `cantidad_prod` BIGINT, IN `almacen_prod` BIGINT)
+    NO SQL
+BEGIN
+
+DECLARE cantidad_producto BIGINT;
+
+SET cantidad_producto = (SELECT (cantidad + cantidad_prod) FROM inventarios WHERE id_producto = CONVERT(codigo_prod using utf8mb4) COLLATE utf8mb4_general_ci AND id_almacen = CONVERT(almacen_prod using utf8mb4) COLLATE utf8mb4_general_ci); 
+
+UPDATE inventarios SET cantidad = cantidad_producto where id_producto = CONVERT(codigo_prod using utf8mb4) collate utf8mb4_general_ci and id_almacen = CONVERT(almacen_prod using utf8mb4) collate utf8mb4_general_ci;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generarCuentasDeshabilitar`(IN `total_venta` DECIMAL(11,2), IN `fecha_venta` DATE, IN `almacen_venta` BIGINT)
+    NO SQL
+BEGIN
+
+DECLARE ventas decimal(11,2);
+DECLARE total_diario decimal(11,2);
+
+SET ventas = (SELECT (ventas_diarias - total_venta) FROM cierre_cajas WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+UPDATE cierre_cajas SET ventas_diarias = ventas WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta;
+
+SET total_diario = (SELECT ((saldo_inicial + ventas + ingresos)-egresos) FROM cierre_cajas WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+
+UPDATE cierre_cajas SET saldo_final = total_diario WHERE fecha = CONVERT(fecha_venta using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta;
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generarMovimientoEgreso`(IN `cantidad_egreso` DECIMAL(11,2), IN `fecha_egreso` DATE, IN `almacen_venta` BIGINT)
+    NO SQL
+BEGIN
+
+DECLARE egreso decimal(11,2);
+DECLARE total_diario decimal(11,2);
+
+SET egreso = (SELECT (egresos + cantidad_egreso) FROM cierre_cajas WHERE fecha = CONVERT(fecha_egreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+UPDATE cierre_cajas SET egresos = egreso WHERE fecha = CONVERT(fecha_egreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta;
+
+SET total_diario = (SELECT ((saldo_inicial + ventas_diarias + ingresos)-egreso) FROM cierre_cajas WHERE fecha = CONVERT(fecha_egreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+
+UPDATE cierre_cajas SET saldo_final = total_diario WHERE fecha = CONVERT(fecha_egreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta;
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generarMovimientoIngreso`(IN `cantidad_ingreso` DECIMAL(11,2), IN `fecha_ingreso` DATE, IN `almacen_venta` BIGINT)
+    NO SQL
+BEGIN
+
+DECLARE ingreso decimal(11,2);
+DECLARE total_diario decimal(11,2);
+
+SET ingreso = (SELECT (ingresos + cantidad_ingreso) FROM cierre_cajas WHERE fecha = CONVERT(fecha_ingreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+UPDATE cierre_cajas SET ingresos = ingreso WHERE fecha = CONVERT(fecha_ingreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta ;
+
+SET total_diario = (SELECT ((saldo_inicial + ventas_diarias + ingreso)-egresos) FROM cierre_cajas WHERE fecha = CONVERT(fecha_ingreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta);
+
+UPDATE cierre_cajas SET saldo_final = total_diario WHERE fecha = CONVERT(fecha_ingreso using utf8mb4) COLLATE utf8mb4_general_ci AND estado = 'abierto' AND id_almacen = almacen_venta;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generarStockGeneral`(IN `codigo_prod` INT)
+    NO SQL
+BEGIN
+
+SELECT SUM(cantidad)as cantidadTotal
+FROM inventarios WHERE id_producto = codigo_prod;
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertarCabeceraFact`(IN `id_serie` BIGINT(20), IN `id_tipo_c` BIGINT(20), IN `codigo` VARCHAR(191), IN `ruc` VARCHAR(191), IN `direccion` VARCHAR(191), IN `razon` VARCHAR(191), IN `id_c` INT(11), IN `fecha` VARCHAR(191), IN `tipo_v` VARCHAR(191), IN `serie_f` VARCHAR(191), IN `sub_t` DECIMAL(11,2), IN `desc_g` DECIMAL(11,2), IN `igv_t` DECIMAL(11,2), IN `total_v` DECIMAL(11,2), IN `id_alm` BIGINT(20), IN `tipo_p` VARCHAR(191))
+    NO SQL
+BEGIN
+DECLARE ser varchar(8);
+DECLARE ceros VARCHAR(8);
+
+set ser = (select (numero_actual + 1) from serie_comprobantes where id = id_serie);
+
+
+Set ceros = '00000000';
+set ceros = (SELECT right(concat(ceros,ser),8));
+
+update serie_comprobantes set numero_actual = ser where  id = id_serie;
+
+insert into c_facts (id_tipo_comprobante,id_almacen,cod_cliente,ruc_cliente,dir_cliente,razon,id_user,fecha,tipo_venta,tipo_pago,serie,folio,sub_total,desc_global,igv_total,total) VALUES (id_tipo_c,id_alm,codigo,ruc,direccion,razon,id_c,fecha,tipo_v,tipo_p,serie_f,ceros,sub_t,desc_g,igv_t,total_v);
+
+select numero_actual from serie_comprobantes where id = id_serie;
+
+END$$
+DELIMITER ;

@@ -952,7 +952,7 @@ export default {
             impresora.setAlign("center");
             impresora.write("SPEEDCUBER PERU\n");
             //impresora.write("ROJAS RIOS VANESSA KATHERINE\n");
-            impresora.write("AV. ARENALES 1624 Tienda 34\n");
+            impresora.write("AV. ARENALES 1737 Tienda 2-22\n");
             impresora.write("LIMA - LIMA - LINCE\n");
             impresora.write("RUC: 10457782417\n");
             impresora.write("Telefono: 01-7505980\n");
@@ -1011,7 +1011,6 @@ export default {
                 })
         },
         insertarCabecera(){
-            console.log(this.objetoFactura.ciudad_destino)
             if(!this.objetoFactura.ciudad_destino && this.objetoFactura.tipo_pago == 'cheque'){
                 Vue.swal({
                     title: `Debes seleccionar un destino`,

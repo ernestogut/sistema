@@ -15,7 +15,7 @@ class AperturaCajaMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if($request->user()->id_almacen == 0 && auth()->user()->idrole != 1){
+        if($request->user()->id_almacen == 0 && (auth()->user()->idrole != 1 && auth()->user()->idrole != 4) ){
             return redirect()->route('contenido'); 
         }
         return $next($request);

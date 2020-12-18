@@ -194,7 +194,7 @@ export default {
     },
     data(){
         return{
-            cabeceras: ['Acciones', 'N° Orden', 'Cliente', 'Teléfono', 'Estado', 'Total pedido', 'Fecha'],
+            cabeceras: ['Acciones', 'N° Orden', 'Cliente', 'Teléfono', 'Estado', 'Total pedido', 'Metodo de pago', 'Fecha'],
             ordenDetalle: '',
             ordenDireccion: '',
             ordenDocumento: '',
@@ -210,6 +210,7 @@ export default {
                 { key: "nombre_completo", label: "Cliente", sortable: true, class: "text-center"},
                 { key: "estado_compra", label: "Estado", sortable: true, class: "text-center"},
                 { key: "total_orden", label: "Total pedido", sortable: true, class: "text-center"},
+                { key: "metodo_pago", label: "Metodo de pago", sortable: true, class: "text-center"},
                 { key: "fecha_compra", label: "Fecha", sortable: true, class: "text-center"},
                 { key: "actions", label: "Acciones", class: "text-center"}
             ],

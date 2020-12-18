@@ -209,6 +209,8 @@ Route::get('cierre_caja/{codigo}/consultarCajaSeleccionada', 'CierreCajaControll
 Route::get('c_fact/{tipo_venta}/{fecha}/{almacen}/mostrarVentasTipoPago', 'CFactController@mostrarVentasTipoPago');
 Route::get('speed/obtenerCategoriasProductos', 'SpeedController@obtenerCategoriasProductos');
 Route::get('speed/obtenerPedidosPorMayor', 'SpeedController@obtenerPedidosPorMayor');
+Route::post('delivery/subirVoucherPorPedido', 'DeliveryController@subirVoucherPorPedido');
+Route::post('voucher_pedido_por_dia/subirVoucherPorDia', 'VoucherPedidoPorDiaController@subirVoucherPorDia');
 Route::get('speed/obtenerProductosConPrecioPorMayor', 'SpeedController@obtenerProductosConPrecioPorMayor');
 Route::get('speed/{id_pedido}/obtenerDetallePedidoPorMayor', 'SpeedController@obtenerDetallePedidoPorMayor');
 Route::put('speed/{id_pedido}/cambiarEstadoPedido', 'SpeedController@cambiarEstadoPedido');
@@ -226,6 +228,8 @@ Route::get('proveedor/listarProveedorModal', 'ProveedorController@listarProveedo
 Route::get('cierre_caja/{almacen}/montoDiaAnterior', 'CierreCajaController@montoDiaAnterior');
 Route::put('movimiento_caja/anularMovimiento', 'MovimientoCajaController@anularMovimiento');
 Route::put('c_fact/{id}/deshabilitarFactura', 'CFactController@deshabilitarFactura');
+Route::put('delivery/{id}/anularPedido', 'DeliveryController@anularPedido');
+Route::get('delivery/{fecha}/obtenerPedidosPorFecha', 'DeliveryController@obtenerPedidosPorFecha');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
 Route::put('detalle_traslado/{id_cabecera}/procesarTraslado', 'DetalleTrasladoController@procesarTraslado');
 Route::put('detalle_traslado/{id_cabecera}/completarTraslado', 'DetalleTrasladoController@completarTraslado');
@@ -259,6 +263,11 @@ Route::get('tipo_comprobante/obtenerComprobantes', 'TipoComprobanteController@ob
 Route::resource('cliente', 'ClienteController');
 Route::resource('c_fact', 'CFactController');
 Route::resource('d_fact', 'DFactController');
+Route::resource('cabecera_salida', 'CabeceraSalidaController');
+Route::resource('detalle_salida', 'DetalleSalidaController');
+Route::resource('voucher_pedido', 'VoucherPedidoController');
+Route::resource('precio_delivery', 'PreciosDeliveryController');
+Route::resource('delivery', 'DeliveryController');
 Route::resource('tipo_comprobante', 'TipoComprobanteController');
 Route::resource('comprobante', 'ComprobanteController');
 Route::resource('serie_comprobante', 'SerieComprobanteController');

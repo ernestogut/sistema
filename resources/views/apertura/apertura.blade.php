@@ -71,7 +71,7 @@
                     <div class="card-footer" style="width:44%; border-radius: 10px; background: #1E2137; width: 100%; border-color: #1E2137;">
                         <button type="submit" class="btn btn-success">Aperturar caja</button>
                         <button type="button" class="btn" id="abrirGaveta" style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Abrir gaveta</button>
-                        @if(Auth::user()->idrole==1)
+                        @if(Auth::user()->idrole==1 || Auth::user()->idrole==4)
                             <a href="{{route('principal')}}" class="btn " style="border-radius: 10px; background: #56B092; border-color: #56B092; color: white;">Omitir apertura</a>
                         @endif
                     </div>

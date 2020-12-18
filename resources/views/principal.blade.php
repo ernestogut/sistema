@@ -72,6 +72,8 @@
                 @include('plantilla.sidebarvendedor')
             @elseif(Auth::user()->idrole == 3)
                 @include('plantilla.sidebaralmacenero')
+            @elseif(Auth::user()->idrole == 4)
+                @include('plantilla.sidebaradministradorrudy')
             @endIf
         @endIf
 

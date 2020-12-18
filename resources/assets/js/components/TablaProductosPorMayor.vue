@@ -44,6 +44,9 @@
               <b-input-group-append>
                 <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
               </b-input-group-append>
+              <b-button class="btn btn-info btn-sm" @click="exportExcel">
+                Exportar XLSX
+              </b-button>
             </b-input-group>
           </b-form-group>
         </b-col>
@@ -177,6 +180,7 @@
     import Loading from 'vue-loading-overlay';
     // Import stylesheet
     import 'vue-loading-overlay/dist/vue-loading.css';
+    import XLSX from 'xlsx';
 export default {
     mounted(){
         this.listarItem();
@@ -274,6 +278,17 @@ export default {
                 this.totalRows = this.arrayProductos.length
                 this.cargando = false;      
             })
+        },
+        exportExcel: function () {
+          var arrayPreciosPorMayor = []
+          var arrayPreciosPorMayor = this.arrayProductos.filter(function (producto) {
+              return producto.precio_por_mayor != null;
+          });
+          let data = XLSX.utils.json_to_sheet(arrayPreciosPorMayor)
+          const workbook = XLSX.utils.book_new()
+          const filename = 'precios_por_mayor'
+          XLSX.utils.book_append_sheet(workbook, data, filename)
+          XLSX.writeFile(workbook, `${filename}.xlsx`)
         },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering

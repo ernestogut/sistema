@@ -38,6 +38,9 @@
                         <li  @click="menu=3" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-wallet"></i> Ingresos</a>
                         </li>
+                        <li  @click="menu=32" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-wallet"></i> Salidas</a>
+                        </li>
                         <li  @click="menu=14" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-notebook"></i> Traspaso almacén</a>
                         </li>

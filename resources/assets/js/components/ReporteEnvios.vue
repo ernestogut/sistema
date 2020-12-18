@@ -210,6 +210,8 @@ export default {
           class: "text-center",
           visible: true
         },
+        { key: "distrito", label: "Distrito", sortable: true, class: "text-center", visible: true },
+        { key: "provincia", label: "Provincia", sortable: true, class: "text-center", visible: true },
         {
           key: "departamento",
           label: "Departamento",
@@ -217,9 +219,9 @@ export default {
           class: "text-center",
           visible: true
         },
-        { key: "provincia", label: "Provincia", sortable: true, class: "text-center", visible: true },
-        { key: "distrito", label: "Distrito", sortable: true, class: "text-center", visible: true },
-        { key: "conteo", label: "Cantidad de envios", sortable: true, class: "text-center", visible: true },
+        { key: "conteo", label: "Cantidad total de ventas", sortable: true, class: "text-center", visible: true },
+        { key: "suma_total", label: "Suma total de ventas", sortable: true, class: "text-center", visible: true },
+        { key: "promedio", label: "Promedio de ventas", sortable: true, class: "text-center", visible: true },
       ],
       totalRows: 1,
       currentPage: 1,
@@ -309,8 +311,8 @@ export default {
               )
               .then(response => {
                 this.arrayReporte = response.data;
+                this.fields[1].visible = false
                 this.fields[2].visible = false
-                this.fields[3].visible = false
                 this.totalRows = this.arrayReporte.length;
                 this.cargando = false;
               });
@@ -323,7 +325,7 @@ export default {
               .then(response => {
                 this.arrayReporte = response.data;
                 this.fields[2].visible = true
-                this.fields[3].visible = false
+                this.fields[1].visible = false
                 this.totalRows = this.arrayReporte.length;
                 this.cargando = false;
               });
@@ -336,7 +338,7 @@ export default {
               .then(response => {
                 this.arrayReporte = response.data;
                 this.fields[2].visible = true
-                this.fields[3].visible = true
+                this.fields[1].visible = true
                 this.totalRows = this.arrayReporte.length;
                 this.cargando = false;
               });
@@ -358,8 +360,8 @@ export default {
               )
               .then(response => {
                 this.arrayReporte = response.data;
+                this.fields[1].visible = false
                 this.fields[2].visible = false
-                this.fields[3].visible = false
                 this.totalRows = this.arrayReporte.length;
                 this.cargando = false;
               });
@@ -372,7 +374,7 @@ export default {
               .then(response => {
                 this.arrayReporte = response.data;
                 this.fields[2].visible = true
-                this.fields[3].visible = false
+                this.fields[1].visible = false
                 this.totalRows = this.arrayReporte.length;
                 this.cargando = false;
               });
@@ -385,7 +387,7 @@ export default {
               .then(response => {
                 this.arrayReporte = response.data;
                 this.fields[2].visible = true
-                this.fields[3].visible = true
+                this.fields[1].visible = true
                 this.totalRows = this.arrayReporte.length;
                 this.cargando = false;
               });

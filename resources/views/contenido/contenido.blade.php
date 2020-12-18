@@ -78,6 +78,9 @@
             <template v-if="menu==29">
                 <reporte-envio></reporte-envio>
             </template>
+            <template v-if="menu==32">
+                <salida-almacen></salida-almacen>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <facturacion></facturacion>
@@ -97,11 +100,21 @@
             <template v-if="menu==18">
                 <movimiento-caja></movimiento-caja>
             </template>
+            <template v-if="menu==31">
+                <envio-delivery></envio-delivery>
+            </template>
+            
         @elseif(Auth::user()->idrole == 3)
             <template v-if="menu==4">
                 <proveedor></proveedor>
             </template>
-
+        @elseif(Auth::user()->idrole == 4)
+            <template v-if="menu==30">
+                <precios-envio></precios-envio>
+            </template>
+            <template v-if="menu==31">
+                <envio-delivery></envio-delivery>
+            </template>
         @endIf
     @endIf
 

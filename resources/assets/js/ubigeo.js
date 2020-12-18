@@ -1069,10 +1069,6 @@ var departamentos = [
              "distrito":"Lurin"
           },
           {
-             "coddistrito":"140621",
-             "distrito":"Magdalena"
-          },
-          {
              "coddistrito":"140622",
              "distrito":"Magdalena Del Mar"
           },
@@ -1126,10 +1122,6 @@ var departamentos = [
           },
           {
              "coddistrito":"140635",
-             "distrito":"Santiago De Surco"
-          },
-          {
-             "coddistrito":"140636",
              "distrito":"Surco"
           },
           {
@@ -1143,10 +1135,6 @@ var departamentos = [
           {
              "coddistrito":"140639",
              "distrito":"Villa Maria Del Triunfo"
-          },
-          {
-             "coddistrito":"140640",
-             "distrito":"Villa MarÃ­a Del Triunfo"
           }
        ]
     },

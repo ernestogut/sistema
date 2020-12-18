@@ -44,6 +44,9 @@ Vue.component('user', require('./components/User.vue').default);
 Vue.component('notification', require('./components/Notification.vue').default);
 Vue.component('dashboard', require('./components/Escritorio.vue').default);
 Vue.component('almacen', require('./components/Almacen.vue').default);
+Vue.component('envio-delivery', require('./components/EnviosDelivery.vue').default);
+Vue.component('envio-delivery-detalle', require('./components/EnvioDelivery.vue').default);
+Vue.component('precios-envio', require('./components/PreciosDelivery.vue').default);
 Vue.component('compra', require('./components/Compras.vue').default);
 Vue.component('producto', require('./components/Producto.vue').default);
 Vue.component('facturacion', require('./components/Facturacion.vue').default);
@@ -51,6 +54,7 @@ Vue.component('datatable-productos', require('./components/DatatableProductoComp
 Vue.component('vue-datatable', require('./components/DatatableComponent.vue').default);
 Vue.component('tipo-comprobante', require('./components/TipoComprobante.vue').default);
 Vue.component('ingreso-almacen', require('./components/IngresoAlmacen.vue').default);
+Vue.component('salida-almacen', require('./components/almacen/SalidaAlmacen.vue').default);
 Vue.component('producto-speed', require('./components/ProductoSpeed.vue').default);
 Vue.component('pedido-speed', require('./components/PedidoSpeed.vue').default);
 Vue.component('reporte', require('./components/Reportes.vue').default);
@@ -99,6 +103,8 @@ var app = new Vue({
                     this.menu = 1
                 }else if(this.usuarioLogeado.idrole ==2){
                     this.menu = 5
+                }else if(this.usuarioLogeado.idrole == 4){
+                    this.menu = 30
                 }
                 //this.$store.dispatch('cargarProductos')
             })

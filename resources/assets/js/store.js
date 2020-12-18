@@ -8,10 +8,13 @@ export default {
         arrayVentas: [],
         arrayAlmacen: [],
         arrayDocumentos: [],
+        arrayPedidosDelivery: [],
+        arrayDiasDePedidos: [],
         tablaVenta: [],
         arrayVariaciones: [],
         productoVariacion: '',
-        show: false
+        show: false,
+        modalEnvioControl: false
 
     },
     mutations:{
@@ -26,6 +29,9 @@ export default {
         },
         SET_PEDIDOS (state, arrayPedidos) {
             state.arrayPedidos = arrayPedidos;
+        },
+        SET_PEDIDOS_DELIVERY (state, arrayPedidosDelivery) {
+            state.arrayPedidosDelivery = arrayPedidosDelivery;
         },
         SET_VENTAS (state, arrayVentas){
             state.arrayVentas = arrayVentas;
@@ -50,6 +56,12 @@ export default {
         },
         SET_PRODUCTOSTOTALES (state, arrayProductosTotales){
             state.arrayProductosTotales = arrayProductosTotales;
+        },
+        SET_MODALENVIOCONTROL (state, modalEnvioControl){
+            state.modalEnvioControl = modalEnvioControl;
+        },
+        SET_DIAS_DE_PEDIDOS (state, arrayDiasDePedidos){
+            state.arrayDiasDePedidos = arrayDiasDePedidos;
         }
     },
     getters:{
@@ -64,6 +76,9 @@ export default {
         },
         arrayPedidos(state){
             return state.arrayPedidos;
+        },
+        arrayPedidosDelivery(state){
+            return state.arrayPedidosDelivery;
         },
         arrayAlmacen(state){
             return state.arrayAlmacen;
@@ -88,6 +103,12 @@ export default {
         },
         arrayProductosTotales(state){
             return state.arrayProductosTotales;
+        },
+        modalEnvioControl(state){
+            return state.modalEnvioControl;
+        },
+        arrayDiasDePedidos(state){
+            return state.arrayDiasDePedidos;
         }
 
     },
@@ -117,6 +138,13 @@ export default {
                 
             })
         },
+        cargarDiasDePedidos({commit}){
+            return axios.get('/delivery').then((response)=>{
+                console.log(response.data)
+                let arrayDiasPedidos = response.data
+                commit('SET_DIAS_DE_PEDIDOS', arrayDiasPedidos)
+            })
+        },
         cargarUsuarios({commit}){
             return axios.get('/user/obtenerUsuarios').then(response =>{
                     let arrayUsuarios = response.data
@@ -141,6 +169,12 @@ export default {
                     commit('SET_PEDIDOS', arrayPedidos)
                 });
         },
+        cargarPedidosDelivery({commit}){
+            return axios.get('/delivery').then(response =>{
+                    let arrayPedidosDelivery = response.data
+                    commit('SET_PEDIDOS_DELIVERY', arrayPedidosDelivery)
+                });
+        },
         actualizarProductos({ commit }, arrayProductos) {
             commit("SET_PRODUCTOS", arrayProductos);
         },
@@ -161,6 +195,9 @@ export default {
         },
         actualizarUsuarioLogeado({ commit }, arrayUsuarioLogeado) {
             commit("SET_USUARIO_LOGEADO", arrayUsuarioLogeado);
+        },
+        actualizarModalEnvioControl({ commit }, modalEnvioControl) {
+            commit("SET_MODALENVIOCONTROL", modalEnvioControl);
         },
     }
 }

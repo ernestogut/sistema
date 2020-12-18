@@ -52,32 +52,32 @@ class EnviosController extends Controller
     }
     public function rankingDepartamentosFecha($fecha)
     {
-        $ranking_departamento = Envios::select(DB::raw('id_factura, departamento, provincia, distrito, COUNT(*) as conteo'))->where(DB::raw('DATE(created_at)'), $fecha)->groupBy('departamento')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
+        $ranking_departamento = Envios::select(DB::raw('envios.id_factura, envios.departamento, envios.provincia, envios.distrito, COUNT(*) as conteo, sum(c_facts.total) as suma_total, sum(c_facts.total) / COUNT(*) as promedio'))->join('c_facts', 'envios.id_factura', 'c_facts.id')->where(DB::raw('DATE(envios.created_at)'), $fecha)->groupBy('envios.departamento')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
         return $ranking_departamento;
     }
     public function rankingDepartamentosRango($fecha_inicio, $fecha_fin)
     {
-        $ranking_departamento = Envios::select(DB::raw('id_factura, departamento, provincia, distrito, COUNT(*) as conteo'))->whereBetween(DB::raw('DATE(created_at)'), array($fecha_inicio, $fecha_fin))->groupBy('departamento')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
+        $ranking_departamento = Envios::select(DB::raw('envios.id_factura, envios.departamento, envios.provincia, envios.distrito, COUNT(*) as conteo, sum(c_facts.total) as suma_total, sum(c_facts.total) / COUNT(*) as promedio'))->join('c_facts', 'envios.id_factura', 'c_facts.id')->whereBetween(DB::raw('DATE(envios.created_at)'), array($fecha_inicio, $fecha_fin))->groupBy('envios.departamento')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
         return $ranking_departamento;
     }
     public function rankingProvinciasFecha($fecha)
     {
-        $ranking_provincia = Envios::select(DB::raw('id_factura, departamento, provincia, distrito, COUNT(*) as conteo'))->where(DB::raw('DATE(created_at)'), $fecha)->groupBy('provincia')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
+        $ranking_provincia = Envios::select(DB::raw('envios.id_factura, envios.departamento, envios.provincia, envios.distrito, COUNT(*) as conteo, sum(c_facts.total) as suma_total, sum(c_facts.total) / COUNT(*) as promedio'))->join('c_facts', 'envios.id_factura', 'c_facts.id')->where(DB::raw('DATE(envios.created_at)'), $fecha)->groupBy('envios.provincia')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
         return $ranking_provincia;
     }
     public function rankingProvinciasRango($fecha_inicio, $fecha_fin)
     {
-        $ranking_provincia = Envios::select(DB::raw('id_factura, departamento, provincia, distrito, COUNT(*) as conteo'))->whereBetween(DB::raw('DATE(created_at)'), array($fecha_inicio, $fecha_fin))->groupBy('provincia')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
+        $ranking_provincia = Envios::select(DB::raw('envios.id_factura, envios.departamento, envios.provincia, envios.distrito, COUNT(*) as conteo, sum(c_facts.total) as suma_total, sum(c_facts.total) / COUNT(*) as promedio'))->join('c_facts', 'envios.id_factura', 'c_facts.id')->whereBetween(DB::raw('DATE(envios.created_at)'), array($fecha_inicio, $fecha_fin))->groupBy('envios.provincia')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
         return $ranking_provincia;
     }
     public function rankingDistritosFecha($fecha)
     {
-        $ranking_distrito = Envios::select(DB::raw('id_factura, departamento, provincia, distrito, COUNT(*) as conteo'))->where(DB::raw('DATE(created_at)'), $fecha)->groupBy('distrito')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
+        $ranking_distrito = Envios::select(DB::raw('envios.id_factura, envios.departamento, envios.provincia, envios.distrito, COUNT(*) as conteo, sum(c_facts.total) as suma_total, sum(c_facts.total) / COUNT(*) as promedio'))->join('c_facts', 'envios.id_factura', 'c_facts.id')->where(DB::raw('DATE(envios.created_at)'), $fecha)->groupBy('envios.distrito')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
         return $ranking_distrito;
     }
     public function rankingDistritosRango($fecha_inicio, $fecha_fin)
     {
-        $ranking_distrito = Envios::select(DB::raw('id_factura, departamento, provincia, distrito, COUNT(*) as conteo'))->whereBetween(DB::raw('DATE(created_at)'), array($fecha_inicio, $fecha_fin))->groupBy('distrito')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
+        $ranking_distrito = Envios::select(DB::raw('envios.id_factura, envios.departamento, envios.provincia, envios.distrito, COUNT(*) as conteo, sum(c_facts.total) as suma_total, sum(c_facts.total) / COUNT(*) as promedio'))->join('c_facts', 'envios.id_factura', 'c_facts.id')->whereBetween(DB::raw('DATE(envios.created_at)'), array($fecha_inicio, $fecha_fin))->groupBy('envios.distrito')->orderBy(DB::raw('COUNT(*)'), 'DESC')->get();
         return $ranking_distrito;
     }
     /**

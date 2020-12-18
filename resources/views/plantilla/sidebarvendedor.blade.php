@@ -35,6 +35,14 @@
                         </li>
                     </ul>
                 </li>
+               <li  class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Listos Ya!</a>
+                    <ul class="nav-dropdown-items">
+                        <li  @click="menu=31" class="nav-item">
+                            <a class="nav-link" href="#"><i class="icon-notebook"></i> Pedidos</a>
+                        </li>
+                    </ul>
+                </li>
                 <li  class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Socios de negocio</a>
                     <ul class="nav-dropdown-items">
@@ -43,14 +51,15 @@
                         </li>
                     </ul>
                 </li>
-                <!-- <li class="nav-item nav-dropdown">
+                
+                 <li class="nav-item nav-dropdown">
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pie-chart"></i> Reportes</a>
                     <ul class="nav-dropdown-items">
                         <li   @click="menu=10" class="nav-item">
                             <a class="nav-link" href="#"><i class="icon-chart"></i> Reporte Ventas</a>
                         </li>
                     </ul>
-                </li>-->
+                </li>
             </ul>
         </nav>
         <button class="sidebar-minimizer brand-minimizer" type="button"></button>

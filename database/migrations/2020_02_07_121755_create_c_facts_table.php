@@ -25,8 +25,6 @@ class CreateCFactsTable extends Migration
             $table->string('razon');
             $table->unsignedBigInteger('id_user');
             $table->string('fecha');
-            $table->string('ciudad_destino')->nullable();
-            $table->string('distrito_destino')->nullable();
             $table->string('tipo_venta');
             $table->string('tipo_pago');
             $table->string('serie');

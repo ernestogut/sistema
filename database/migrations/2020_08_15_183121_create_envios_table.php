@@ -15,7 +15,8 @@ class CreateEnviosTable extends Migration
     {
         Schema::create('envios', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigIncrements('id_factura');
+            $table->unsignedBigInteger('id_factura');
+            $table->foreign('id_factura')->references('id')->on('c_facts');
             $table->string('departamento');
             $table->string('provincia');
             $table->string('distrito');
