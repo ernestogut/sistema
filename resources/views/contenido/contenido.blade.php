@@ -81,6 +81,12 @@
             <template v-if="menu==32">
                 <salida-almacen></salida-almacen>
             </template>
+            <template v-if="menu==30">
+                <precios-envio></precios-envio>
+            </template>
+            <template v-if="menu==31">
+                <envio-delivery></envio-delivery>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <facturacion></facturacion>

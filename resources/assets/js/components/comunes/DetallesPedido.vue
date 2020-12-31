@@ -22,7 +22,7 @@
                     <div class="card card-2">
                         <div class="card-body">
                             <div class="media">
-                                <div class="sq align-self-center "> <img class="img-fluid my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0" src="https://i.imgur.com/fUWWpRS.jpg" width="135" height="135" /> </div>
+                                <!--<div class="sq align-self-center "> <img class="img-fluid my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0" src="https://i.imgur.com/fUWWpRS.jpg" width="135" height="135" /> </div>-->
                                 <div class="media-body my-auto text-right">
                                     <div class="row my-auto flex-column flex-md-row">
                                         {{pedido.pedido}}
@@ -95,10 +95,10 @@
                         <h1 class="display-4 ">S/ {{pedido.monto_pagado}}</h1>
                     </div>
                 </div>
-                <div class="row mb-3 mt-3 mt-md-0">
-                    <div class="col-auto border-line"> <small class="text-white">PAN:AA02hDW7E</small></div>
-                    <div class="col-auto border-line"> <small class="text-white">CIN:UMMC20PTC </small></div>
-                    <div class="col-auto "><small class="text-white">GSTN:268FD07EXX </small> </div>
+                <div class="d-flex align-items-center justify-content-center mb-3 mt-3 mt-md-0">
+                    <div class="col-auto border-line"> <small class="text-white">SPEED</small></div>
+                    <div class="col-auto border-line"> <small class="text-white">CUBER </small></div>
+                    <div class="col-auto "><small class="text-white">PERÚ </small> </div>
                 </div>
             </div>
         </div>

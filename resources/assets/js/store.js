@@ -140,7 +140,6 @@ export default {
         },
         cargarDiasDePedidos({commit}){
             return axios.get('/delivery').then((response)=>{
-                console.log(response.data)
                 let arrayDiasPedidos = response.data
                 commit('SET_DIAS_DE_PEDIDOS', arrayDiasPedidos)
             })

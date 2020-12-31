@@ -119,6 +119,9 @@
           <b-button variant="primary" size="sm" @click="funcionConjunto(row.item)">
             <i class="icon-eye"></i>
           </b-button>
+          <b-button v-if="controlador==4" variant="secondary" size="sm" @click="funcionImprimir(row.item)">
+            <i class="icon-printer"></i>
+          </b-button>
           <b-button variant="danger" size="sm" v-if="controlador!=6" @click="eliminarItem(row.item, row.index)">
             <i class="icon-trash"></i>
           </b-button>
@@ -154,6 +157,7 @@ export default {
     factura: Boolean,
     funcionBoton: Function,
     funcionBotonTrash: Function,
+    funcionImprimir: Function,
     eliminarItem: Function,
     listarSeries: Function
   },

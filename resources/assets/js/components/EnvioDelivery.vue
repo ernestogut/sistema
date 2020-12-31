@@ -37,6 +37,9 @@
             <b-input-group-append>
               <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
             </b-input-group-append>
+            <b-button class="btn btn-info btn-sm" @click="exportExcel">
+                Exportar XLSX
+            </b-button>
           </b-input-group>
         </b-form-group>
       </b-col>
@@ -302,7 +305,7 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title" id="exampleModalLabel">Detalles del pedido</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <button type="button" class="close" @click="cerrarModalVerPedido()" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
@@ -311,7 +314,7 @@
                       <DetallesPedido :pedido="pedidoSeleccionado"></DetallesPedido>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                      <button type="button" class="btn btn-secondary" @click="cerrarModalVerPedido()">Cerrar</button>
                     </div>
                   </div>
                 </div>
@@ -329,6 +332,7 @@ import DetallesPedido from '../components/comunes/DetallesPedido'
 import Loading from 'vue-loading-overlay';
     // Import stylesheet
     import 'vue-loading-overlay/dist/vue-loading.css';
+    import XLSX from 'xlsx';
 import Viewer from 'vue-viewer';
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
@@ -442,6 +446,34 @@ export default {
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
+    exportExcel: function () {
+      let data = XLSX.utils.json_to_sheet(this.arrayPedidos)
+      data['!cols'] = [];
+      data['!cols'][0] = {hidden: true};
+      data['!cols'][1] = {hidden: true};
+      data['!cols'][2] = {hidden: true};
+      data['!cols'][10] = {hidden: true};
+      data['!cols'][13] = {hidden: true};
+      data['!cols'][14] = {hidden: true};
+      data['!cols'][15] = {hidden: true};
+      data['!cols'][16] = {hidden: true};
+      data['!cols'][17] = {hidden: true};
+      data['!cols'][20] = {hidden: true};
+      data.D1.v = 'Fecha'
+      data.E1.v = 'Hora'
+      data.F1.v = 'Cliente'
+      data.G1.v = 'Telefono'
+      data.H1.v = 'Direccion'
+      data.I1.v = 'Referencia'
+      data.J1.v = 'Distrito'
+      data.L1.v = 'Observacion'
+      data.M1.v = 'Metodo de pago'
+      data.S1.v = 'Por cobrar'
+      const workbook = XLSX.utils.book_new()
+      const filename = this.arrayPedidos[0].fecha
+      XLSX.utils.book_append_sheet(workbook, data, filename)
+      XLSX.writeFile(workbook, `${filename}.xlsx`)
+    },
     seleccionarDistrito(){
             let me= this;
             var url='/precio_delivery';
@@ -548,8 +580,10 @@ export default {
     },
     abrirModalVerPedido(pedido){
       this.pedidoSeleccionado = pedido;
-      console.log(pedido)
       $('#modalDetallePedido').modal('show');
+    },
+    cerrarModalVerPedido(){
+      $('#modalDetallePedido').modal('hide');
     },
     editarPedido(){
       this.$store.dispatch('actualizarShow', true)

@@ -21,7 +21,7 @@
                     <label :for="comprobante.id">{{comprobante.nombre}}</label>
                 </div>
             </div>
-            <vue-datatable  :items="arrayFacturas" :fields="cabecerasFactura"   :controlador="4" :funcionBoton="verFactura" :factura="true" :eliminarItem="deshabilitarFactura" v-if="initiated" >
+            <vue-datatable  :items="arrayFacturas" :fields="cabecerasFactura" :funcionImprimir="imprimirBoletaPorVenta"   :controlador="4" :funcionBoton="verFactura" :factura="true" :eliminarItem="deshabilitarFactura" v-if="initiated" >
             </vue-datatable>
             <div class="modal fade bd-example-modal-lg1" id="modalVenta"  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" ref="vuemodal" style="overflow-y: scroll;">
                 <div class="modal-dialog modal-xl">
@@ -494,6 +494,7 @@ export default {
             iconos: 'icon-plus',
             cabecerasFactura: [
                 { key: "num_doc", label: "Num doc", sortable: true, sortDirection: "desc", class: "text-center" },
+                { key: "tipo_pago", label: "Tipo de pago", sortable: true, sortDirection: "desc", class: "text-center" },
                 { key: "usuario", label: "Vendedor", sortable: true,class: "text-center", class: "text-center"},
                 { key: "serie", label: "Serie", sortable: true, class: "text-center"},
                 { key: "folio", label: "Folio", sortable: true, class: "text-center"},
@@ -999,6 +1000,65 @@ export default {
                 .then(valor => {
                     console.log(valor)
                 })
+        },
+        imprimirBoletaPorVenta(item){
+            console.log(item)
+            axios.get(`d_fact/${item.num_doc}`).then((response)=>{   
+                const RUTA_API = "http://localhost:8000";
+            
+                let impresora = new Impresora(RUTA_API);
+                            
+                impresora.setFontSize(1, 1);
+                impresora.setEmphasize(0);
+                impresora.setAlign("center");
+                impresora.write("SPEEDCUBER PERU\n");
+                //impresora.write("ROJAS RIOS VANESSA KATHERINE\n");
+                impresora.write("AV. ARENALES 1737 Tienda 2-22\n");
+                impresora.write("LIMA - LIMA - LINCE\n");
+                impresora.write("RUC: 10457782417\n");
+                impresora.write("Telefono: 01-7505980\n");
+                impresora.write(`${this.comprobanteEscogido.nombre} N: ${item.serie} - ${item.folio}\n`);
+                impresora.write(`Fecha/Hora: ${item.fecha}\n`);
+                impresora.write("DATOS DEL CLIENTE:\n");
+                if(item.razon){
+                    impresora.write(`Nombre: ${item.razon}\n`);
+                }
+                if(item.dir_client){
+                    impresora.write(`Direccion: ${item.dir_cliente}\n`);
+                }
+                if(item.ruc_cliente){
+                    impresora.write(`DNI: ${item.ruc_cliente}\n`);
+                }
+                impresora.write(`FORMA DE PAGO: ${item.tipo_pago}\n`);
+                impresora.write("DATOS DEL PRODUCTO:\n");
+                impresora.write("CANTID.:  ");
+                impresora.write("P.VENTA:  ");
+                impresora.write("TOTAL:  \n");
+                impresora.write("--------------------------------\n");
+                for(var s = 0; s < response.data.length; s++){
+                    impresora.setAlign("center");
+                    impresora.write(`${response.data[s].descripcion_producto}\n`);
+                    impresora.write(`${response.data[s].cantidad_cantidad}UNIDAD  `);
+                    impresora.write(`${parseFloat(response.data[s].precio_producto).toFixed(2)}  `);
+                    impresora.setAlign("right");
+                    impresora.write(`${parseFloat(response.data[s].total_producto).toFixed(2)}\n`);
+                    impresora.write("--------------------------------\n");
+                }
+                impresora.setAlign("right");
+                impresora.write(`SUBTOTAL: S/ ${item.sub_total}\n`);
+                impresora.write(`IGV 18%: ${item.igv_total}\n`);
+                impresora.write(`TOTAL: S/ ${parseFloat(item.total).toFixed(2)}\n\n`);
+                impresora.setAlign("center");
+                impresora.write("***Gracias por su compra***");
+                impresora.feed(3);
+                impresora.cut();
+                impresora.cutPartial(); // Pongo este y también cut porque en ocasiones no funciona con cut, solo con cutPartial
+                impresora.end()
+                    .then(valor => {
+                        console.log(valor)
+                    }) 
+                    console.log(response.data)
+            })
         },
         abrirGaveta(){
             const RUTA_API = "http://localhost:8000";

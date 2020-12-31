@@ -128,7 +128,7 @@ class CFactController extends Controller
         if(!$request->ajax()) return redirect('/');
         /*$cabecera = C_fact::find($id);
         return $cabecera;*/
-        $cabecera = C_fact::select('c_facts.id as num_doc', 'c_facts.id_tipo_comprobante', 'c_facts.id_almacen', 'c_facts.tipo_pago', 'c_facts.estado', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('c_facts.id_tipo_comprobante', '=', $tipo_comprobante)->where('c_facts.fecha', '=', date('Y-m-d'))->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
+        $cabecera = C_fact::select('c_facts.id as num_doc', 'c_facts.id_tipo_comprobante', 'c_facts.id_almacen', 'c_facts.tipo_pago', 'c_facts.estado', 'users.usuario', 'c_facts.serie', 'c_facts.folio', 'c_facts.fecha', 'c_facts.total', 'c_facts.dir_cliente', 'c_facts.razon', 'c_facts.ruc_cliente', 'c_facts.sub_total', 'c_facts.igv_total')->join('users', 'c_facts.id_user', '=', 'users.id')->where('c_facts.id_tipo_comprobante', '=', $tipo_comprobante)->where('c_facts.fecha', '=', date('Y-m-d'))->where('estado', 'habilitado')->orderBy('c_facts.id', 'desc')->get();
         return $cabecera;
     }
 

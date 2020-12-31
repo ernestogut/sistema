@@ -171,7 +171,7 @@
                         <envio-delivery-detalle :dia="diaSeleccionado"></envio-delivery-detalle>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     </div>
                     </div>
                 </div>
@@ -481,6 +481,7 @@ export default {
             this.objetoEnvio.fecha = this.$moment().format("YYYY-MM-DD")
         },
         insertarPedido(){
+            if(confirm('¿Estás seguro de registrar este pedido?')){
                 this.$store.dispatch('actualizarShow', true)
                 var me = this;
                 axios.post('/delivery', this.objetoEnvio).then((response)=>{
@@ -501,6 +502,10 @@ export default {
                         icon: 'error'
                     });
                 })
+            }else{
+                return;
+            }
+                
         },
         verPedidosDia(dia, controladorModal){
             this.diaSeleccionado = dia;

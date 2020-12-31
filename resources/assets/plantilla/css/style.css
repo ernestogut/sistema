@@ -9035,7 +9035,7 @@ app-root {
     .sidebar-fixed .sidebar .sidebar-nav,
     .sidebar-fixed .sidebar .nav {
       width: 220px !important;
-      height: calc(100vh - 55px); }
+       }
     .sidebar .sidebar-minimizer,
     .sidebar-fixed .sidebar .sidebar-minimizer {
       display: none; }
