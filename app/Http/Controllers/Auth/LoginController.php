@@ -24,10 +24,10 @@ class LoginController extends Controller
     public function login(Request $request){
 
         $this->validateLogin($request);
-        $user = User::select('id_almacen')->where('usuario', '=', $request->usuario)->get();
+        $user = User::select('id_almacen', 'idrole')->where('usuario', '=', $request->usuario)->get();
         //$cierre_caja = CierreCaja::select('id_usuario', 'fecha', 'estado')->where('id_almacen', '=', $codigo)->orderBy('id', 'desc')->take(2)->get();
         if( Auth::attempt(['usuario' => $request->usuario, 'password' => $request->password, 'condicion'=>1])){
-            if($user[0]->id_almacen != 0){
+            if($user[0]->id_almacen != 0 || ($user[0]->id_almacen == 0 && $user[0]->idrole == 4)){
                 return redirect()->route('principal');
             }else{
                 return redirect()->route('contenido');

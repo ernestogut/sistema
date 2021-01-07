@@ -307,7 +307,7 @@ export default {
       });
     },
     listarRoles(){
-            var urlItem = '/role';
+            var urlItem = '/rol';
             axios.get(urlItem).then(response=>{
                 this.arrayRoles = response.data;
             })

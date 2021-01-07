@@ -112,6 +112,9 @@
                 <b-button size="sm"  @click="detalleIngreso(row.item)" class="mr-1">
                     <i class="icon-eye"></i>
                 </b-button>
+                <b-button size="sm"  @click="completarIngreso(row.item)" class="mr-1" variant="primary" v-if="row.item.estado != 'completado'">
+                    <i class="icon-check"></i>
+                </b-button>
                 </template>
                 <template v-slot:table-busy>
                 <div class="text-center text-danger my-2">
@@ -387,6 +390,7 @@ export default {
                 { key: "fecha_emision", label: "Fecha de emisión", sortable: true, class: "text-center"},
                 { key: "motivo", label: "Motivo", sortable: true, class: "text-center"},
                 { key: "observacion", label: "Observacion", sortable: true, class: "text-center"},
+                { key: "estado", label: "Estado", sortable: true, class: "text-center"},
                 { key: "actions", label: "Acciones" , class: "text-center"}
             ],
             comprobanteEscogido: '',
@@ -692,7 +696,7 @@ export default {
                                 }
                             }
                         }
-                    }
+                    }       
                     Vue.swal({
                     title: 'Ingreso exitoso!',
                     text: 'El ingreso ha sido realizado con éxito!',
@@ -711,6 +715,16 @@ export default {
                     icon: 'error'
                 });
             })
+        },
+        completarIngreso(ingreso){
+            if(confirm('Estás seguro de completar este ingreso?')){
+                axios.post(`detalle_ingreso/completarIngreso`, {id_ingreso: ingreso.id}).then((response)=>{
+                    ingreso.estado = 'completado';
+                    alert('ingreso completado satisfactoriamente');
+                })
+            }else{
+
+            }
         },
         obtenerFecha(){
             this.objetoIngreso.fecha_emision = this.$moment().format("YYYY-MM-DD")

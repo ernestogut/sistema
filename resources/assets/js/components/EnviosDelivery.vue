@@ -156,7 +156,12 @@
                 </div>
                 </template>
             </b-table>
+            <div>
+                <i class="fa fa-square-o text-danger bg-danger mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Día sin completar</span>  
+                <i class="fa fa-square-o text-success bg-success mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Día completado</span>
+            </div>  
             </div>
+             
             <!---->
             <div class="modal fade" id="modalPedidosDetalle" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
@@ -253,8 +258,8 @@
                                         <input type="text" class="form-control" v-model="objetoEnvio.pedido">
                                     </div>-->
                                     <div class="form-group col-md-3">
-                                        <label>Observación</label>
-                                        <input type="text" class="form-control" v-model="objetoEnvio.observacion">
+                                        <label>Observación SCP</label>
+                                        <input type="text" class="form-control" v-model="objetoEnvio.observacion_empresa">
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label>Precio de los productos</label>
@@ -320,7 +325,7 @@ export default {
                 referencia: null,
                 distrito: null,
                 pedido: null,
-                observacion: null,
+                observacion_empresa: null,
                 metodo_pago: 'efectivo',
                 medio_recepcion: 'facebook',
                 precio_productos: 0.00,
@@ -336,7 +341,8 @@ export default {
                 { key: "id", label: "#", sortable: true, sortDirection: "desc" ,class: "text-center"},
                 { key: "fecha", label: "Fecha", sortable: true, class: "text-center"},
                 { key: "conteo", label: "Cantidad pedidos", sortable: true, class: "text-center"},
-                { key: "total_cobrar", label: "Total a cobrar", sortable: true, class: "text-center"},
+                { key: "conteo_cancelados", label: "Cantidad pedidos cancelados", sortable: true, class: "text-center"},
+                { key: "total_cobrar", label: this.$store.getters.arrayUsuarioLogeado.idrole!=4?"Total a cobrar":"Total a pagar", sortable: true, class: "text-center"},
                 { key: "total_monto_envios", label: "Total monto envios", sortable: true, class: "text-center"},
                 { key: 'voucher', label: 'Voucher', class: "text-center"},
                 { key: "actions", label: "Acciones", class: "text-center"}

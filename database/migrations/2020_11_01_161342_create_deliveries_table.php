@@ -26,7 +26,8 @@ class CreateDeliveriesTable extends Migration
             $table->unsignedBigInteger('distrito');
             $table->foreign('distrito')->references('id')->on('precios_deliveries');
             $table->text('pedido');
-            $table->text('observacion')->nullable();
+            $table->text('observacion_empresa')->nullable();
+            $table->text('observacion_delivery')->nullable();
             $table->text('medio_recepcion');
             $table->string('metodo_pago');
             $table->decimal('precio_productos', 11, 2);

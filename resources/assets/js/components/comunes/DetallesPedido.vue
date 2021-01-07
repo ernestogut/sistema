@@ -20,12 +20,12 @@
             <div class="row">
                 <div class="col">
                     <div class="card card-2">
-                        <div class="card-body">
+                        <div class="card-body" v-for="producto in arrayProductosPedido" :key="producto.id">
                             <div class="media">
-                                <!--<div class="sq align-self-center "> <img class="img-fluid my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0" src="https://i.imgur.com/fUWWpRS.jpg" width="135" height="135" /> </div>-->
+                                <div class="sq align-self-center "> <img class="img-fluid my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0" src="/img/solo-logo-scp.png" width="40" height="40" /> </div>
                                 <div class="media-body my-auto text-right">
                                     <div class="row my-auto flex-column flex-md-row">
-                                        {{pedido.pedido}}
+                                        {{producto}}
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +78,8 @@
                     <p class="mb-1">Distrito: <strong>{{pedido.distrito}}</strong></p>
                     <p class="mb-1">Dirección: <strong>{{pedido.direccion}}</strong></p>
                     <p class="mb-1">Referencia: <strong>{{pedido.referencia}}</strong></p><hr>
-                    <p class="mb-1">Observación: <strong>{{pedido.observacion}}</strong></p>
+                    <p class="mb-1">Observación SCP: <strong>{{pedido.observacion_empresa}}</strong></p>
+                    <p class="mb-1">Observación Listos Ya!: <strong>{{pedido.observacion_delivery}}</strong></p>
                     <p class="mb-1">Medio de recepción: <strong>{{pedido.medio_recepcion}}</strong></p>
                     <p class="mb-1">Método de pago: <strong>{{pedido.metodo_pago}}</strong></p>
                 </div>
@@ -110,6 +111,13 @@
 export default {
     props: {
         pedido: Object
+    },
+    computed:{
+        arrayProductosPedido(){
+            if(this.pedido.pedido){
+                return this.pedido.pedido.split(',')
+            }   
+        }
     }
 }
 </script>

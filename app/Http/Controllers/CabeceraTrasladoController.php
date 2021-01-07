@@ -95,8 +95,9 @@ class CabeceraTrasladoController extends Controller
      * @param  \App\CabeceraTraslado  $cabeceraTraslado
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CabeceraTraslado $cabeceraTraslado)
+    public function destroy($id)
     {
-        //
+        $cabecera_traslado = CabeceraTraslado::find($id);
+        $cabecera_traslado->delete();
     }
 }

@@ -17,6 +17,7 @@ class CreateDetalleIngresosTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('id_cabecera_ingreso');
             $table->foreign('id_cabecera_ingreso')->references('id')->on('cabecera_ingresos')->onDelete('cascade');
+            $table->string('codigo_padre');
             $table->string('codigo_producto');
             $table->string('descripcion_producto');
             $table->text('cantidades');

@@ -2,34 +2,94 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Role;
+use Illuminate\Http\Request;
+
 class RoleController extends Controller
 {
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        //verifica si la peticion se la esta haciendo por ajax y si no es asi se lo redirige a /
-        if(!$request->ajax()) return redirect('/');
-        //listar todos los registros de la tabla categoria
-        $rol = Role::all();
+        $roles = Role::all();
+        return $roles;
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $rol = new Role();
+        $rol->nombre = $request->nombre;
+        $rol->descripcion = $request->descripcion;
+        $rol->save();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $rol = Role::find($id);
         return $rol;
-        // $categorias = DB::table('categorias')->paginate(2);
-        // return $categorias;
-
     }
 
-    public function selectRole(Request $request){
-
-        $roles = Role::where('condicion', '=', '1')
-        ->select('id','nombre')
-        ->orderBy('nombre','asc')->get();
-
-        return ['roles' => $roles];
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $rol = Role::find($id);
+        $rol->nombre = $request->nombre;
+        $rol->descripcion = $request->descripcion;
+        $rol->save();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $rol = Role::find($id);
+        $rol->delete();
+    }
 }

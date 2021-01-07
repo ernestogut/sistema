@@ -130,6 +130,14 @@
                             >
                                 <i class="fa fa-check-square"></i>
                             </b-button>
+                            <b-button
+                                variant="danger"
+                                size="sm"
+                                @click="eliminarTraslado(row.item, row.index)"
+                            >
+                                <i class="fa fa-trash"></i>
+                            </b-button>
+                            
                         </div>
                         
                     </template>
@@ -752,6 +760,25 @@ export default {
         },
         obtenerFecha(){
             this.objetoIngreso.fecha_emision = this.$moment().format("YYYY-MM-DD")
+        },
+        eliminarTraslado(item, index){
+            Vue.swal({
+                title: 'Advertencia',
+                text: '¿Estás seguro de eliminar este traslado? !Esta acción no se puede deshacer!',
+                icon: 'warning'
+            }).then((result) => {
+                if (result.value) {
+                    this.$store.dispatch('actualizarShow', true)
+                    axios.delete(`cabecera_traslado/${item.num_documento}`).then(response=>{
+                        this.$store.dispatch('actualizarShow', false)
+                        this.arrayTraslados.splice(index,1) 
+                        this.listarTraslados();
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                }
+            })
+            
         }
     },
 }

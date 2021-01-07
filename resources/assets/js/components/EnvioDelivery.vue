@@ -116,7 +116,7 @@
               
           </template>
           <template #cell(fecha)="data">
-            {{new Date(data.item.fecha.replace(/-/g, '\/')).toLocaleDateString("es-ES", { year: 'numeric', month: 'long', day: 'numeric'}) }} a las {{data.item.hora}}
+            {{data.item.fecha}} - {{data.item.hora}}
               
           </template>
           <template #cell(por_cobrar)="data">
@@ -134,7 +134,7 @@
             >
               <b-icon icon="upload"></b-icon>
             </b-button>
-            <b-button size="sm" variant="warning" @click="abrirModalVerPedido(row.item)">
+            <b-button size="sm" variant="warning" @click="abrirModalVerPedido(row.item)" v-if="usuarioLogeado.idrole != 4">
                 <i class="icon-eye"></i>
               </b-button>
             <b-button size="sm" variant="warning" @click="abrirModalEditarPedido(row.item)">
@@ -159,7 +159,16 @@
           </div>
         </template>
       </b-table>
+      
     </div>
+    <div>
+        <i class="fa fa-square-o mr-2" style="width: 15px; height: 15px;"></i><span>Pendiente</span>
+        <i class="fa fa-square-o text-danger bg-danger mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Cancelado</span>  
+        <i class="fa fa-square-o text-warning bg-warning mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Recogido</span>  
+        <i class="fa fa-square-o text-info bg-info mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Pagado</span>
+        <i class="fa fa-square-o text-dark bg-dark mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Entregado</span>
+        <i class="fa fa-square-o text-success bg-success mr-2" style="width: 15px; height: 15px; border-radius: 5px"></i><span class="mr-2">Completado</span>
+      </div>  
     
     <div class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modalSubirImagen">
       <div class="modal-dialog">
@@ -254,8 +263,12 @@
                                         <input type="text" class="form-control" v-model="objetoEnvio.pedido">
                                     </div>-->
                                     <div class="form-group col-md-3">
-                                        <label>Observación</label>
-                                        <input type="text" class="form-control" v-model="objetoEnvio.observacion">
+                                        <label>Observación SCP</label>
+                                        <input type="text" class="form-control" v-model="objetoEnvio.observacion_empresa">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Observación Listos YA!</label>
+                                        <input type="text" class="form-control" v-model="objetoEnvio.observacion_delivery" readonly>
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label>Precio de los productos</label>
@@ -273,18 +286,52 @@
                                         <label>Por cobrar</label>
                                         <input type="number" step="any" class="form-control" id="por_cobrar_edit" v-model="objetoEnvio.por_cobrar" disabled>
                                     </div>
-                                </template>
                                     <div class="form-group col-md-3">
                                         <label>Estado</label>
                                         <select v-model="objetoEnvio.estado" class="form-control">
                                             <option disabled value="">Selecciona un estado</option>
-                                            <option value="pendiente" v-if="usuarioLogeado.idrole != 4">Pendiente</option>
-                                            <option value="pagado" v-if="usuarioLogeado.idrole != 4">Pagado</option>
-                                            <option value="recogido" v-if="usuarioLogeado.idrole != 4">Recogido</option>
-                                            <option value="entregado" v-if="usuarioLogeado.idrole == 4">Entregado</option>
-                                            <option value="completado" v-if="usuarioLogeado.idrole == 4">Completado</option>
+                                            <option value="pendiente" >Pendiente</option>
+                                            <option value="cancelado" >Cancelado</option>
+                                            <option value="pagado" >Pagado</option>
+                                            <option value="recogido" >Recogido</option>
+                                            <option value="entregado" >Entregado</option>
+                                            <option value="completado" >Completado</option>
                                         </select>
                                     </div>
+                                </template>
+                                <template v-else>
+                                  <div class="form-group col-md-3">
+                                        <label>Observación Listos YA!</label>
+                                        <input type="text" class="form-control" v-model="objetoEnvio.observacion_delivery" >
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Observación SCP</label>
+                                        <input type="text" class="form-control" v-model="objetoEnvio.observacion_empresa" readonly>
+                                    </div>
+                                  <div class="form-group col-md-3">
+                                    
+                                        <label>Estado</label>
+                                        <select v-model="objetoEnvio.estado" class="form-control">
+                                            <option disabled value="">Selecciona un estado</option>
+                                            <option value="pendiente" >Pendiente</option>
+                                            <option value="cancelado" >Cancelado</option>
+                                            <option value="pagado" >Pagado</option>
+                                            <option value="recogido" >Recogido</option>
+                                            <option value="entregado" >Entregado</option>
+                                            <option value="completado" >Completado</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Método de pago</label>
+                                        <select v-model="objetoEnvio.metodo_pago" class="form-control">
+                                            <option disabled value="">Escoje un método de pago</option>
+                                            <option value="efectivo">Efectivo</option>
+                                            <option value="transferencia">Transferencia</option>
+                                            <option value="contra_entrega">Contra entrega</option>
+                                        </select>
+                                    </div>
+                                </template>
+                                    
                                 </div>
                                 <hr>
                                  <div class="form-group" v-if="usuarioLogeado.idrole != 4">
@@ -355,17 +402,20 @@ export default {
       sortDirection: "asc",
       filter: null,
       filterOn: [],
-      fields: [
-          { key: "index", label: "#", sortable: true, sortDirection: "desc" ,class: "text-center"},
-          { key: "responsable", label: "Responsable", sortable: true, class: "text-center"},
-          { key: "fecha", label: "Fecha", sortable: true, class: "text-center"},
-          { key: "distrito", label: "Distrito", sortable: true, class: "text-center"},
-          { key: "precio_productos", label: "Precio productos", sortable: true, class: "text-center"},
-          { key: "envio_productos", label: "Envio", sortable: true, class: "text-center"},
-          { key: "monto_pagado", label: "Monto pagado", sortable: true, class: "text-center"},
-          { key: "por_cobrar", label: "Total a cobrar", sortable: true, class: "text-center"},
-          { key: 'voucher', label: 'Voucher', class: "text-center"},
-          { key: "actions", label: "Acciones", class: "text-center"}
+      fields2: [
+          { key: "index", label: "#", sortable: true, sortDirection: "desc" ,class: "text-center", visible: true},
+          { key: "cliente", label: "Cliente", sortable: true, class: "text-center", visible: true},
+          { key: "responsable", label: "Responsable", sortable: true, class: "text-center", visible: this.$store.getters.arrayUsuarioLogeado.idrole!=4?true:false},
+          { key: "fecha", label: "Fecha", sortable: true, class: "text-center", visible: true},
+          { key: "telefono", label: "Teléfono", sortable: true, class: "text-center", visible: this.$store.getters.arrayUsuarioLogeado.idrole==4?true:false},
+          { key: "distrito", label: "Distrito", sortable: true, class: "text-center", visible: true},
+          { key: "precio_productos", label: "Precio productos", sortable: true, class: "text-center", visible: this.$store.getters.arrayUsuarioLogeado.idrole!=4?true:false},
+          { key: "envio_productos", label: "Envio", sortable: true, class: "text-center", visible: true},
+          { key: "monto_pagado", label: "Monto pagado", sortable: true, class: "text-center", visible: this.$store.getters.arrayUsuarioLogeado.idrole!=4?true:false},
+          { key: "por_cobrar", label: "Total a cobrar", sortable: true, class: "text-center", visible: true},
+          { key: "observacion_empresa", label: "Observacion SCP", sortable: true, class: "text-center", visible: this.$store.getters.arrayUsuarioLogeado.idrole!=4?false:true},
+          { key: 'voucher', label: 'Voucher', class: "text-center", visible: true},
+          { key: "actions", label: "Acciones", class: "text-center", visible: true}
       ],
       arrayPedidos: [],
       cargando: false,
@@ -389,7 +439,8 @@ export default {
                 referencia: null,
                 distrito: null,
                 pedido: null,
-                observacion: null,
+                observacion_empresa: null,
+                observacion_delivery: null,
                 metodo_pago: 'efectivo',
                 medio_recepcion: 'facebook',
                 precio_productos: 0.00,
@@ -428,14 +479,19 @@ export default {
         },
     modalEnvioControl(){
             return this.$store.getters.modalEnvioControl;
-        }
+        },
+      fields() {
+        return this.fields2.filter(field => field.visible)
+      }
   },
   methods: {
       rowClass(item, type) {
             if (!item || type !== 'row') return
-            if (item.estado == 'completado') return 'bg-success'
-            if (item.estado == 'recogido') return 'bg-warning'
-            if (item.estado == 'pagado') return 'bg-info'
+            if (item.estado == 'cancelado') return 'bg-danger text-dark' 
+            if (item.estado == 'completado') return 'bg-success text-dark'
+            if (item.estado == 'recogido') return 'bg-warning text-dark'
+            if (item.estado == 'entregado') return 'bg-dark text-light'
+            if (item.estado == 'pagado') return 'bg-info text-dark'
         },
       showImageClick (imagen) {
             this.imageSrc = imagen
@@ -559,7 +615,8 @@ export default {
             this.objetoEnvio.direccion= response.data.direccion
             this.objetoEnvio.referencia= response.data.referencia
             this.objetoEnvio.pedido= response.data.pedido
-            this.objetoEnvio.observacion= response.data.observacion
+            this.objetoEnvio.observacion_empresa= response.data.observacion_empresa
+            this.objetoEnvio.observacion_delivery= response.data.observacion_delivery
             this.objetoEnvio.metodo_pago= response.data.metodo_pago
             this.objetoEnvio.medio_recepcion = response.data.medio_recepcion
             this.objetoEnvio.precio_productos= response.data.precio_productos
@@ -625,7 +682,7 @@ export default {
         },
         'objetoEnvio.monto_pagado'(){
             this.objetoEnvio.por_cobrar = ((Number(this.objetoEnvio.precio_productos)+Number(this.objetoEnvio.envio_productos))-Number(this.objetoEnvio.monto_pagado)).toFixed(2);
-        },
+        }
   }
 };
 </script>

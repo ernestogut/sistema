@@ -19,10 +19,10 @@ class CreateCFactsTable extends Migration
             $table->foreign('id_tipo_comprobante')->references('id')->on('tipo_comprobantes');
             $table->unsignedBigInteger('id_almacen');
             $table->foreign('id_almacen')->references('id')->on('almacens');
-            $table->string('cod_cliente');
-            $table->string('ruc_cliente');
-            $table->string('dir_cliente');
-            $table->string('razon');
+            $table->string('cod_cliente')->nullable();
+            $table->string('ruc_cliente')->nullable();
+            $table->string('dir_cliente')->nullable();
+            $table->string('razon')->nullable();
             $table->unsignedBigInteger('id_user');
             $table->string('fecha');
             $table->string('tipo_venta');

@@ -615,15 +615,6 @@ export default {
         })
     },
     methods:{
-        //Departamentos, provincias y distritos
-        /*onChangeDepartamento(event) {
-            var idDepartamento = event.target.value.coddepartamento
-            this.arrayProvincias = jQuery.grep(provincias, function (obj) {
-                return obj[idDepartamento];
-            });
-            console.log(this.arrayProvincias);
-            console.log(event.target.value.coddepartamento);
-        },*/
         //clientes
         abrirModalRegistro(){
             $('#modalCliente').modal('show');
@@ -796,6 +787,10 @@ export default {
             this.objetoFactura.tipo_venta =  'A'
             this.objetoFactura.folio = ''
             this.codigoProducto = ''
+            this.objetoFactura.sub_total = ''
+            this.objetoFactura.igv_total = ''
+            this.objetoFactura.total = ''
+            this.objetoFactura.desc_total = ''
             this.comision = 0.04,
             this.objetoFactura.ciudad_destino = '',
             this.objetoFactura.provincia_destino = '',
@@ -1002,7 +997,6 @@ export default {
                 })
         },
         imprimirBoletaPorVenta(item){
-            console.log(item)
             axios.get(`d_fact/${item.num_doc}`).then((response)=>{   
                 const RUTA_API = "http://localhost:8000";
             
@@ -1038,7 +1032,7 @@ export default {
                 for(var s = 0; s < response.data.length; s++){
                     impresora.setAlign("center");
                     impresora.write(`${response.data[s].descripcion_producto}\n`);
-                    impresora.write(`${response.data[s].cantidad_cantidad}UNIDAD  `);
+                    impresora.write(`${response.data[s].cantidad_producto}UNIDAD  `);
                     impresora.write(`${parseFloat(response.data[s].precio_producto).toFixed(2)}  `);
                     impresora.setAlign("right");
                     impresora.write(`${parseFloat(response.data[s].total_producto).toFixed(2)}\n`);
@@ -1057,7 +1051,6 @@ export default {
                     .then(valor => {
                         console.log(valor)
                     }) 
-                    console.log(response.data)
             })
         },
         abrirGaveta(){
@@ -1183,9 +1176,9 @@ export default {
                 }
                 suma = lista.reduce((a, b) => a + b, 0)
                 this.objetoFactura.total = suma
-                this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
                 this.objetoFactura.sub_total =  Math.round((this.objetoFactura.total / 1.18)*100)/100
-                this.objetoFactura.desc_global = descuento_global;
+                this.objetoFactura.igv_total = Math.round((this.objetoFactura.sub_total * 0.18)*100)/100
+                this.objetoFactura.desc_global = descuento_global; 
             },
             deep: true
         },

@@ -23,7 +23,7 @@ class DeliveryController extends Controller
 
         //$pedidos = Delivery::select('users.nombre', 'deliveries.fecha')->join('users', 'deliveries.id_usuario', 'users.id')->distinct()->get();
 
-        $pedidos = DB::table('vista_vouchers_por_dia')->select('fecha', 'conteo', 'total_cobrar', 'voucher', 'id', 'total_monto_envios', 'pedidos_incompletos')->get();
+        $pedidos = DB::table('vista_vouchers_por_dia')->select('fecha', 'conteo', 'conteo_cancelados', 'total_cobrar', 'voucher', 'id', 'total_monto_envios', 'pedidos_incompletos')->get();
         //$pedidos = Delivery::all();
         return $pedidos;
     }
@@ -63,7 +63,7 @@ class DeliveryController extends Controller
         $pedido->referencia = $request->referencia;
         $pedido->distrito = $request->distrito;
         $pedido->pedido = $request->pedido;
-        $pedido->observacion = $request->observacion;
+        $pedido->observacion_empresa = $request->observacion_empresa;
         $pedido->metodo_pago = $request->metodo_pago;
         $pedido->medio_recepcion = $request->medio_recepcion;
         $pedido->precio_productos = $request->precio_productos;
@@ -98,7 +98,7 @@ class DeliveryController extends Controller
         if(!$request->ajax()) return redirect('/');
 
 
-        $pedidos_por_fecha = Delivery::select('deliveries.id', 'users.nombre as responsable', 'users.apellido', 'deliveries.fecha', 'deliveries.hora', 'deliveries.cliente', 'deliveries.telefono', 'deliveries.direccion', 'deliveries.referencia', 'precios_deliveries.distrito as distrito', 'deliveries.pedido', 'deliveries.observacion', 'deliveries.metodo_pago','deliveries.medio_recepcion', 'deliveries.precio_productos', 'deliveries.envio_productos', 'deliveries.total_pedido', 'deliveries.monto_pagado', 'deliveries.por_cobrar', 'deliveries.estado', 'deliveries_imagenes.imagenes')->join('users', 'deliveries.id_usuario', 'users.id')->join('precios_deliveries', 'deliveries.distrito', 'precios_deliveries.id')->join('deliveries_imagenes', 'deliveries.id', 'deliveries_imagenes.id_pedido')->where('deliveries.estado', '!=', 'anulado')->where('deliveries.fecha', $fecha)->orderBy('id', 'desc')->get();
+        $pedidos_por_fecha = Delivery::select('deliveries.id', 'users.nombre as responsable', 'users.apellido', 'deliveries.fecha', 'deliveries.hora', 'deliveries.cliente', 'deliveries.telefono', 'deliveries.direccion', 'deliveries.referencia', 'precios_deliveries.distrito as distrito', 'deliveries.pedido', 'deliveries.observacion_empresa', 'deliveries.observacion_delivery', 'deliveries.metodo_pago','deliveries.medio_recepcion', 'deliveries.precio_productos', 'deliveries.envio_productos', 'deliveries.total_pedido', 'deliveries.monto_pagado', 'deliveries.por_cobrar', 'deliveries.estado', 'deliveries_imagenes.imagenes')->join('users', 'deliveries.id_usuario', 'users.id')->join('precios_deliveries', 'deliveries.distrito', 'precios_deliveries.id')->join('deliveries_imagenes', 'deliveries.id', 'deliveries_imagenes.id_pedido')->where('deliveries.estado', '!=', 'anulado')->where('deliveries.fecha', $fecha)->orderBy('id', 'desc')->get();
 
 
         foreach($pedidos_por_fecha as $valor){
@@ -174,8 +174,8 @@ class DeliveryController extends Controller
             $pedido->referencia = $request->referencia;
             $pedido->distrito = $request->distrito;
             $pedido->pedido = $request->pedido;
-            $pedido->observacion = $request->observacion;
-            $pedido->metodo_pago = $request->metodo_pago;
+            
+            
             $pedido->medio_recepcion = $request->medio_recepcion;
             $pedido->precio_productos = $request->precio_productos;
             $pedido->envio_productos = $request->envio_productos;
@@ -183,6 +183,9 @@ class DeliveryController extends Controller
             $pedido->monto_pagado = $request->monto_pagado;
             $pedido->por_cobrar = $request->por_cobrar;
         }
+        $pedido->observacion_empresa = $request->observacion_empresa;
+        $pedido->observacion_delivery = $request->observacion_delivery;
+        $pedido->metodo_pago = $request->metodo_pago;
         $pedido->estado = $request->estado;
         $pedido->save();
         

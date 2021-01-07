@@ -53,8 +53,10 @@
                                 </form>
                             </div>
                             <a class="nav-link dropdown-toggle nav-link mr-4    " data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                @if (Auth::user()->idrole != 1)
+                                @if (Auth::user()->idrole != 1 && Auth::user()->idrole != 4)
                                     <span class="d-md-down-none text-white">{{Auth::user()->nombre}} {{Auth::user()->apellido}} en {{App\Http\Controllers\UserController::obtenerAlmacen(Auth::user()->id, Auth::user()->id_almacen)[0]->almacen  }}</span>
+                                @elseif (Auth::user()->idrole == 4)
+                                    <span class="d-md-down-none text-white">{{Auth::user()->nombre}} {{Auth::user()->apellido  }} Listos Ya!</span>
                                 @else
                                     <span class="d-md-down-none text-white">Admin {{Auth::user()->nombre}} {{Auth::user()->apellido  }}</span>
                                 @endif

@@ -17,7 +17,7 @@ class CabeceraIngresoController extends Controller
     public function index()
     {
 
-        $cabecera_ingreso = CabeceraIngreso::select('cabecera_ingresos.id', 'users.usuario as responsable','cabecera_ingresos.fecha_emision', 'cabecera_ingresos.motivo', 'cabecera_ingresos.observacion')->join('users','cabecera_ingresos.id_usuario', '=', 'users.id')->orderBy('cabecera_ingresos.id', 'desc')->get();
+        $cabecera_ingreso = CabeceraIngreso::select('cabecera_ingresos.id', 'users.usuario as responsable','cabecera_ingresos.fecha_emision', 'cabecera_ingresos.motivo', 'cabecera_ingresos.observacion', 'cabecera_ingresos.estado')->join('users','cabecera_ingresos.id_usuario', '=', 'users.id')->orderBy('cabecera_ingresos.id', 'desc')->get();
 
 
         //$cabecera_ingreso = CabeceraIngreso::select('cabecera_ingresos.id as num_documento', 'almacens.')
@@ -47,6 +47,7 @@ class CabeceraIngresoController extends Controller
         $cabecera_ingreso->fecha_emision = $request->fecha_emision;
         $cabecera_ingreso->motivo = $request->motivo;
         $cabecera_ingreso->observacion = $request->observacion;
+        $cabecera_ingreso->estado = 'pendiente';
         $cabecera_ingreso->save();
         $cabecera = CabeceraIngreso::orderBy('id', 'desc')->first()->id;
         return $cabecera;

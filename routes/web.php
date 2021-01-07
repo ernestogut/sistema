@@ -155,9 +155,7 @@ Route::group(['middleware' => ['auth']], function () {
         /**
          * rutas roles
          */
-        Route::get('/role', 'RoleController@index');
-        Route::post('/role/registrar','RoleController@store' );
-        Route::get('/role/selectRole', 'RoleController@selectRole');
+        Route::resource('rol', 'RoleController');
 
         /**
          * rutas roles
@@ -231,6 +229,7 @@ Route::put('c_fact/{id}/deshabilitarFactura', 'CFactController@deshabilitarFactu
 Route::put('delivery/{id}/anularPedido', 'DeliveryController@anularPedido');
 Route::get('delivery/{fecha}/obtenerPedidosPorFecha', 'DeliveryController@obtenerPedidosPorFecha');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
+Route::post('detalle_ingreso/completarIngreso', 'DetalleIngresoController@completarIngreso');
 Route::put('detalle_traslado/{id_cabecera}/procesarTraslado', 'DetalleTrasladoController@procesarTraslado');
 Route::put('detalle_traslado/{id_cabecera}/completarTraslado', 'DetalleTrasladoController@completarTraslado');
 Route::get('speed/{almacen}/obtenerProductosPorAlmacen', 'SpeedController@obtenerProductosPorAlmacen');

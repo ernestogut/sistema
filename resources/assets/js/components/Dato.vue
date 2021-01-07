@@ -163,7 +163,6 @@
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.datos = respuesta.datos;
-                    console.log(datos);
                 })
 
                 .catch(function (error) {
