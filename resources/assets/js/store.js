@@ -10,6 +10,7 @@ export default {
         arrayDocumentos: [],
         arrayPedidosDelivery: [],
         arrayDiasDePedidos: [],
+        arrayTipoDePagos:[],
         tablaVenta: [],
         arrayVariaciones: [],
         productoVariacion: '',
@@ -62,6 +63,9 @@ export default {
         },
         SET_DIAS_DE_PEDIDOS (state, arrayDiasDePedidos){
             state.arrayDiasDePedidos = arrayDiasDePedidos;
+        },
+        SET_TIPO_DE_PAGOS (state, arrayTipoDePagos){
+            state.arrayTipoDePagos = arrayTipoDePagos;
         }
     },
     getters:{
@@ -109,6 +113,9 @@ export default {
         },
         arrayDiasDePedidos(state){
             return state.arrayDiasDePedidos;
+        },
+        arrayTipoDePagos(state){
+            return state.arrayTipoDePagos;
         }
 
     },
@@ -172,6 +179,12 @@ export default {
             return axios.get('/delivery').then(response =>{
                     let arrayPedidosDelivery = response.data
                     commit('SET_PEDIDOS_DELIVERY', arrayPedidosDelivery)
+                });
+        },
+        cargarTipoDePagos({commit}){
+            return axios.get('/tipo_pago').then(response =>{
+                    let arrayTipoDePagos = response.data
+                    commit('SET_TIPO_DE_PAGOS', arrayTipoDePagos)
                 });
         },
         actualizarProductos({ commit }, arrayProductos) {

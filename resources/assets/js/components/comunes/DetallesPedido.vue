@@ -81,7 +81,7 @@
                     <p class="mb-1">Observación SCP: <strong>{{pedido.observacion_empresa}}</strong></p>
                     <p class="mb-1">Observación Listos Ya!: <strong>{{pedido.observacion_delivery}}</strong></p>
                     <p class="mb-1">Medio de recepción: <strong>{{pedido.medio_recepcion}}</strong></p>
-                    <p class="mb-1">Método de pago: <strong>{{pedido.metodo_pago}}</strong></p>
+                    <p class="mb-1">Método de pago: <strong>{{pedido.tipo_pago}}</strong></p>
                 </div>
             </div>
         </div>

@@ -87,6 +87,9 @@
             <template v-if="menu==31">
                 <envio-delivery></envio-delivery>
             </template>
+            <template v-if="menu==33">
+                <tipo-pago></tipo-pago>
+            </template>
         @elseif(Auth::user()->idrole == 2)
             <template v-if="menu==5">
                 <facturacion></facturacion>

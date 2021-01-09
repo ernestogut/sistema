@@ -259,6 +259,7 @@ Route::get('cliente/{documento}/listarClientesModal', 'ClienteController@listarC
 Route::get('cliente/{id}/buscarCliente', 'ClienteController@buscarCliente')->name('cliente.buscar');
 Route::get('proveedor/{id}/buscarProveedor', 'ProveedorController@buscarProveedor')->name('proveedor.buscar');
 Route::get('tipo_comprobante/obtenerComprobantes', 'TipoComprobanteController@obtenerComprobantes')->name('tipo_comprobante.listar');
+Route::resource('tipo_pago', 'TipoPagoController');
 Route::resource('cliente', 'ClienteController');
 Route::resource('c_fact', 'CFactController');
 Route::resource('d_fact', 'DFactController');

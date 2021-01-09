@@ -251,11 +251,9 @@
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label>Método de pago</label>
-                                        <select v-model="objetoEnvio.metodo_pago" class="form-control">
+                                        <select v-model="objetoEnvio.tipo_pago" class="form-control">
                                             <option disabled value="">Escoje un método de pago</option>
-                                            <option value="efectivo">Efectivo</option>
-                                            <option value="transferencia">Transferencia</option>
-                                            <option value="contra_entrega">Contra entrega</option>
+                                            <option  v-for="tipo_pago in arrayTipoDePagos" :key="tipo_pago.id" :value="tipo_pago.id">{{tipo_pago.nombre}}</option>
                                         </select>
                                     </div>
                                     <!--<div class="form-group col-md-3">
@@ -323,11 +321,9 @@
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label>Método de pago</label>
-                                        <select v-model="objetoEnvio.metodo_pago" class="form-control">
+                                        <select v-model="objetoEnvio.tipo_pago" class="form-control">
                                             <option disabled value="">Escoje un método de pago</option>
-                                            <option value="efectivo">Efectivo</option>
-                                            <option value="transferencia">Transferencia</option>
-                                            <option value="contra_entrega">Contra entrega</option>
+                                            <option  v-for="tipo_pago in arrayTipoDePagos" :key="tipo_pago.id" :value="tipo_pago.id">{{tipo_pago.nombre}}</option>
                                         </select>
                                     </div>
                                 </template>
@@ -441,7 +437,7 @@ export default {
                 pedido: null,
                 observacion_empresa: null,
                 observacion_delivery: null,
-                metodo_pago: 'efectivo',
+                tipo_pago: 'efectivo',
                 medio_recepcion: 'facebook',
                 precio_productos: 0.00,
                 envio_productos: 0.00,
@@ -482,7 +478,10 @@ export default {
         },
       fields() {
         return this.fields2.filter(field => field.visible)
-      }
+      },
+      arrayTipoDePagos(){
+            return this.$store.getters.arrayTipoDePagos;
+        }
   },
   methods: {
       rowClass(item, type) {
@@ -607,7 +606,7 @@ export default {
       }else{*/
         this.pedidoSeleccionado = pedido
         axios.get(`delivery/${pedido.id}`).then(response=>{
-          $('#modalEnvioEditar').modal("show");
+          
             this.objetoEnvio.id_usuario = response.data.id_usuario
             this.objetoEnvio.fecha= response.data.fecha
             this.objetoEnvio.cliente= response.data.cliente
@@ -617,7 +616,7 @@ export default {
             this.objetoEnvio.pedido= response.data.pedido
             this.objetoEnvio.observacion_empresa= response.data.observacion_empresa
             this.objetoEnvio.observacion_delivery= response.data.observacion_delivery
-            this.objetoEnvio.metodo_pago= response.data.metodo_pago
+            this.objetoEnvio.tipo_pago= response.data.tipo_pago
             this.objetoEnvio.medio_recepcion = response.data.medio_recepcion
             this.objetoEnvio.precio_productos= response.data.precio_productos
             this.objetoEnvio.envio_productos= response.data.envio_productos
@@ -631,6 +630,7 @@ export default {
               }
             }
             this.$store.dispatch('actualizarModalEnvioControl', true)
+            $('#modalEnvioEditar').modal("show");
         })
       //}
       

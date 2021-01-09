@@ -37,6 +37,9 @@
             <b-input-group-append>
               <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
             </b-input-group-append>
+            <b-button class="btn btn-info btn-sm" @click="exportExcel">
+                Exportar XLSX
+              </b-button>
           </b-input-group>
         </b-form-group>
       </b-col>
@@ -130,6 +133,7 @@
 </template>
 
 <script>
+import XLSX from 'xlsx';
 export default {
     created(){
         let datosLS = JSON.parse(localStorage.getItem('ventas'));
@@ -218,6 +222,13 @@ export default {
         rowClass(item, type) {
             if (!item || type !== 'row') return
             if (item.stock < 5) return 'bg-danger'
+        },
+        exportExcel: function () {
+          let data = XLSX.utils.json_to_sheet(this.arrayProductos)
+          const workbook = XLSX.utils.book_new()
+          const filename = 'inventario_lince'
+          XLSX.utils.book_append_sheet(workbook, data, filename)
+          XLSX.writeFile(workbook, `${filename}.xlsx`)
         },
         consultarProductoSimple(producto){
           if((producto.cantidad_alm > 0 && (this.factura || this.traslado)) || (!this.factura && !this.traslado)){

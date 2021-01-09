@@ -68,6 +68,7 @@ Vue.component('reporte-cierre', require('./components/ReporteCierre.vue').defaul
 Vue.component('traspaso-almacen', require('./components/TraspasoAlmacen.vue').default);
 Vue.component('cierre-caja', require('./components/CierreCaja.vue').default);
 Vue.component('movimiento-caja', require('./components/MovimientoCaja.vue').default);
+Vue.component('tipo-pago', require('./components/TipoPago.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

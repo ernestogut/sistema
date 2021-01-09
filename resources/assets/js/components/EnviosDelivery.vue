@@ -246,11 +246,9 @@
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label>Método de pago</label>
-                                        <select v-model="objetoEnvio.metodo_pago" class="form-control">
-                                            <option disabled value="">Escoje un método de pago</option>
-                                            <option value="efectivo">Efectivo</option>
-                                            <option value="transferencia">Transferencia</option>
-                                            <option value="contra_entrega">Contra entrega</option>
+                                        <select v-model="objetoEnvio.tipo_pago" class="form-control">
+                                            <option disabled value="" selected>Escoje un método de pago</option>
+                                            <option  v-for="tipo_pago in arrayTipoDePagos" :key="tipo_pago.id" :value="tipo_pago.id">{{tipo_pago.nombre}}</option>
                                         </select>
                                     </div>
                                     <!--<div class="form-group col-md-3">
@@ -306,6 +304,7 @@ export default {
     mounted(){
         //this.listarEnvios()
         this.objetoEnvio.id_usuario = this.usuarioLogeado.id
+        this.$store.dispatch('cargarTipoDePagos');
         this.listarEnvios()
         $(this.$refs.modalEnvio).on("hidden.bs.modal", this.limpiarModalEnvio)
         //this.listarUsuarios();
@@ -326,7 +325,7 @@ export default {
                 distrito: null,
                 pedido: null,
                 observacion_empresa: null,
-                metodo_pago: 'efectivo',
+                tipo_pago: 'efectivo',
                 medio_recepcion: 'facebook',
                 precio_productos: 0.00,
                 envio_productos: 0.00,
@@ -342,7 +341,7 @@ export default {
                 { key: "fecha", label: "Fecha", sortable: true, class: "text-center"},
                 { key: "conteo", label: "Cantidad pedidos", sortable: true, class: "text-center"},
                 { key: "conteo_cancelados", label: "Cantidad pedidos cancelados", sortable: true, class: "text-center"},
-                { key: "total_cobrar", label: this.$store.getters.arrayUsuarioLogeado.idrole!=4?"Total a cobrar":"Total a pagar", sortable: true, class: "text-center"},
+                { key: "total_cobrar", label: this.$store.getters.arrayUsuarioLogeado.idrole!=4?"Total a cobrar productos":"Total a pagar", sortable: true, class: "text-center"},
                 { key: "total_monto_envios", label: "Total monto envios", sortable: true, class: "text-center"},
                 { key: 'voucher', label: 'Voucher', class: "text-center"},
                 { key: "actions", label: "Acciones", class: "text-center"}
@@ -392,6 +391,9 @@ export default {
         },
         modalEnvioControl(){
             return this.$store.getters.modalEnvioControl;
+        },
+        arrayTipoDePagos(){
+            return this.$store.getters.arrayTipoDePagos;
         }
     },
     methods:{
@@ -415,7 +417,7 @@ export default {
             this.distritoSeleccionado = {}
             this.objetoEnvio.pedido = null
             this.objetoEnvio.observacion =  null
-            this.objetoEnvio.metodo_pago = 'efectivo'
+            this.objetoEnvio.tipo_pago = 'efectivo'
             this.objetoEnvio.medio_recepcion = 'facebook',
             this.objetoEnvio.precio_productos = 0.00
             this.objetoEnvio.envio_productos = 0.00
@@ -435,7 +437,6 @@ export default {
                 });
             //}
         },
-        
         isMobile(){
             if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
                 return true

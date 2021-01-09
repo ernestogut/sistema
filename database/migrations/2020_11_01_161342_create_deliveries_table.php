@@ -29,7 +29,8 @@ class CreateDeliveriesTable extends Migration
             $table->text('observacion_empresa')->nullable();
             $table->text('observacion_delivery')->nullable();
             $table->text('medio_recepcion');
-            $table->string('metodo_pago');
+            $table->unsignedBigInteger('tipo_pago');
+            $table->foreign('tipo_pago')->references('id')->on('tipo_pagos');
             $table->decimal('precio_productos', 11, 2);
             $table->decimal('envio_productos', 11, 2);
             $table->decimal('total_pedido', 11, 2);
