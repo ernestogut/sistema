@@ -606,7 +606,11 @@ export default {
       }else{*/
         this.pedidoSeleccionado = pedido
         axios.get(`delivery/${pedido.id}`).then(response=>{
-          
+            for(var i = 0; i < this.arrayDistritosDelivery.length; i++){
+              if(this.arrayDistritosDelivery[i].id == response.data.distrito){
+                this.distritoSeleccionado = this.arrayDistritosDelivery[i]
+              }
+            }
             this.objetoEnvio.id_usuario = response.data.id_usuario
             this.objetoEnvio.fecha= response.data.fecha
             this.objetoEnvio.cliente= response.data.cliente
@@ -624,11 +628,7 @@ export default {
             this.objetoEnvio.monto_pagado= response.data.monto_pagado
             this.objetoEnvio.por_cobrar= response.data.por_cobrar
             this.objetoEnvio.estado= response.data.estado
-            for(var i = 0; i < this.arrayDistritosDelivery.length; i++){
-              if(this.arrayDistritosDelivery[i].id == response.data.distrito){
-                this.distritoSeleccionado = this.arrayDistritosDelivery[i]
-              }
-            }
+            
             this.$store.dispatch('actualizarModalEnvioControl', true)
             $('#modalEnvioEditar').modal("show");
         })

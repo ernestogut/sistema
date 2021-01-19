@@ -287,7 +287,7 @@ export default {
                     var cantidadTotal = 0
                     for(var j = 0; j < this.arrayAlmacenFijo.length; j++){
                         objetoCantidad.id_almacen = this.arrayAlmacenFijo[j].id
-                        objetoCantidad.cantidad = 0
+                        objetoCantidad.cantidad = 1
                         objetoCantidad.nombre = this.arrayAlmacenFijo[j].descripcion
                         arrayCantidad.push(objetoCantidad)
                         objetoCantidad = {}

@@ -8,6 +8,7 @@ use App\Inventario;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Mockery\Undefined;
 
 class DetalleIngresoController extends Controller
 {
@@ -170,7 +171,7 @@ class DetalleIngresoController extends Controller
      */
     public function show($id_cabecera_ingreso)
     {
-        $detalle_ingreso = DetalleIngreso::select('codigo_producto', 'descripcion_producto', 'cantidades')->where('id_cabecera_ingreso', '=', $id_cabecera_ingreso)->get();
+        $detalle_ingreso = DetalleIngreso::select('id', 'codigo_producto', 'codigo_padre', 'descripcion_producto', 'cantidades')->where('id_cabecera_ingreso', '=', $id_cabecera_ingreso)->get();
         foreach($detalle_ingreso as $valor){
             $valor->cantidades = json_decode($valor->cantidades, true);
         }
@@ -195,9 +196,31 @@ class DetalleIngresoController extends Controller
      * @param  \App\DetalleIngreso  $detalleIngreso
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, DetalleIngreso $detalleIngreso)
+
+    public function actualizarDetalleIngreso(Request $request){
+        $detalle = $request->ventas;
+            foreach ($detalle as $key => $value) {
+                if(isset($value['id'])){
+                    $detalle_ingreso = DetalleIngreso::find($value['id']);
+                    $detalle_ingreso->codigo_padre = $value['codigo_padre'];
+                    $detalle_ingreso->codigo_producto = $value['codigo_producto'];
+                    $detalle_ingreso->descripcion_producto = $value['descripcion_producto'];
+                    $detalle_ingreso->cantidades = json_encode($value['cantidades']);
+                    $detalle_ingreso->save();  
+                }else{
+                    $detalle_ingreso = new DetalleIngreso();
+                    $detalle_ingreso->id_cabecera_ingreso = $request->id_cabecera_ingreso;
+                    $detalle_ingreso->codigo_padre = $value['codigo_padre'];
+                    $detalle_ingreso->codigo_producto = $value['codigo'];
+                    $detalle_ingreso->descripcion_producto = $value['producto'];
+                    $detalle_ingreso->cantidades = json_encode($value['cantidades']);
+                    $detalle_ingreso->save();    
+                } 
+            }
+    } 
+    public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -206,8 +229,31 @@ class DetalleIngresoController extends Controller
      * @param  \App\DetalleIngreso  $detalleIngreso
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DetalleIngreso $detalleIngreso)
+    public function anularDetalleIngreso($id_cabecera_ingreso){
+        $detalle_ingreso = DetalleIngreso::select('codigo_padre', 'codigo_producto', 'descripcion_producto', 'cantidades')->where('id_cabecera_ingreso', '=', $id_cabecera_ingreso)->get();
+        foreach($detalle_ingreso as $value){
+                    
+            $value->cantidades = json_decode($value->cantidades, true);
+            foreach ($value['cantidades'] as $llave => $valor){
+                DB::connection("mysql")->statement("call disminuirInventarioAlm(?,?,?)",[$value['codigo_producto'],$valor['cantidad'],$valor['id_almacen']]);
+                            $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_producto'])->sum('cantidad');
+                            DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_producto'],$suma_total]); 
+                            if($value['codigo_padre'] != 0){
+                                    DB::connection("mysql")->statement("call disminuirInventarioAlm(?,?,?)",[$value['codigo_padre'],$valor['cantidad'],$valor['id_almacen']]);
+    
+                                //DB::connection("mysql")->statement("call aumentarInventarioAlm(?,?,?)",[$value['codigo_padre'],$value['cantidad'],$value['almacen']]);
+                            
+                                $suma_total = DB::table('inventarios')->where('id_producto', '=', $value['codigo_padre'])->sum('cantidad');
+                
+                                DB::connection("speed")->statement("call actualizarInventario(?,?)",[$value['codigo_padre'],$suma_total]);
+                            }    
+                        
+            }
+        }
+    }
+    public function destroy($id)
     {
-        //
+        $detalle_ingreso = DetalleIngreso::find($id);
+        $detalle_ingreso->delete();
     }
 }

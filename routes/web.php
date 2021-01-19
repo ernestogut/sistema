@@ -212,6 +212,7 @@ Route::post('voucher_pedido_por_dia/subirVoucherPorDia', 'VoucherPedidoPorDiaCon
 Route::get('speed/obtenerProductosConPrecioPorMayor', 'SpeedController@obtenerProductosConPrecioPorMayor');
 Route::get('speed/{id_pedido}/obtenerDetallePedidoPorMayor', 'SpeedController@obtenerDetallePedidoPorMayor');
 Route::put('speed/{id_pedido}/cambiarEstadoPedido', 'SpeedController@cambiarEstadoPedido');
+Route::put('cabecera_ingreso/{id_ingreso}/anularIngreso', 'CabeceraIngresoController@anularIngreso');
 Route::post('speed/insertarPrecioPorMayor', 'SpeedController@insertarPrecioPorMayor');
 Route::get('speed/{id_categoria}/obtenerProductosDeCategoria', 'SpeedController@obtenerProductosDeCategoria');
 Route::get('reporte_venta/{almacen}/mostrarVentasPorSemana', 'ReporteVentaController@mostrarVentasPorSemana');
@@ -229,6 +230,7 @@ Route::put('c_fact/{id}/deshabilitarFactura', 'CFactController@deshabilitarFactu
 Route::put('delivery/{id}/anularPedido', 'DeliveryController@anularPedido');
 Route::get('delivery/{fecha}/obtenerPedidosPorFecha', 'DeliveryController@obtenerPedidosPorFecha');
 Route::put('cierre_caja/{codigo}/cerrarCaja', 'CierreCajaController@cerrarCaja');
+Route::post('detalle_ingreso/actualizarDetalleIngreso', 'DetalleIngresoController@actualizarDetalleIngreso');
 Route::post('detalle_ingreso/completarIngreso', 'DetalleIngresoController@completarIngreso');
 Route::put('detalle_traslado/{id_cabecera}/procesarTraslado', 'DetalleTrasladoController@procesarTraslado');
 Route::put('detalle_traslado/{id_cabecera}/completarTraslado', 'DetalleTrasladoController@completarTraslado');

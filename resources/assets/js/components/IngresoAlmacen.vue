@@ -112,8 +112,14 @@
                 <b-button size="sm"  @click="detalleIngreso(row.item)" class="mr-1">
                     <i class="icon-eye"></i>
                 </b-button>
+                <b-button size="sm"  @click="abrirModalEditarIngreso(row.item)" class="mr-1" v-if="row.item.estado != 'completado'">
+                    <i class="icon-pencil"></i>
+                </b-button>
                 <b-button size="sm"  @click="completarIngreso(row.item)" class="mr-1" variant="primary" v-if="row.item.estado != 'completado'">
                     <i class="icon-check"></i>
+                </b-button>
+                <b-button size="sm"  @click="anularIngreso(row.item)" class="mr-1" variant="danger" v-if="row.item.estado == 'completado'">
+                    <i class="icon-trash"></i>
                 </b-button>
                 </template>
                 <template v-slot:table-busy>
@@ -128,23 +134,23 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Nuevo ingreso de productos</h5>
+                        <h5 class="modal-title" id="exampleModalLongTitle">{{controladorActualizarIngreso?'Actualizar ingreso de productos':'Nuevo ingreso de productos'}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="card-body">
-                        <form  action="" @submit.prevent="insertarCabecera()">
+                        <form  action="" @submit.prevent="controladorActualizarIngreso?actualizarIngreso():insertarCabecera()">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label>Responsable</label>
-                                    <select required="required" class="form-control" v-model="objetoIngreso.id_usuario">
+                                    <select required="required" class="form-control" v-model="objetoIngreso.id_usuario" :disabled="controladorActualizarIngreso">
                                         <option v-for="usuario in arrayUsuarios" :value="usuario.id" :key="usuario.key">{{usuario.usuario}}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Fecha de emisión</label>
-                                    <input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoIngreso.fecha_emision">
+                                    <input type="date" name="FechaReg"  id="FechaReg" class="form-control" v-model="objetoIngreso.fecha_emision" :disabled="controladorActualizarIngreso">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Motivo</label>
@@ -152,7 +158,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Documento</label>
-                                    <input type="text" class="form-control" disabled>
+                                    <input type="text" class="form-control" v-model="objetoIngreso.numero_documento"  disabled>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label>Observación</label>
@@ -189,11 +195,11 @@
                                 <tbody>
                                     <tr v-for="(venta, index) in ventas" :key="venta.id">
                                         <th scope="row" class="text-center align-middle">{{index+1}}</th>
-                                        <td class="text-center align-middle">{{venta.codigo}}</td>
-                                        <td class="text-center align-middle">{{venta.producto}}</td>
+                                        <td class="text-center align-middle">{{venta.codigo || venta.codigo_producto}}</td>
+                                        <td class="text-center align-middle">{{venta.producto || venta.descripcion_producto}}</td>
                                         <td class="text-center align-middle" v-for="cantidadAlm in venta.cantidades" :key="cantidadAlm.id"><input class="form-control" type="number" step="any"   v-model="cantidadAlm.cantidad"></td>
                                         <td class="text-center align-middle">
-                                            <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(index)"><i class="icon-trash"></i></span>
+                                            <span class="btn btn-danger btn-sm boton" @click="eliminarProductoTabla(venta, index)"><i class="icon-trash"></i></span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -419,6 +425,7 @@ export default {
             filter: null,
             filterOn: [],
             cargando: false,
+            controladorActualizarIngreso: false
         }
         //ingreso colocado, terminar con facturacion detallada y demás botones
     },
@@ -494,6 +501,7 @@ export default {
             this.$store.dispatch('actualizarTablaVentas', ventasT)
             localStorage.setItem('ventas', JSON.stringify(ventasT)) 
             this.controlador = 4
+            this.objetoIngreso.numero_documento = null
             this.objetoIngreso.id_almacen = null
             this.objetoIngreso.fecha_emision = null
             this.objetoIngreso.motivo = ''
@@ -628,8 +636,28 @@ export default {
             })
         },
         abrirModalVenta(){
+                this.controladorActualizarIngreso = false;
                 this.objetoIngreso.id_almacen = this.arrayAlmacenFijo[0].id
                 this.obtenerFecha()
+                $('#modalVenta').modal('show');
+                $('#modalVenta').on('shown.bs.modal', function () {
+                    $('#buscarP').trigger('focus');
+                })
+        },
+        abrirModalEditarIngreso(item){
+                this.controladorActualizarIngreso = true;
+                axios.get(`detalle_ingreso/${item.id}`).then(response=>{
+                    this.objetoIngreso.numero_documento = item.id;
+                    this.objetoIngreso.id_usuario = item.id_responsable
+                    this.objetoIngreso.fecha_emision = item.fecha_emision
+                    this.objetoIngreso.motivo = item.motivo
+                    this.objetoIngreso.observacion = item.observacion
+                    this.$store.dispatch('actualizarTablaVentas', response.data);
+
+                    localStorage.setItem('ventas', JSON.stringify(this.ventas))
+                })
+                /*this.objetoIngreso.id_almacen = this.arrayAlmacenFijo[0].id
+                this.obtenerFecha()*/
                 $('#modalVenta').modal('show');
                 $('#modalVenta').on('shown.bs.modal', function () {
                     $('#buscarP').trigger('focus');
@@ -673,11 +701,20 @@ export default {
             this.controlador = 1
             $('#modalProducto').modal('show');
         },
-        eliminarProductoTabla(index){
+        eliminarProductoTabla(item, index){
             var ventasT = this.ventas;
-            ventasT.splice(index,1)
-            this.$store.dispatch('actualizarTablaVentas', ventasT);
-            //document.getElementById(`producto${venta.codigo}`).className = ''
+            if(item.id){
+                axios.delete(`/detalle_ingreso/${item.id}`).then(()=>{
+                ventasT.splice(index,1)
+                this.$store.dispatch('actualizarTablaVentas', ventasT);
+                }).catch(err=>{
+                    ventasT.splice(index,1)
+                    this.$store.dispatch('actualizarTablaVentas', ventasT);
+                })
+            }else{
+                ventasT.splice(index,1)
+            }
+            
             localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
         },
         insertarCabecera(){
@@ -716,20 +753,104 @@ export default {
                 });
             })
         },
+        actualizarIngreso(){
+            this.$store.dispatch('actualizarShow', true)
+            axios.put(`cabecera_ingreso/${this.objetoIngreso.numero_documento}`, this.objetoIngreso).then((response)=>{
+                //this.id_cabecera_ingreso = response.data
+                var productos = this.arrayProductos
+                //this.ventas.almacen = this.objetoIngreso.id_almacen;
+                axios.post('/detalle_ingreso/actualizarDetalleIngreso', {'ventas': this.ventas, 'id_cabecera_ingreso': this.objetoIngreso.numero_documento}).then((response)=>{
+                    this.$store.dispatch('actualizarShow', false)
+                    for(var k = 0; k < this.ventas.length; k++){
+                        for(var l = 0; l < productos.length; l++){
+                            if(this.ventas[k].codigo == productos[l].codigo){
+                                for(var m = 0; m < this.ventas[k].cantidades.length; m++){
+                                    productos[l].stock = productos[l].stock + parseInt(this.ventas[k].cantidades[m].cantidad);
+                                }
+                            }
+                        }
+                    }       
+                    Vue.swal({
+                    title: 'Ingreso exitoso!',
+                    text: 'El ingreso ha sido actualizado con éxito!',
+                    icon: 'success'
+                    });
+                    this.listarIngresos();
+                    //this.$store.dispatch('actualizarProductos', productos)
+                     $('#modalVenta').modal('hide');
+                })        
+            })
+            .catch(error=>{
+                this.show = false
+                Vue.swal({
+                    title: 'Ingreso fallido!',
+                    text: 'Ha habido un error al procesar el ingreso!',
+                    icon: 'error'
+                });
+            })
+        },
         completarIngreso(ingreso){
             if(confirm('Estás seguro de completar este ingreso?')){
+                this.$store.dispatch('actualizarShow', true)
                 axios.post(`detalle_ingreso/completarIngreso`, {id_ingreso: ingreso.id}).then((response)=>{
                     ingreso.estado = 'completado';
-                    alert('ingreso completado satisfactoriamente');
-                })
+                    this.$store.dispatch('actualizarShow', false)
+                    this.listarIngresos();
+                    Vue.swal({
+                        title: 'Ingreso completado correctamente!',
+                        text: 'Las cantidades fueron ingresadas al inventario!',
+                        icon: 'success',
+                    })
+                }).catch(err=>{
+                                this.$store.dispatch('actualizarShow', false)
+                                Vue.swal({
+                                    title: 'Completar ingreso fallido!',
+                                    text: 'Hubo un error al completar el ingreso!',
+                                    icon: 'danger',
+                                })
+                            })
             }else{
 
             }
+        },
+        anularIngreso(ingreso){  
+           if(confirm('Estás seguro de anular este ingreso?')){
+                this.$store.dispatch('actualizarShow', true)
+                            axios.put(`cabecera_ingreso/${ingreso.id}/anularIngreso`).then(()=>
+                            {
+                                this.$store.dispatch('actualizarShow', false)
+                                ingreso.estado = 'anulado';
+                                this.listarIngresos();
+                                Vue.swal({
+                                    title: 'Ingreso anulado correctamente!',
+                                    text: 'Ingreso anulado ya no puedes volver a activarlo!',
+                                    icon: 'success',
+                                })
+                                
+                            }).catch(err=>{
+                                this.$store.dispatch('actualizarShow', false)
+                                Vue.swal({
+                                    title: 'Anular ingreso fallido!',
+                                    text: 'Hubo un error al anular el ingreso!',
+                                    icon: 'danger',
+                                })
+                            })
+            }else{
+
+            }       
         },
         obtenerFecha(){
             this.objetoIngreso.fecha_emision = this.$moment().format("YYYY-MM-DD")
         }
     },
+    watch:{
+        ventas:{
+            handler: function(){
+                localStorage.setItem('ventas', JSON.stringify(this.ventas)) 
+            },
+            deep: true
+        }
+    }
 }
 </script>
 

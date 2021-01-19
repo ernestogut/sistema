@@ -134,6 +134,7 @@
                                 variant="danger"
                                 size="sm"
                                 @click="eliminarTraslado(row.item, row.index)"
+                                v-if="usuarioLogeado.idrole == 1"
                             >
                                 <i class="fa fa-trash"></i>
                             </b-button>
@@ -499,7 +500,6 @@ export default {
             
         },
         agregarProducto(item){
-            //console.log(item)
             if(item.cantidad_alm > 0){
                 var obj = {}
                 var controlador = false
@@ -663,16 +663,17 @@ export default {
                 });
             }else{
                 this.$store.dispatch('actualizarShow', true)
-                axios.post('/cabecera_traslado', this.objetoIngreso).then((response)=>{
-                    this.id_cabecera_traslado = response.data
+                axios.post('/cabecera_traslado', {'traslado': this.objetoIngreso, 'ventas': this.ventas}).then((response)=>{
+                    //this.id_cabecera_traslado = response.data
+                    var traslado_cabecera = response.data
                     var ventasT = this.ventas;
                     for(var i = 0; i < ventasT.length; i++){
                         ventasT[i].almacen_origen = this.objetoIngreso.id_almacen_origen;
                         ventasT[i].almacen_destino = this.objetoIngreso.id_almacen_destino;
                     }
                     this.$store.dispatch('actualizarTablaVentas', ventasT);
-                    axios.post('/detalle_traslado', {'ventas': this.ventas, 'id_cabecera_traslado': this.id_cabecera_traslado}).then((response)=>{
-                        $('#modalVenta').modal('hide');
+                    this.imprimirTraslado(traslado_cabecera);
+                    $('#modalVenta').modal('hide');
                         Vue.swal({
                             title: 'Solicitud de traslado exitoso!',
                             text: 'Comunicate con un administrador para que acepte tu traslado!',
@@ -680,7 +681,11 @@ export default {
                         });
                         this.$store.dispatch('actualizarShow', false)
                         this.listarTraslados();
-                    })
+                    /*axios.post('/detalle_traslado', {'ventas': this.ventas, 'id_cabecera_traslado': this.id_cabecera_traslado}).then((response)=>{
+                        
+                        
+                        
+                    })*/
                 })
                 .catch(error=>{
                     this.$store.dispatch('actualizarShow', false)
@@ -779,6 +784,36 @@ export default {
                 }
             })
             
+        },
+        imprimirTraslado(traslado){
+            console.log(traslado)
+                const RUTA_API = "http://localhost:8000";
+            
+                let impresora = new Impresora(RUTA_API);
+                            
+                impresora.setFontSize(1, 1);
+                impresora.setEmphasize(0);
+                impresora.setAlign("center");
+                impresora.write(`N° Documento: ${traslado.num_documento}\n`);
+                impresora.write(`Fecha/Hora: ${traslado.fecha_emision}\n`);
+                impresora.write("DATOS DEL TRASLADO:\n");
+                impresora.write(`RESPONSABLE: ${traslado.responsable}\n`);
+                impresora.write(`De: ${traslado.almacen_origen} a ${traslado.almacen_destino}\n`);
+                impresora.write("DATOS DEL PRODUCTO:\n");
+                impresora.write("CANTIDAD:  \n");
+                impresora.write("--------------------------------\n");
+                for(var s = 0; s < this.ventas.length; s++){
+                    impresora.setAlign("center");
+                    impresora.write(`${this.ventas[s].producto}\n`);
+                    impresora.write(`${this.ventas[s].cantidad} UNIDAD\n`);
+                }
+                impresora.feed(3);
+                impresora.cut();
+                impresora.cutPartial(); // Pongo este y también cut porque en ocasiones no funciona con cut, solo con cutPartial
+                impresora.end()
+                    .then(valor => {
+                        console.log(valor)
+                    })
         }
     },
 }
