@@ -103,10 +103,10 @@
                 <template v-slot:cell(index)="row">{{ row.index + 1 }}</template>
 
                 <template v-slot:cell(actions)="row">
-                <b-button size="sm"  v-if="row.item.estado == 'abierto'" @click="cerrarCaja(row.item)" class="mr-1">
+                <b-button size="sm" variant="danger"  v-if="row.item.estado == 'abierto'" @click="cerrarCaja(row.item)" class="mr-1">
                     cerrar caja
                 </b-button>
-                <b-button size="sm" @click="abrirModalMetodosPago(row.item)" class="mr-1">
+                <b-button variant="info" size="sm" @click="abrirModalMetodosPago(row.item)" class="mr-1">
                     <i class="icon-eye"></i>
                 </b-button>
                 </template>

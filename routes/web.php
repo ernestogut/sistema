@@ -215,6 +215,7 @@ Route::put('speed/{id_pedido}/cambiarEstadoPedido', 'SpeedController@cambiarEsta
 Route::put('cabecera_ingreso/{id_ingreso}/anularIngreso', 'CabeceraIngresoController@anularIngreso');
 Route::post('speed/insertarPrecioPorMayor', 'SpeedController@insertarPrecioPorMayor');
 Route::get('speed/{id_categoria}/obtenerProductosDeCategoria', 'SpeedController@obtenerProductosDeCategoria');
+Route::get('delivery/{fecha}/obtenerPedidosPorFechaParaExportarExcel', 'DeliveryController@obtenerPedidosPorFechaParaExportarExcel');
 Route::get('reporte_venta/{almacen}/mostrarVentasPorSemana', 'ReporteVentaController@mostrarVentasPorSemana');
 Route::get('reporte_venta/{almacen}/obtenerVentasDiariasPorAlmacen', 'ReporteVentaController@obtenerVentasDiariasPorAlmacen');
 Route::get('envio/{fecha}/rankingDepartamentosFecha', 'EnviosController@rankingDepartamentosFecha');

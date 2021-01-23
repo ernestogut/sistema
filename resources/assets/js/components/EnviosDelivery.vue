@@ -163,8 +163,8 @@
             </div>
              
             <!---->
-            <div class="modal fade" id="modalPedidosDetalle" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl">
+            <div class="modal fade" id="modalPedidosDetalle" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
                     <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Pedidos del {{diaSeleccionado.fecha}}</h5>
