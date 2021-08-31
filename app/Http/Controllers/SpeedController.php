@@ -41,6 +41,15 @@ class SpeedController extends Controller
         DB::connection("speed")->statement("call  insertarPrecioPorMayor(?,?)",[$request->id_producto,$request->precioPorMayor]);
 
     }
+    public function generarInventario(Request $request)
+    {
+        $statement = 'call generarInventario(?)';
+        $parameters = [
+            $request->almacen_id
+        ];
+        $data = DB::connection("speed")->select($statement, $parameters);
+        return $data;
+    }
     public function obtenerDetallePedidoPorMayor($id_pedido){
         $detalle_pedido = DB::connection("speed2")->table('carrito_detalles')->select('id as doc', 'nombre as name', 'precio as price', 'cantidad', 'imagenes as images', 'codigo as id', 'es_variacion')->where('id_cabecera_carrito', $id_pedido)->get();
         foreach($detalle_pedido as $value){

@@ -92,6 +92,14 @@
       <template v-slot:cell(actions)="row">
         <div v-if="!factura">
           <b-button
+            variant="secondary"
+            size="sm"
+            v-if="isFromAlmacen"
+            @click="generarInventario(row.item.id, row.item.descripcion)"
+          >
+            Generar excel
+          </b-button>
+          <b-button
             variant="primary"
             size="sm"
             @click="(controlador!=5)?funcionConjunto(row.item):funcionBoton(row.item)"
@@ -159,7 +167,9 @@ export default {
     funcionBotonTrash: Function,
     funcionImprimir: Function,
     eliminarItem: Function,
-    listarSeries: Function
+    listarSeries: Function,
+    isFromAlmacen: Boolean,
+    generarInventario: Function
   },
   data() {
     return {

@@ -200,7 +200,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 });
-
+Route::post('almacen/generarInventario', 'SpeedController@generarInventario');
 Route::get('almacen/{codigo}/cantidadesAlmacen', 'AlmacenController@cantidadesAlmacen');
 Route::get('cierre_caja/{codigo}/verificarEstadoCaja', 'CierreCajaController@verificarEstadoCaja');
 Route::get('cierre_caja/{codigo}/consultarCajaSeleccionada', 'CierreCajaController@consultarCajaSeleccionada');
@@ -289,6 +289,5 @@ Route::resource('reporte_venta', 'ReporteVentaController');
 Route::resource('cabecera_compra', 'CabeceraCompraController');
 Route::resource('detalle_compra', 'DetalleCompraController');
 //Route::get('/comprobante/{tipo_comprobante}', 'ComprobanteController@obtenerSeries');
-
 
 //Route::get('/home', 'HomeController@index')->name('home');
